@@ -97,9 +97,23 @@ export const createApp = (): Express => {
   }
   app.use('/uploads', express.static(uploadsPath));
 
-  // Root Health Check for Cloud Platforms (Render, AWS, GCP)
+  // Production Root Endpoint
+  app.get('/', (req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      message: 'PFIS API is running',
+      service: 'PFIS - Patient Friction Intelligence System',
+      environment: config.nodeEnv,
+    });
+  });
+
+  // Production Health Check for Cloud Platforms (Render, AWS, GCP)
   app.get('/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'ok' });
+    res.status(200).json({
+      success: true,
+      status: 'healthy',
+      service: 'PFIS API',
+    });
   });
 
   // System Health Endpoint
