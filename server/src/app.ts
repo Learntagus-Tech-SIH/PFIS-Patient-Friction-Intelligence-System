@@ -30,9 +30,7 @@ export const createApp = (): Express => {
       [
         'http://localhost:5173',
         'http://localhost:5000',
-        'https://pfis-patient-friction-intelligence.vercel.app',
         'https://pfis-patient-friction-intelligence-system.onrender.com',
-        'https://pfis-sih.vercel.app',
         config.clientUrl,
         ...configuredClients,
       ].filter(Boolean)
@@ -51,7 +49,6 @@ export const createApp = (): Express => {
         if (
           allowedOrigins.includes(normalizedOrigin) ||
           (config.nodeEnv === 'development' && /^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin)) ||
-          /\.vercel\.app$/.test(normalizedOrigin) ||
           /\.onrender\.com$/.test(normalizedOrigin)
         ) {
           callback(null, true);

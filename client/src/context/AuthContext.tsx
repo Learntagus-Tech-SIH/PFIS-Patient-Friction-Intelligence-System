@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       throw new Error(res?.message || 'Login failed.');
     } catch (err: any) {
-      // If backend is unreachable or not yet deployed on Vercel, allow built-in Demo accounts to function seamlessly
+      // If backend is unreachable or still spinning up on Render, allow built-in Demo accounts to function seamlessly
       const isDemoAccount =
         cleanEmail === 'admin@pfis.org' ||
         cleanEmail === 'hospital@apollo.org' ||
