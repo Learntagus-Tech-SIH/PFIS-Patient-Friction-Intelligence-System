@@ -141,7 +141,7 @@ export const AdminDashboard: React.FC = () => {
       {statsError ? (
         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-          <span>Could not load real-time statistics. Check server connectivity at <code className="font-mono">localhost:5000</code>.</span>
+          <span>Could not load real-time statistics. Check server connectivity or API status.</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

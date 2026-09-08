@@ -106,7 +106,8 @@ export const GoogleCallback: React.FC = () => {
       }
 
       try {
-        const res = await authService.googleCallback(code, role, clientId);
+        const frontendRedirectUri = `${window.location.origin}/auth/google/callback`;
+        const res = await authService.googleCallback(code, role, clientId, frontendRedirectUri);
         if (res.success && res.token && res.user) {
           setAuthSession(res.token, res.user, res.profile);
 

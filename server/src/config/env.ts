@@ -26,6 +26,10 @@ export const config = {
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
   clientUrl: (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, ''),
   serverUrl: (process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`).replace(/\/+$/, ''),
+  googleCallbackUrl: (
+    process.env.GOOGLE_CALLBACK_URL ||
+    `${(process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`).replace(/\/+$/, '')}/api/auth/google/callback`
+  ).replace(/\/+$/, ''),
   nodeEnv: process.env.NODE_ENV || 'development',
   maxFileSizeMb: parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10),
 };

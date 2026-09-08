@@ -48,8 +48,8 @@ export const authService = {
     return res.data;
   },
 
-  async googleCallback(code: string, role?: string, clientId?: string): Promise<LoginResponse> {
-    const res = await api.post<LoginResponse>('/auth/google/callback', { code, role, clientId });
+  async googleCallback(code: string, role?: string, clientId?: string, redirectUri?: string): Promise<LoginResponse> {
+    const res = await api.post<LoginResponse>('/auth/google/callback', { code, role, clientId, redirectUri });
     return res.data;
   },
 

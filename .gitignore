@@ -7,6 +7,12 @@ build/
 client/.env
 client/.env.*
 client/.env.local
+server/.env
+server/.env.*
+server/.env.local
+!.env.example
+!client/.env.example
+!server/.env.example
 .DS_Store
 *.log
 uploads/*

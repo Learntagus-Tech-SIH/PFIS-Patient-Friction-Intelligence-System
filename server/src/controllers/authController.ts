@@ -681,7 +681,7 @@ export class AuthController {
         );
       }
 
-      const callbackUrl = `${config.serverUrl}/api/auth/google/callback`;
+      const callbackUrl = config.googleCallbackUrl;
       const scope = encodeURIComponent('openid email profile');
       const state = encodeURIComponent(JSON.stringify({ role, clientId }));
 
@@ -731,7 +731,7 @@ export class AuthController {
         role = (state as string) || 'patient';
       }
 
-      const callbackUrl = `${config.serverUrl}/api/auth/google/callback`;
+      const callbackUrl = config.googleCallbackUrl;
 
       // Exchange authorization code for tokens with Google OAuth
       const tokenRes = await axios.post(
@@ -798,7 +798,7 @@ export class AuthController {
         return;
       }
 
-      const redirectUri = `${config.serverUrl}/api/auth/google/callback`;
+      const redirectUri = config.googleCallbackUrl;
       const scope = encodeURIComponent('openid email profile');
       const state = encodeURIComponent(JSON.stringify({ role, clientId }));
 
@@ -830,7 +830,7 @@ export class AuthController {
         return;
       }
 
-      const redirectUri = customRedirectUri || `${config.serverUrl}/api/auth/google/callback`;
+      const redirectUri = customRedirectUri || config.googleCallbackUrl;
 
       // Exchange authorization code for tokens with Google OAuth
       const tokenRes = await axios.post(

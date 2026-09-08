@@ -30,6 +30,8 @@ export const createApp = (): Express => {
       [
         'http://localhost:5173',
         'http://localhost:5000',
+        'https://pfis-patient-friction-intelligence.vercel.app',
+        'https://pfis-patient-friction-intelligence-system.onrender.com',
         'https://pfis-sih.vercel.app',
         config.clientUrl,
         ...configuredClients,
