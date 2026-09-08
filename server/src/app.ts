@@ -102,7 +102,6 @@ export const createApp = (): Express => {
       success: true,
       message: 'PFIS API is running',
       service: 'PFIS - Patient Friction Intelligence System',
-      environment: config.nodeEnv,
     });
   });
 
@@ -111,7 +110,8 @@ export const createApp = (): Express => {
     res.status(200).json({
       success: true,
       status: 'healthy',
-      service: 'PFIS API',
+      service: 'PFIS - Patient Friction Intelligence System',
+      message: 'PFIS API is healthy and operational',
     });
   });
 
