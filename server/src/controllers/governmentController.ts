@@ -71,7 +71,11 @@ export class GovernmentController {
 
   public static async approveHospital(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = typeof req.params.id === 'string' ? req.params.id : Array.isArray(req.params.id) ? req.params.id[0] : '';
+      if (!id) {
+        res.status(400).json({ success: false, message: 'Hospital ID is required.' });
+        return;
+      }
       const hospital = await Hospital.findById(id);
       if (!hospital) {
         res.status(404).json({ success: false, message: 'Hospital not found.' });
@@ -96,7 +100,11 @@ export class GovernmentController {
 
   public static async rejectHospital(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = typeof req.params.id === 'string' ? req.params.id : Array.isArray(req.params.id) ? req.params.id[0] : '';
+      if (!id) {
+        res.status(400).json({ success: false, message: 'Hospital ID is required.' });
+        return;
+      }
       const { reason } = req.body;
       const hospital = await Hospital.findById(id);
       if (!hospital) {

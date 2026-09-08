@@ -140,6 +140,10 @@ export class HospitalRepository {
     return res.rows;
   }
 
+  static async getServicesByHospital(hospitalId: string): Promise<HospitalServiceEntity[]> {
+    return this.getServices(hospitalId);
+  }
+
   static async addService(service: Omit<HospitalServiceEntity, 'id'> & { id?: string }): Promise<HospitalServiceEntity> {
     const db = getDB();
     const id = service.id || crypto.randomUUID();

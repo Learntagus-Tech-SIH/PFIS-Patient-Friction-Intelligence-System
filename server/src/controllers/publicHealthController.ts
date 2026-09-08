@@ -2,6 +2,18 @@ import { Request, Response } from 'express';
 import { PublicHealthRepository } from '../database/repositories/PublicHealthRepository.js';
 import { HospitalRepository } from '../database/repositories/HospitalRepository.js';
 
+function toSingleString(val: unknown): string {
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val) && typeof val[0] === 'string') return val[0];
+  return '';
+}
+
+function toOptionalString(val: unknown): string | undefined {
+  if (typeof val === 'string' && val.trim().length > 0) return val.trim();
+  if (Array.isArray(val) && typeof val[0] === 'string' && val[0].trim().length > 0) return val[0].trim();
+  return undefined;
+}
+
 export class PublicHealthController {
   // 1. Digital Triage
   static async runTriage(req: Request, res: Response) {
@@ -121,7 +133,7 @@ export class PublicHealthController {
 
   static async getPatientTriage(req: Request, res: Response) {
     try {
-      const patientId = req.params.patientId || (req as any).user?.id;
+      const patientId = toOptionalString(req.params.patientId) || (req as any).user?.id || 'demo-patient';
       const records = await PublicHealthRepository.findTriageByPatient(patientId);
       return res.status(200).json({ success: true, data: records });
     } catch (err: any) {
@@ -132,10 +144,9 @@ export class PublicHealthController {
   // 2. Referrals
   static async getReferrals(req: Request, res: Response) {
     try {
-      const { patientId, facilityId } = req.query;
       const referrals = await PublicHealthRepository.getReferrals({
-        patient_id: patientId ? String(patientId) : undefined,
-        facility_id: facilityId ? String(facilityId) : undefined,
+        patient_id: toOptionalString(req.query.patientId),
+        facility_id: toOptionalString(req.query.facilityId),
       });
       return res.status(200).json({ success: true, data: referrals });
     } catch (err: any) {
@@ -188,7 +199,10 @@ export class PublicHealthController {
 
   static async updateReferralStatus(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = toSingleString(req.params.id);
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'Referral ID is required' });
+      }
       const { status, counterReferralNotes } = req.body;
       const updated = await PublicHealthRepository.updateReferralStatus(id, status, counterReferralNotes);
       if (!updated) {
@@ -203,7 +217,7 @@ export class PublicHealthController {
   // 3. Health Records (Longitudinal & ABHA)
   static async getHealthRecords(req: Request, res: Response) {
     try {
-      const patientId = req.params.patientId || (req as any).user?.id || 'demo-patient-sunita';
+      const patientId = toOptionalString(req.params.patientId) || (req as any).user?.id || 'demo-patient-sunita';
       const records = await PublicHealthRepository.getHealthRecords(patientId);
       return res.status(200).json({
         success: true,
@@ -255,8 +269,7 @@ export class PublicHealthController {
   // 4. Diagnostics & Equipment Uptime
   static async getDiagnostics(req: Request, res: Response) {
     try {
-      const { facilityId } = req.query;
-      const tests = await PublicHealthRepository.getDiagnostics(facilityId ? String(facilityId) : undefined);
+      const tests = await PublicHealthRepository.getDiagnostics(toOptionalString(req.query.facilityId));
       return res.status(200).json({ success: true, data: tests });
     } catch (err: any) {
       return res.status(500).json({ success: false, message: err.message });
@@ -273,6 +286,7 @@ export class PublicHealthController {
         facility_name: facilityName || 'Primary Health Centre (PHC) Mahabaleshwar',
         test_name: testName || 'Complete Blood Count (CBC)',
         scheduled_date: scheduledDate || new Date().toISOString().split('T')[0],
+        sample_status: 'Slot Confirmed',
       });
       return res.status(201).json({ success: true, data: booking });
     } catch (err: any) {
@@ -282,7 +296,7 @@ export class PublicHealthController {
 
   static async getDiagnosticBookings(req: Request, res: Response) {
     try {
-      const patientId = req.query.patientId ? String(req.query.patientId) : (req as any).user?.id;
+      const patientId = toOptionalString(req.query.patientId) || (req as any).user?.id;
       const bookings = await PublicHealthRepository.getDiagnosticBookings(patientId);
       return res.status(200).json({ success: true, data: bookings });
     } catch (err: any) {
@@ -293,12 +307,11 @@ export class PublicHealthController {
   // 5. Essential Medicines (e-Aushadhi)
   static async getMedicines(req: Request, res: Response) {
     try {
-      const { facilityId, search, category, status } = req.query;
       const meds = await PublicHealthRepository.getMedicines({
-        facilityId: facilityId ? String(facilityId) : undefined,
-        search: search ? String(search) : undefined,
-        category: category ? String(category) : undefined,
-        status: status ? String(status) : undefined,
+        facilityId: toOptionalString(req.query.facilityId),
+        search: toOptionalString(req.query.search),
+        category: toOptionalString(req.query.category),
+        status: toOptionalString(req.query.status),
       });
       return res.status(200).json({ success: true, data: meds });
     } catch (err: any) {
@@ -309,10 +322,9 @@ export class PublicHealthController {
   // 6. High-Risk Registry
   static async getHighRiskRegistry(req: Request, res: Response) {
     try {
-      const { patientId, cohort } = req.query;
       const list = await PublicHealthRepository.getHighRiskRegistry({
-        patient_id: patientId ? String(patientId) : undefined,
-        cohort: cohort ? String(cohort) : undefined,
+        patient_id: toOptionalString(req.query.patientId),
+        cohort: toOptionalString(req.query.cohort),
       });
       return res.status(200).json({ success: true, data: list });
     } catch (err: any) {
@@ -353,7 +365,10 @@ export class PublicHealthController {
 
   static async updateHighRiskStatus(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = toSingleString(req.params.id);
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'ID is required' });
+      }
       const { status, followUpNotes } = req.body;
       const updated = await PublicHealthRepository.updateHighRiskStatus(id, status, followUpNotes);
       return res.status(200).json({ success: true, data: updated });
@@ -365,8 +380,7 @@ export class PublicHealthController {
   // 7. Frontline Tasks (ASHA / ANM / CHO)
   static async getFrontlineTasks(req: Request, res: Response) {
     try {
-      const { workerId } = req.query;
-      const tasks = await PublicHealthRepository.getFrontlineTasks(workerId ? String(workerId) : undefined);
+      const tasks = await PublicHealthRepository.getFrontlineTasks(toOptionalString(req.query.workerId));
       return res.status(200).json({ success: true, data: tasks });
     } catch (err: any) {
       return res.status(500).json({ success: false, message: err.message });
@@ -384,7 +398,10 @@ export class PublicHealthController {
 
   static async updateFrontlineTaskStatus(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = toSingleString(req.params.id);
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'ID is required' });
+      }
       const { status, notes } = req.body;
       const updated = await PublicHealthRepository.updateFrontlineTaskStatus(id, status, notes);
       return res.status(200).json({ success: true, data: updated });
@@ -440,7 +457,10 @@ export class PublicHealthController {
   // 9. Facility Quality & Metrics Dashboard
   static async getFacilityMetrics(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = toSingleString(req.params.id);
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'Facility ID is required' });
+      }
       const hospital = await HospitalRepository.findById(id);
       if (!hospital) {
         return res.status(404).json({ success: false, message: 'Hospital not found' });

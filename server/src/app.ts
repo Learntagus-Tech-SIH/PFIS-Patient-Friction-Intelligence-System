@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
+import fs from 'fs';
 import rateLimit from 'express-rate-limit';
 import routes from './routes/index.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
@@ -19,12 +20,22 @@ export const createApp = (): Express => {
   );
 
   // CORS Configuration
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5000',
-    'https://pfis-sih.vercel.app',
-    config.clientUrl,
-  ];
+  const configuredClients = (process.env.CLIENT_URL || '')
+    .split(',')
+    .map((u) => u.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
+  const allowedOrigins = Array.from(
+    new Set(
+      [
+        'http://localhost:5173',
+        'http://localhost:5000',
+        'https://pfis-sih.vercel.app',
+        config.clientUrl,
+        ...configuredClients,
+      ].filter(Boolean)
+    )
+  );
 
   app.use(
     cors({
@@ -37,7 +48,9 @@ export const createApp = (): Express => {
         const normalizedOrigin = origin.replace(/\/+$/, '');
         if (
           allowedOrigins.includes(normalizedOrigin) ||
-          (config.nodeEnv === 'development' && /^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin))
+          (config.nodeEnv === 'development' && /^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin)) ||
+          /\.vercel\.app$/.test(normalizedOrigin) ||
+          /\.onrender\.com$/.test(normalizedOrigin)
         ) {
           callback(null, true);
         } else {
@@ -75,7 +88,19 @@ export const createApp = (): Express => {
 
   // Static uploads directory for document previews
   const uploadsPath = path.resolve(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsPath)) {
+    try {
+      fs.mkdirSync(uploadsPath, { recursive: true });
+    } catch {
+      // Directory creation fallback
+    }
+  }
   app.use('/uploads', express.static(uploadsPath));
+
+  // Root Health Check for Cloud Platforms (Render, AWS, GCP)
+  app.get('/health', (req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok' });
+  });
 
   // System Health Endpoint
   app.get('/api/health', (req: Request, res: Response) => {
