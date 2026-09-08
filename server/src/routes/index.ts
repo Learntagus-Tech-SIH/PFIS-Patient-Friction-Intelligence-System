@@ -11,6 +11,11 @@ import adminRoutes from './adminRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
 import languageRoutes from './languageRoutes.js';
 import publicHealthRoutes from './publicHealthRoutes.js';
+import doctorRoutes from './doctorRoutes.js';
+import ashaRoutes from './ashaRoutes.js';
+import governmentRoutes from './governmentRoutes.js';
+import queueRoutes from './queueRoutes.js';
+import frictionReportRoutes from './frictionReportRoutes.js';
 
 const router = Router();
 
@@ -27,5 +32,10 @@ router.use('/admin', adminRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/languages', languageRoutes);
 router.use('/public-health', publicHealthRoutes);
+router.use('/doctors', doctorRoutes);
+router.use('/asha', ashaRoutes);
+router.use('/government', governmentRoutes);
+router.use('/queue', queueRoutes);
+router.use('/friction-reports', frictionReportRoutes);
 
 export default router;

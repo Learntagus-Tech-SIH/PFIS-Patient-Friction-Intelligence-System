@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         cleanEmail === 'dhirajkumar464748@gmail.com';
 
       if (isDemoAccount) {
-        let demoRole: 'admin' | 'hospital' | 'patient' = 'patient';
+        let demoRole: 'admin' | 'hospital' | 'patient' | 'doctor' | 'asha_worker' | 'government' = 'patient';
         let demoName = 'Demo Patient';
         if (cleanEmail === 'admin@pfis.org' || cleanEmail === 'dhirajkumar464748@gmail.com') {
           demoRole = 'admin';

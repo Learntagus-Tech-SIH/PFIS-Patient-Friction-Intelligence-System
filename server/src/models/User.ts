@@ -1,6 +1,6 @@
 import { createSQLModel } from '../database/sqlModel.js';
 
-export type UserRole = 'patient' | 'hospital' | 'admin';
+export type UserRole = 'patient' | 'hospital' | 'admin' | 'doctor' | 'asha_worker' | 'government';
 
 export interface IUser {
   _id?: string;

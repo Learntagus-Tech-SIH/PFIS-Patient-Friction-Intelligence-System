@@ -21,6 +21,9 @@ export const runRelationalSeed = async (): Promise<void> => {
     console.log('  PFIS RELATIONAL SEEDER: POPULATING DEMO DATASET (SQL)    ');
     console.log('===========================================================');
 
+    // Ensure all 6 role demo accounts exist
+    await ensureRoleDemoAccounts();
+
     // 1. Check if admin exists
     const existingAdmin = await UserRepository.findByEmail('admin@pfis.org');
     if (existingAdmin) {
@@ -301,6 +304,72 @@ export const runRelationalSeed = async (): Promise<void> => {
     console.error('[Seed Error] Failed to seed relational database:', err.message);
   }
 };
+
+async function ensureRoleDemoAccounts(): Promise<void> {
+  try {
+    const rolesToEnsure = [
+      {
+        email: 'doctor@pfis.org',
+        pass: 'Doctor@123',
+        name: 'Dr. Priya Sharma (Clinical Lead)',
+        role: 'doctor' as const,
+        phone: '+91 98765 22334',
+      },
+      {
+        email: 'asha@pfis.org',
+        pass: 'Asha@123',
+        name: 'Kavita Devi (ASHA Sangini)',
+        role: 'asha_worker' as const,
+        phone: '+91 98765 33445',
+      },
+      {
+        email: 'government@pfis.org',
+        pass: 'Govt@123',
+        name: 'Rajesh Verma (District Health Officer)',
+        role: 'government' as const,
+        phone: '+91 98765 44556',
+      },
+      {
+        email: 'hospital@apollo.org',
+        pass: 'Hospital@123',
+        name: 'Apollo Hospital Nodal Admin',
+        role: 'hospital' as const,
+        phone: '+91 98765 55667',
+      },
+      {
+        email: 'patient@pfis.org',
+        pass: 'Patient@123',
+        name: 'Sunita Devi',
+        role: 'patient' as const,
+        phone: '+91 98140 12345',
+      },
+      {
+        email: 'admin@pfis.org',
+        pass: 'Admin@123',
+        name: 'PFIS Executive Admin',
+        role: 'admin' as const,
+        phone: '+91 98765 43210',
+      },
+    ];
+
+    for (const r of rolesToEnsure) {
+      const existing = await UserRepository.findByEmail(r.email);
+      if (!existing) {
+        const hash = await bcrypt.hash(r.pass, 10);
+        await UserRepository.create({
+          email: r.email,
+          password_hash: hash,
+          name: r.name,
+          role: r.role,
+          phone: r.phone,
+        });
+        console.log(`[Seed] Created demo account: ${r.email} (${r.role})`);
+      }
+    }
+  } catch (err: any) {
+    console.warn('[Seed] Warning in ensureRoleDemoAccounts:', err.message);
+  }
+}
 
 async function seedPublicHealthData(): Promise<void> {
   try {

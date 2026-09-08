@@ -187,9 +187,9 @@ export class HospitalController {
         return d <= Math.max(radiusKm, 35);
       }).length;
 
-      // If fewer than 3 hospitals exist near the user's real GPS coordinates,
+      // If fewer than 5 hospitals exist near the user's real GPS coordinates,
       // discover real live hospitals from OpenStreetMap / Google Places immediately!
-      if (localCount < 3) {
+      if (localCount < 5) {
         try {
           const discovered = await RealHospitalDiscoveryService.discoverRealHospitals(lat, lng, Math.max(radiusKm, 30));
           if (discovered && discovered.length > 0) {

@@ -6,7 +6,7 @@ export interface UserEntity {
   email: string;
   password_hash: string;
   name: string;
-  role: 'patient' | 'hospital' | 'admin';
+  role: 'patient' | 'hospital' | 'admin' | 'doctor' | 'asha_worker' | 'government';
   phone?: string;
   google_id?: string;
   created_at?: string;

@@ -15,6 +15,8 @@ import { CompletionGauge } from '../../components/charts/CompletionGauge';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
 import { TTSButton } from '../../components/common/TTSButton';
 import { SimpleModeToggle } from '../../components/common/SimpleModeToggle';
+import { SmartHospitalRecommendationCard } from '../../components/hospitals/SmartHospitalRecommendationCard';
+import { LiveQueueTracker } from '../../components/queue/LiveQueueTracker';
 import {
   Sparkles,
   ShieldAlert,
@@ -63,34 +65,8 @@ export const PatientDashboard: React.FC = () => {
         if (pRes?.success && pRes.patient) {
           setPatient(pRes.patient);
           setActiveRequests(pRes.activeRequests || []);
-        } else {
-          // Resilient fallback profile
-          setPatient({
-            _id: 'demo_pat_01',
-            userId: user?.id || 'demo_user',
-            patientCode: 'PAT-1042',
-            age: 38,
-            gender: 'other',
-            preferredLanguage: 'Hindi',
-            transportAvailability: 'moderate',
-            digitalAccessLevel: 'moderate',
-            familySupport: 'moderate',
-            documentationStatus: 'complete',
-            financialAccessibility: 'moderate_budget',
-            appointmentFlexibility: 'flexible',
-            residenceType: 'semi_urban',
-            location: {
-              address: coords.address || 'UniCenter, LPU Campus',
-              city: coords.city || 'Phagwara',
-              state: 'Punjab',
-              pincode: coords.pincode || '144411',
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              geoJSON: { type: 'Point', coordinates: [coords.longitude, coords.latitude] },
-            },
-            createdAt: new Date().toISOString(),
-          } as any);
         }
+        // No fallback: if no patient profile exists, show onboarding state below
 
         const fRes = await patientService.getFrictionProfile().catch(() => null);
         if (fRes?.success) setFrictionProfile(fRes.frictionProfile);
@@ -132,6 +108,32 @@ export const PatientDashboard: React.FC = () => {
     );
   }
 
+  // No patient profile found for this user → show onboarding card
+  if (!patient) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center animate-fade-in">
+        <div className="w-20 h-20 rounded-3xl bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 flex items-center justify-center shadow-lg">
+          <UserCheck className="w-10 h-10 text-brand-600 dark:text-brand-400" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            Welcome, {user?.name}!
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            Your health profile hasn't been set up yet. Complete it to unlock your personalised friction score, care accessibility index, and nearby hospital matching.
+          </p>
+        </div>
+        <Link
+          to="/patient/profile"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all"
+        >
+          <UserCheck className="w-4 h-4" />
+          Set Up My Health Profile
+        </Link>
+      </div>
+    );
+  }
+
   // Real dynamic distance calculation based on user's live coordinates & nearest facility
   const realDistanceKm = nearestHospital?.distanceKm ?? (frictionProfile?.travel?.contributingParameters?.distanceKm ?? 2.7);
 
@@ -164,7 +166,7 @@ export const PatientDashboard: React.FC = () => {
     }
   }
 
-  const userAddressText = coords.address || patient?.location?.address || `${coords.city || 'Phagwara'}, Punjab`;
+  const userAddressText = coords.address || patient?.location?.address || (coords.city ? `${coords.city}, ${coords.state || 'India'}` : patient?.location?.city || 'Location not available');
 
   // Simple language explanation
   const getSimpleExplanation = () => {
@@ -245,6 +247,42 @@ export const PatientDashboard: React.FC = () => {
               {t('patient.editProfile', 'Edit Profile')}
             </Button>
           </Link>
+        </div>
+      </div>
+
+      {/* Smart Recommended Hospital & Live OPD Queue Tracker */}
+      <div className="space-y-6" id="queue">
+        <SmartHospitalRecommendationCard
+          hospital={{
+            id: nearestHospital?._id || 'hosp-rec-1',
+            name: nearestHospital?.name || 'District Civil Hospital, Jalandhar',
+            type: nearestHospital?.type || 'Government',
+            city: nearestHospital?.city || coords.city || 'Jalandhar',
+            district: nearestHospital?.state || coords.state || 'Punjab',
+            distanceKm: Number(realDistanceKm.toFixed(1)),
+            estimatedWaitMinutes: nearestHospital?.averageWaitTimeMinutes || 25,
+            availableBeds: nearestHospital?.availableBeds || 42,
+            totalBeds: nearestHospital?.totalBeds || 120,
+            rating: nearestHospital?.rating || 4.8,
+            reasons: [
+              `Shortest transit barrier: Only ${realDistanceKm.toFixed(1)} km away via local transit`,
+              'Minimal queue friction: Digital OPD tokens active with live SMS/app progression',
+              'Specialty match: General medicine and emergency triage open 24/7 with zero referral backlog',
+            ],
+            specialtyMatch: 'General Medicine, Emergency & Diagnostic Lab',
+            frictionScore: Math.round(100 - accessibilityScore),
+          }}
+          onSelectToken={() => {
+            const el = document.getElementById('queue-tracker-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+
+        <div id="queue-tracker-section">
+          <LiveQueueTracker
+            hospitalName={nearestHospital?.name || 'District Civil Hospital, Jalandhar'}
+            department="General Medicine OPD"
+          />
         </div>
       </div>
 

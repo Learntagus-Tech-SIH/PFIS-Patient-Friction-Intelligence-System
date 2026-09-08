@@ -23,7 +23,13 @@ export const AdminLayout: React.FC = () => {
   }
 
   if (user.role !== 'admin') {
-    return <Navigate to={user.role === 'hospital' ? '/hospital/dashboard' : '/patient/dashboard'} replace />;
+    const redirectMap: Record<string, string> = {
+      hospital: '/hospital/dashboard',
+      doctor: '/doctor/dashboard',
+      asha_worker: '/asha/dashboard',
+      government: '/government/dashboard',
+    };
+    return <Navigate to={redirectMap[user.role] || '/patient/dashboard'} replace />;
   }
 
   return (

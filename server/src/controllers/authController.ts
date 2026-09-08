@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import { User, IUser } from '../models/User.js';
 import { Patient } from '../models/Patient.js';
 import { Hospital } from '../models/Hospital.js';
+import { DoctorProfile } from '../models/DoctorProfile.js';
+import { AshaWorkerProfile } from '../models/AshaWorkerProfile.js';
+import { GovernmentProfile } from '../models/GovernmentProfile.js';
 import { generateToken } from '../utils/jwt.js';
 import { AuditService } from '../services/auditService.js';
 import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
@@ -38,11 +41,17 @@ export class AuthController {
       const ADMIN_EMAILS = ['dhirajkumar464748@gmail.com', 'admin@pfis.org'];
       const isAdmin = ADMIN_EMAILS.includes(normalizedEmail);
 
-      let userRole: 'admin' | 'hospital' | 'patient' = 'patient';
+      let userRole: 'admin' | 'hospital' | 'patient' | 'doctor' | 'asha_worker' | 'government' = 'patient';
       if (isAdmin) {
         userRole = 'admin';
       } else if (role === 'hospital') {
         userRole = 'hospital';
+      } else if (role === 'doctor') {
+        userRole = 'doctor';
+      } else if (role === 'asha_worker') {
+        userRole = 'asha_worker';
+      } else if (role === 'government') {
+        userRole = 'government';
       } else {
         userRole = 'patient';
       }
@@ -148,6 +157,78 @@ export class AuthController {
           specialistAvailable: true,
         });
         profileData = newHospital;
+      } else if (userRole === 'doctor') {
+        const count = await DoctorProfile.countDocuments();
+        const doctorCode = `DOC-${1000 + count + 1}`;
+        const newDoctor = await DoctorProfile.create({
+          userId: newUser._id,
+          doctorCode,
+          name: name.trim(),
+          specialization: extraDetails.specialization || 'General Medicine',
+          qualification: extraDetails.qualification || 'MBBS',
+          licenseNumber: extraDetails.licenseNumber || '',
+          hospitalId: extraDetails.hospitalId || null,
+          hospitalName: extraDetails.hospitalName || '',
+          experience: extraDetails.experience || 0,
+          languages: extraDetails.languages || ['Hindi', 'English'],
+          phone: phone || '',
+          email: normalizedEmail,
+          consultationFee: extraDetails.consultationFee || 0,
+          opdTimings: extraDetails.opdTimings || '09:00 AM - 05:00 PM',
+          availableDays: extraDetails.availableDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          totalPatientsSeen: 0,
+          location: {
+            address: extraDetails.address || '',
+            city: extraDetails.city || '',
+            state: extraDetails.state || '',
+            pincode: extraDetails.pincode || '',
+            latitude: extraDetails.latitude || 0,
+            longitude: extraDetails.longitude || 0,
+          },
+          isVerified: false,
+          isActive: true,
+        });
+        profileData = newDoctor;
+      } else if (userRole === 'asha_worker') {
+        const count = await AshaWorkerProfile.countDocuments();
+        const ashaCode = `ASHA-${2000 + count + 1}`;
+        const newAsha = await AshaWorkerProfile.create({
+          userId: newUser._id,
+          ashaCode,
+          name: name.trim(),
+          phone: phone || '',
+          email: normalizedEmail,
+          zone: extraDetails.zone || 'Zone A',
+          district: extraDetails.district || extraDetails.city || 'Local District',
+          state: extraDetails.state || 'Punjab',
+          assignedVillages: extraDetails.assignedVillages || [],
+          supervisorName: extraDetails.supervisorName || '',
+          supervisorPhone: extraDetails.supervisorPhone || '',
+          totalPatientsTracked: 0,
+          highRiskPatientCount: 0,
+          referralsMade: 0,
+          fieldVisitsThisMonth: 0,
+          certificationLevel: extraDetails.certificationLevel || 'Basic',
+          isActive: true,
+        });
+        profileData = newAsha;
+      } else if (userRole === 'government') {
+        const count = await GovernmentProfile.countDocuments();
+        const govCode = `GOV-${3000 + count + 1}`;
+        const newGov = await GovernmentProfile.create({
+          userId: newUser._id,
+          govCode,
+          department: extraDetails.department || 'National Health Mission',
+          designation: extraDetails.designation || 'Health Officer',
+          state: extraDetails.state || '',
+          district: extraDetails.district || '',
+          accessLevel: extraDetails.accessLevel || 'district',
+          phone: phone || '',
+          email: normalizedEmail,
+          isVerified: false,
+          isActive: true,
+        });
+        profileData = newGov;
       }
 
       const token = generateToken({

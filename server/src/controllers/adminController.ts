@@ -11,6 +11,7 @@ import { AuditLog } from '../models/AuditLog.js';
 import { User } from '../models/User.js';
 import { AuditService } from '../services/auditService.js';
 import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
+import { getDB } from '../database/db.js';
 
 export class AdminController {
   public static async getDashboardStats(req: Request, res: Response): Promise<void> {
@@ -698,6 +699,134 @@ export class AdminController {
       });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message || 'Failed to fetch audit logs.' });
+    }
+  }
+
+  // ── Feature Flags ──────────────────────────────────────────────────────
+  private static DEFAULT_FLAGS = [
+    { key: 'teleconsultation', label: 'Teleconsultation', description: 'Video/audio teleconsult between patients and doctors', enabledFor: ['patient', 'doctor', 'hospital', 'admin'], enabled: true },
+    { key: 'digital_triage', label: 'Digital Triage', description: 'AI-powered digital symptom triage for patients', enabledFor: ['patient', 'admin'], enabled: true },
+    { key: 'asha_portal', label: 'ASHA Worker Portal', description: 'Field visit tracking and patient flagging for ASHA workers', enabledFor: ['asha_worker', 'admin'], enabled: true },
+    { key: 'government_analytics', label: 'Government Analytics', description: 'Population-level analytics for government officials', enabledFor: ['government', 'admin'], enabled: true },
+    { key: 'hospital_approval', label: 'Hospital Approval Workflow', description: 'Government officers can approve/reject hospital registrations', enabledFor: ['government', 'admin'], enabled: true },
+    { key: 'friction_fingerprint', label: 'Friction Fingerprint', description: 'Personal accessibility friction scoring for patients', enabledFor: ['patient', 'doctor', 'admin'], enabled: true },
+    { key: 'high_risk_followup', label: 'High Risk Follow-Up', description: 'Automated high-risk patient follow-up workflows', enabledFor: ['asha_worker', 'hospital', 'admin'], enabled: true },
+    { key: 'longitudinal_records', label: 'Longitudinal Health Records', description: 'ABHA-linked longitudinal patient health records', enabledFor: ['patient', 'doctor', 'hospital', 'admin'], enabled: true },
+    { key: 'medicine_availability', label: 'Medicine Availability', description: 'Real-time essential medicine stock tracking', enabledFor: ['patient', 'hospital', 'government', 'admin'], enabled: true },
+    { key: 'digital_twin', label: 'Digital Twin Simulator', description: 'What-If scenario patient journey simulation', enabledFor: ['admin'], enabled: true },
+    { key: 'care_escort', label: 'Care Escort / Sahayak', description: 'Doorstep care escort booking for patients', enabledFor: ['patient', 'admin'], enabled: true },
+    { key: 'doctor_portal', label: 'Doctor Portal', description: 'Dedicated doctor dashboard with patient queue and prescriptions', enabledFor: ['doctor', 'admin'], enabled: true },
+  ];
+
+  public static async getFeatureFlags(req: Request, res: Response): Promise<void> {
+    try {
+      const db = getDB();
+      const result = await db.query('SELECT * FROM feature_flags');
+      let flags = result.rows || [];
+
+      // Seed defaults if empty
+      if (flags.length === 0) {
+        for (const flag of AdminController.DEFAULT_FLAGS) {
+          await db.query(
+            'INSERT INTO feature_flags (id, key, label, description, enabledFor, enabled, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [flag.key, flag.key, flag.label, flag.description, JSON.stringify(flag.enabledFor), flag.enabled ? 1 : 0, new Date().toISOString()]
+          );
+        }
+        const seeded = await db.query('SELECT * FROM feature_flags');
+        flags = seeded.rows || [];
+      }
+
+      // Parse enabledFor JSON strings
+      const parsed = flags.map((f: any) => ({
+        ...f,
+        enabled: f.enabled === 1 || f.enabled === true || f.enabled === 'true',
+        enabledFor: typeof f.enabledfor === 'string' ? JSON.parse(f.enabledfor) : (f.enabledFor || f.enabledfor || []),
+      }));
+
+      res.status(200).json({ success: true, count: parsed.length, flags: parsed });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message || 'Failed to fetch feature flags.' });
+    }
+  }
+
+  public static async updateFeatureFlag(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { key } = req.params;
+      const { enabled } = req.body;
+      const db = getDB();
+      await db.query(
+        'UPDATE feature_flags SET enabled = $1, updated_at = $2 WHERE key = $3',
+        [enabled ? 1 : 0, new Date().toISOString(), key]
+      );
+      await AuditService.log('FEATURE_FLAG_UPDATED', 'FeatureFlag', req as any, {
+        userId: req.user?._id,
+        details: { key, enabled },
+      });
+      res.status(200).json({ success: true, message: `Feature '${key}' ${enabled ? 'enabled' : 'disabled'}.` });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message || 'Failed to update feature flag.' });
+    }
+  }
+
+  // ── All Users Management ───────────────────────────────────────────────
+  public static async getAllUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const users = await User.find({});
+      const roleGroups: Record<string, any[]> = {};
+      (users as any[]).forEach((u: any) => {
+        const role = u.role || 'patient';
+        if (!roleGroups[role]) roleGroups[role] = [];
+        roleGroups[role].push({
+          id: u._id || u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          phone: u.phone,
+          isActive: u.isActive !== false,
+          createdAt: u.createdAt || u.created_at,
+        });
+      });
+      res.status(200).json({
+        success: true,
+        total: (users as any[]).length,
+        roleGroups,
+        users: (users as any[]).map((u: any) => ({
+          id: u._id || u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          phone: u.phone,
+          isActive: u.isActive !== false,
+          createdAt: u.createdAt || u.created_at,
+        })),
+      });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message || 'Failed to fetch users.' });
+    }
+  }
+
+  public static async toggleUserStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const user = await User.findById(id);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found.' });
+        return;
+      }
+      user.isActive = !user.isActive;
+      await user.save();
+      await AuditService.log('USER_STATUS_TOGGLED', 'User', req as any, {
+        userId: req.user?._id,
+        resourceId: id,
+        details: { isActive: user.isActive },
+      });
+      res.status(200).json({
+        success: true,
+        message: `User ${user.isActive ? 'activated' : 'deactivated'}.`,
+        user: { id: user._id, name: user.name, isActive: user.isActive },
+      });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message || 'Failed to toggle user status.' });
     }
   }
 }

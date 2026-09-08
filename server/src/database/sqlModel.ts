@@ -200,6 +200,7 @@ function wrapModelInstance(tableName: string, raw: any): any {
     'languagesSupported',
     'ambulanceService',
     'careEscortService',
+    'careAttendantService',
     'location',
     'opdDays',
     'travel',
@@ -212,6 +213,16 @@ function wrapModelInstance(tableName: string, raw: any): any {
     'appointmentTiming',
     'topBarrier',
     'secondaryBarrier',
+    // Request fields stored as JSON strings in SQLite
+    'timeline',
+    'ambulanceBooking',
+    'careEscortBooking',
+    'treatedConditions',
+    'vitals_json',
+    'prescription_json',
+    'geoJSON',
+    'dataShared',
+    'documentIds',
   ];
 
   for (const f of jsonFields) {

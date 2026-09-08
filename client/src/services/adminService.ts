@@ -60,4 +60,26 @@ export const adminService = {
     const res = await api.get('/admin/audit-logs', { params: { limit } });
     return res.data;
   },
+
+  // Feature Flags
+  async getFeatureFlags(): Promise<{ success: boolean; count: number; flags: any[] }> {
+    const res = await api.get('/admin/feature-flags');
+    return res.data;
+  },
+
+  async updateFeatureFlag(key: string, enabled: boolean): Promise<{ success: boolean; message: string }> {
+    const res = await api.put(`/admin/feature-flags/${key}`, { enabled });
+    return res.data;
+  },
+
+  // User Management
+  async getAllUsers(): Promise<{ success: boolean; total: number; users: any[]; roleGroups: any }> {
+    const res = await api.get('/admin/users');
+    return res.data;
+  },
+
+  async toggleUserStatus(id: string): Promise<{ success: boolean; message: string; user: any }> {
+    const res = await api.put(`/admin/users/${id}/toggle`);
+    return res.data;
+  },
 };

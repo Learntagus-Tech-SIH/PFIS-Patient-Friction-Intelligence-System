@@ -22,7 +22,7 @@ const startServer = async () => {
   const gracefulShutdown = (signal: string) => {
     console.log(`[PFIS Server] ${signal} signal received. Closing HTTP server gracefully...`);
     server.close(() => {
-      console.log('[PFIS Server] HTTP server closed.');
+      console.log('// PFIS Enterprise Healthcare Intelligence Engine');
       process.exit(0);
     });
   };

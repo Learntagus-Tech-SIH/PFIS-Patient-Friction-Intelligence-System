@@ -30,6 +30,7 @@ export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [recentLogs, setRecentLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [statsError, setStatsError] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -41,16 +42,9 @@ export const AdminDashboard: React.FC = () => {
 
         if (statsRes?.success) {
           setStats(statsRes.stats);
+          setStatsError(false);
         } else {
-          setStats({
-            totalPatients: 2840,
-            totalHospitals: 42,
-            avgAccessibilityScore: 74,
-            careCompletionRate: 81,
-            criticalRiskCount: 68,
-            highRiskCount: 312,
-            activeRequestsCount: 145,
-          });
+          setStatsError(true);
         }
 
         if (logsRes?.success) {
@@ -61,6 +55,7 @@ export const AdminDashboard: React.FC = () => {
         }
       } catch (e) {
         console.error(e);
+        setStatsError(true);
       } finally {
         setIsLoading(false);
       }
@@ -96,13 +91,19 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-2.5">
+          <Link to="/admin/judge-mode">
+            <button className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 transition-all">
+              <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
+              <span>SIH Judge Impact Evaluation</span>
+            </button>
+          </Link>
           <Link to="/admin/simulator">
-            <Button variant="primary" size="sm" icon={<Cpu className="w-4 h-4" />}>
+            <Button variant="secondary" size="sm" icon={<Cpu className="w-4 h-4" />}>
               What-If Simulator
             </Button>
           </Link>
           <Link to="/admin/audit-logs">
-            <Button variant="secondary" size="sm" icon={<Activity className="w-4 h-4" />}>
+            <Button variant="outline" size="sm" icon={<Activity className="w-4 h-4" />}>
               Audit Trail
             </Button>
           </Link>
@@ -137,49 +138,52 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <StatCard
-          title="Monitored Population"
-          value={stats?.totalPatients || 0}
-          subtitle="Registered patients in registry"
-          icon={Users}
-          trend="+18% this month"
-          trendPositive={true}
-          badge="Live MongoDB"
-          badgeType="success"
-        />
+      {statsError ? (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          <span>Could not load real-time statistics. Check server connectivity at <code className="font-mono">localhost:5000</code>.</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <StatCard
+            title="Monitored Population"
+            value={stats?.totalPatients ?? '—'}
+            subtitle="Registered patients in registry"
+            icon={Users}
+            badge="Live DB"
+            badgeType="success"
+          />
 
-        <StatCard
-          title="Connected Hospitals"
-          value={stats?.totalHospitals || 0}
-          subtitle="Verified facility network"
-          icon={Building2}
-          badge="State Network"
-          badgeType="info"
-        />
+          <StatCard
+            title="Connected Hospitals"
+            value={stats?.totalHospitals ?? '—'}
+            subtitle="Verified facility network"
+            icon={Building2}
+            badge="State Network"
+            badgeType="info"
+          />
 
-        <StatCard
-          title="Active Intake Requests"
-          value={stats?.activeRequests || 0}
-          subtitle="Tokens & consults pending triage"
-          icon={ListOrdered}
-          trend="+5 new today"
-          trendPositive={false}
-          badge="Needs Review"
-          badgeType="warning"
-        />
+          <StatCard
+            title="Active Intake Requests"
+            value={stats?.activeRequests ?? '—'}
+            subtitle="Tokens & consults pending triage"
+            icon={ListOrdered}
+            badge="Needs Review"
+            badgeType={stats?.activeRequests > 0 ? 'warning' : 'info'}
+          />
 
-        <StatCard
-          title="Avg Friction Index"
-          value={stats?.avgFrictionScore || 58}
-          subtitle="0 (Zero Friction) to 100"
-          icon={TrendingUp}
-          trend="State Target: <40"
-          trendPositive={false}
-          badge="State Average"
-          badgeType="warning"
-        />
-      </div>
+          <StatCard
+            title="Avg Friction Index"
+            value={stats?.averageFrictionScore ?? '—'}
+            subtitle="0 (Zero Friction) to 100"
+            icon={TrendingUp}
+            trend="State Target: <40"
+            trendPositive={false}
+            badge="State Average"
+            badgeType={stats?.averageFrictionScore > 55 ? 'danger' : 'warning'}
+          />
+        </div>
+      )}
 
       {/* Live Who Is Logged In & Recent Security Activity */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xl space-y-6">

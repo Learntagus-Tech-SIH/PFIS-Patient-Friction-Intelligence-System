@@ -47,14 +47,7 @@ export class PatientController {
         .populate('activeCareRiskId');
 
       if (!patient) {
-        patient = await Patient.findOne({})
-          .populate('preferredHospitalId')
-          .populate('activeFrictionProfileId')
-          .populate('activeCareRiskId');
-      }
-
-      if (!patient) {
-        res.status(404).json({ success: false, message: 'Patient profile not found.' });
+        res.status(404).json({ success: false, message: 'Patient profile not found. Please complete your health profile setup.' });
         return;
       }
 
@@ -79,10 +72,7 @@ export class PatientController {
     try {
       let patient = await Patient.findOne({ userId: req.user?._id });
       if (!patient) {
-        patient = await Patient.findOne({});
-      }
-      if (!patient) {
-        res.status(404).json({ success: false, message: 'Patient profile not found.' });
+        res.status(404).json({ success: false, message: 'Patient profile not found. Please complete your health profile setup.' });
         return;
       }
 

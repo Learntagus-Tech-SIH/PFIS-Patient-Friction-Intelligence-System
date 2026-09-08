@@ -17,5 +17,11 @@ router.post('/hospitals', AdminController.createHospital);
 router.put('/hospitals/:id', AdminController.updateHospital);
 router.delete('/hospitals/:id', AdminController.deleteHospital);
 router.get('/audit-logs', AdminController.getAuditLogs);
+// Feature Flags
+router.get('/feature-flags', AdminController.getFeatureFlags);
+router.put('/feature-flags/:key', AdminController.updateFeatureFlag);
+// User Management
+router.get('/users', AdminController.getAllUsers);
+router.put('/users/:id/toggle', AdminController.toggleUserStatus);
 
 export default router;

@@ -42,9 +42,11 @@ export const CareLeakage: React.FC = () => {
                 <GitFork className="w-6 h-6 text-brand-500" />
                 Care Leakage & Retention Funnel
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">
-                Total Leakage: {leakageData?.totalLeakagePercentage || 82}%
-              </span>
+              {leakageData?.totalLeakagePercentage !== undefined && (
+                <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">
+                  Total Leakage: {leakageData.totalLeakagePercentage}%
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               Tracking patient attrition across 6 operational milestones to isolate where journeys collapse
@@ -52,7 +54,7 @@ export const CareLeakage: React.FC = () => {
           </div>
 
           <span className="text-xs text-slate-400 font-medium">
-            Observed Cohort: {leakageData?.cohortName || 'Regional Q1-2026'}
+            Observed Cohort: {leakageData?.cohortName || 'Loading...'}
           </span>
         </div>
 

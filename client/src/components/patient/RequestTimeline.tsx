@@ -4,8 +4,15 @@ import { TimelineEvent } from '../../types';
 
 export const RequestTimeline: React.FC<{
   currentStatus: string;
-  timeline: TimelineEvent[];
-}> = ({ currentStatus, timeline = [] }) => {
+  timeline: TimelineEvent[] | string | undefined;
+}> = ({ currentStatus, timeline: rawTimeline }) => {
+  // Safely coerce timeline: may arrive as JSON string from SQLite layer
+  let timeline: TimelineEvent[] = [];
+  if (Array.isArray(rawTimeline)) {
+    timeline = rawTimeline;
+  } else if (typeof rawTimeline === 'string') {
+    try { timeline = JSON.parse(rawTimeline); } catch { timeline = []; }
+  }
   const steps = [
     { key: 'REQUEST_CREATED', label: 'Request Created' },
     { key: 'CONSENT_GIVEN', label: 'Consent Given' },
