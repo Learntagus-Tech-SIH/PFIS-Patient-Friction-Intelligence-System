@@ -12,7 +12,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        sync: false # Set to your actual Render frontend URL (e.g. https://pfis-frontend.onrender.com)
+        value: https://pfis-patient-friction-intelligence.onrender.com
       - key: SERVER_URL
         value: https://pfis-patient-friction-intelligence-system.onrender.com
       - key: GOOGLE_CALLBACK_URL

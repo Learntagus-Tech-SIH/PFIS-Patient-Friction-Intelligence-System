@@ -30,6 +30,7 @@ export const createApp = (): Express => {
       [
         'http://localhost:5173',
         'http://localhost:5000',
+        'https://pfis-patient-friction-intelligence.onrender.com',
         'https://pfis-patient-friction-intelligence-system.onrender.com',
         config.clientUrl,
         ...configuredClients,

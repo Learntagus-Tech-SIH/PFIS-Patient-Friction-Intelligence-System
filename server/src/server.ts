@@ -1,6 +1,6 @@
 import { createApp } from './app.js';
 import { connectDB } from './config/database.js';
-import { config } from './config/env.js';
+import { config, validateGoogleOAuthEnv } from './config/env.js';
 
 const startServer = async () => {
   console.log('---------------------------------------------------------');
@@ -9,6 +9,8 @@ const startServer = async () => {
   console.log('---------------------------------------------------------');
 
   await connectDB();
+
+  validateGoogleOAuthEnv();
 
   const app = createApp();
 

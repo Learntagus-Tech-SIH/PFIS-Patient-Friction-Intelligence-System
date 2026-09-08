@@ -775,10 +775,15 @@ export class AuthController {
         `${config.clientUrl}/auth/google/callback?token=${encodeURIComponent(token)}&user=${encodedUser}`
       );
     } catch (error: any) {
-      console.error('[GoogleCallback GET Error]', error.response?.data || error.message);
+      const errData = error.response?.data;
+      console.error('[GoogleCallback GET Error]', {
+        status: error.response?.status,
+        error: errData?.error,
+        error_description: errData?.error_description,
+      });
       const msg =
-        error.response?.data?.error_description ||
-        error.response?.data?.error ||
+        errData?.error_description ||
+        errData?.error ||
         error.message ||
         'Google OAuth exchange failed.';
       return res.redirect(`${config.clientUrl}/auth/google/callback?error=${encodeURIComponent(msg)}`);
@@ -788,7 +793,7 @@ export class AuthController {
   public static async getGoogleAuthUrl(req: Request, res: Response): Promise<void> {
     try {
       const role = (req.query.role as string) || 'admin';
-      const clientId = ((req.query.clientId as string) || config.googleClientId || '').trim();
+      const clientId = (config.googleClientId || (req.query.clientId as string) || '').trim();
 
       if (!clientId) {
         res.status(400).json({
@@ -824,7 +829,7 @@ export class AuthController {
         return;
       }
 
-      const effectiveClientId = ((clientId || config.googleClientId || '') as string).trim();
+      const effectiveClientId = (config.googleClientId || (clientId as string) || '').trim();
       if (!effectiveClientId) {
         res.status(400).json({ success: false, message: 'Google Client ID is missing.' });
         return;
