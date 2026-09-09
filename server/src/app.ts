@@ -97,15 +97,6 @@ export const createApp = (): Express => {
   }
   app.use('/uploads', express.static(uploadsPath));
 
-  // Production Root Endpoint
-  app.get('/', (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      message: 'PFIS API is running',
-      service: 'PFIS - Patient Friction Intelligence System',
-    });
-  });
-
   // Production Health Check for Cloud Platforms (Render, AWS, GCP)
   app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
@@ -130,16 +121,58 @@ export const createApp = (): Express => {
   // Mount Application Routes
   app.use('/api', routes);
 
-  // 404 Route Handler
-  app.use((req: Request, res: Response) => {
-    res.status(404).json({
-      success: false,
-      message: `API endpoint [${req.method}] ${req.url} does not exist on PFIS server.`,
+  // Client static build directory detection (for full-stack deployment or local preview)
+  const candidateClientDirs = [
+    path.resolve(process.cwd(), '../client/dist'),
+    path.resolve(process.cwd(), 'client/dist'),
+  ];
+  const clientDistDir = candidateClientDirs.find((dir) => fs.existsSync(path.join(dir, 'index.html')));
+
+  if (clientDistDir) {
+    console.log(`[PFIS Server] Serving React static frontend from: ${clientDistDir}`);
+    app.use(express.static(clientDistDir));
+
+    // 404 Route Handler specifically for API requests
+    app.use('/api', (req: Request, res: Response) => {
+      res.status(404).json({
+        success: false,
+        message: `API endpoint [${req.method}] ${req.originalUrl} does not exist on PFIS server.`,
+      });
     });
-  });
+
+    // SPA Fallback: Any non-API, non-health GET route serves index.html
+    app.get('*', (req: Request, res: Response, next: any) => {
+      if (
+        req.path.startsWith('/api') ||
+        req.path.startsWith('/health') ||
+        req.path.startsWith('/uploads')
+      ) {
+        return next();
+      }
+      res.sendFile(path.join(clientDistDir, 'index.html'));
+    });
+  } else {
+    // Production Root Endpoint when frontend is served separately (e.g. Render Static Site)
+    app.get('/', (req: Request, res: Response) => {
+      res.status(200).json({
+        success: true,
+        message: 'PFIS API is running',
+        service: 'PFIS - Patient Friction Intelligence System',
+      });
+    });
+
+    // 404 Route Handler when frontend build is not present
+    app.use((req: Request, res: Response) => {
+      res.status(404).json({
+        success: false,
+        message: `API endpoint [${req.method}] ${req.originalUrl} does not exist on PFIS server.`,
+      });
+    });
+  }
 
   // Global Error Handler
   app.use(errorHandler);
 
   return app;
 };
+

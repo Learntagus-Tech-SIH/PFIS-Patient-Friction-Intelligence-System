@@ -69,12 +69,18 @@ export const Login: React.FC = () => {
     admin: '/admin/dashboard',
   };
 
-  // If already authenticated, redirect to the user's dashboard immediately
+  // If already authenticated, redirect to requested redirect or role dashboard immediately
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate(roleRedirectMap[user.role] || '/patient/dashboard', { replace: true });
+      const redirectParam = searchParams.get('redirect');
+      if (redirectParam && redirectParam.startsWith('/')) {
+        navigate(redirectParam, { replace: true });
+      } else {
+        navigate(roleRedirectMap[user.role] || '/patient/dashboard', { replace: true });
+      }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, searchParams]);
+
 
   // Set default credentials whenever active portal switches
   useEffect(() => {
@@ -249,9 +255,13 @@ export const Login: React.FC = () => {
     try {
       const res = await login(roleEmail, rolePass);
       if (res.success) {
-        setRedirectingMessage(`Welcome back! Redirecting to ${role} dashboard...`);
+        const redirectParam = searchParams.get('redirect');
+        const targetUrl = (redirectParam && redirectParam.startsWith('/'))
+          ? redirectParam
+          : (roleRedirectMap[res.user.role] || '/patient/dashboard');
+        setRedirectingMessage(`Welcome back! Redirecting to ${targetUrl.includes('judge-mode') ? 'SIH Judge Mode' : role + ' dashboard'}...`);
         setTimeout(() => {
-          navigate(roleRedirectMap[res.user.role] || '/patient/dashboard', { replace: true });
+          navigate(targetUrl, { replace: true });
         }, 200);
       }
     } catch (err: any) {
@@ -327,9 +337,18 @@ export const Login: React.FC = () => {
 
       {/* Main Title & Subtitle */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-bold mb-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-          <span>PFIS Integrated Multi-Role Healthcare Portal</span>
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+            <span>PFIS Integrated Multi-Role Healthcare Portal</span>
+          </div>
+          <Link
+            to="/admin/judge-mode"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all shadow-xs"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 animate-pulse" />
+            <span>SIH 2026 Judge Evaluation Hub →</span>
+          </Link>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           {currentPortalConfig.title} Sign In

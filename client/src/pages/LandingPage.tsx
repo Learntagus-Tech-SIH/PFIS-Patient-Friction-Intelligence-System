@@ -124,6 +124,13 @@ export const LandingPage: React.FC = () => {
               {/* Secondary portal links for unauthenticated */}
               {!isAuthenticated && (
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
+                  <Link to="/admin/judge-mode">
+                    <button className="text-xs text-purple-700 dark:text-purple-300 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 font-bold px-3.5 py-1.5 rounded-lg border border-purple-200 dark:border-purple-800 transition-colors flex items-center gap-1.5 shadow-xs">
+                      <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 animate-pulse" />
+                      <span>SIH 2026 Judge Evaluation Hub →</span>
+                    </button>
+                  </Link>
+                  <span className="text-slate-300 hidden sm:inline">•</span>
                   <Link to="/login?role=hospital">
                     <button className="text-xs text-slate-600 hover:text-teal-600 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                       {t('landing.hospitalPortal', 'Hospital Desk Portal →')}

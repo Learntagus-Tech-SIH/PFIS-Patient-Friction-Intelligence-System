@@ -223,7 +223,11 @@ export const App: React.FC = () => {
                     <Route path="/admin" element={<AdminLayout />}>
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />
                       <Route path="dashboard" element={<AdminDashboard />} />
+                      {/* Canonical SIH Judge Mode Evaluation Route */}
                       <Route path="judge-mode" element={<JudgeImpactDashboard />} />
+                      <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
+                      <Route path="judgeMode" element={<Navigate to="/admin/judge-mode" replace />} />
+                      <Route path="judge" element={<Navigate to="/admin/judge-mode" replace />} />
                       <Route path="triage" element={<DigitalTriagePage />} />
                       <Route path="referrals" element={<ReferralTrackingPage />} />
                       <Route path="health-records" element={<LongitudinalRecordsPage />} />
@@ -247,8 +251,16 @@ export const App: React.FC = () => {
                       <Route path="settings" element={<PatientSettings />} />
                     </Route>
 
+                    {/* Top-Level Judge Mode Direct Access & Case Normalization */}
+                    <Route path="/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
+                    <Route path="/Admin/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
+                    <Route path="/Admin/judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
+                    <Route path="/Admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="/Admin" element={<Navigate to="/admin/dashboard" replace />} />
+
                     {/* 404 Catch All */}
                     <Route path="*" element={<NotFound />} />
+
                   </Routes>
                 </NotificationProvider>
               </LocationProvider>

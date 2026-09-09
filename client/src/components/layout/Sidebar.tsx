@@ -31,12 +31,16 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  forceRole?: string;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  if (!user) return null;
+  const role = forceRole || user?.role;
+  if (!role) return null;
 
-  const role = user.role;
 
   const patientLinks = [
     { name: t('nav.dashboard', 'Dashboard'), path: '/patient/dashboard', icon: LayoutDashboard },

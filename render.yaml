@@ -31,11 +31,12 @@ services:
   # ===================================================
   # 2. PFIS Frontend Static Site (Render Static Site)
   # ===================================================
-  - type: static
+  - type: web
     name: pfis-frontend
+    runtime: static
     rootDir: client
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: dist
     routes:
       - type: rewrite
         source: /*
@@ -45,3 +46,4 @@ services:
         value: https://pfis-patient-friction-intelligence-system.onrender.com/api
       - key: VITE_GOOGLE_CLIENT_ID
         sync: false
+
