@@ -5,7 +5,6 @@ import {
   Eye,
   Type,
   SunMoon,
-  Sparkles,
   Volume2,
   VolumeX,
   Gauge,
@@ -29,8 +28,6 @@ export const AccessibilityToolbar: React.FC = () => {
   } = useAccessibility();
 
   const {
-    simpleLanguageMode,
-    toggleSimpleLanguageMode,
     textToSpeechEnabled,
     setTextToSpeechEnabled,
     voiceEnabled,
@@ -140,28 +137,7 @@ export const AccessibilityToolbar: React.FC = () => {
             </button>
           </div>
 
-          {/* 3. Simple Language Mode */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <div>
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Simple Language</p>
-                <p className="text-[10px] text-slate-500">Plain words, no medical jargon</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={toggleSimpleLanguageMode}
-              className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors ${
-                simpleLanguageMode ? 'bg-amber-500 justify-end' : 'bg-slate-200 dark:bg-slate-700 justify-start'
-              }`}
-              aria-pressed={simpleLanguageMode}
-            >
-              <div className="w-4 h-4 rounded-full bg-white shadow-sm flex items-center justify-center">
-                {simpleLanguageMode && <Check className="w-2.5 h-2.5 text-amber-600" />}
-              </div>
-            </button>
-          </div>
+
 
           {/* 4. Voice & Screen Reader Assistance */}
           <div className="flex items-center justify-between">

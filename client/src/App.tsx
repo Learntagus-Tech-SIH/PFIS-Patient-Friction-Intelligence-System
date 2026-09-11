@@ -52,8 +52,8 @@ import { DiagnosticsPage } from './pages/patient/DiagnosticsPage';
 import { MedicineAvailabilityPage } from './pages/patient/MedicineAvailabilityPage';
 import { HighRiskFollowUpPage } from './pages/patient/HighRiskFollowUpPage';
 import { FrontlineWorkerPortal } from './pages/patient/FrontlineWorkerPortal';
-import { PatientConsentCenter } from './pages/patient/PatientConsentCenter';
 import { PatientFrictionReportPage } from './pages/patient/PatientFrictionReportPage';
+import { PatientAccessAssessment } from './pages/patient/PatientAccessAssessment';
 
 // Hospital Pages
 import { HospitalDashboard } from './pages/hospital/HospitalDashboard';
@@ -114,6 +114,8 @@ export const App: React.FC = () => {
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/architecture" element={<SystemArchitecture />} />
+                      <Route path="/system-architecture" element={<Navigate to="/architecture" replace />} />
+                      <Route path="/assessment" element={<PatientAccessAssessment />} />
                       <Route path="/hospitals" element={<Navigate to="/patient/hospitals" replace />} />
                     </Route>
 
@@ -152,8 +154,9 @@ export const App: React.FC = () => {
                       <Route path="risk" element={<AccessibilityRisk />} />
                       <Route path="digital-twin" element={<DigitalTwinSimulator />} />
                       <Route path="teleconsult" element={<TeleconsultationRoom />} />
-                      <Route path="consent" element={<PatientConsentCenter />} />
+                      <Route path="consent" element={<Navigate to="/patient/dashboard" replace />} />
                       <Route path="report-friction" element={<PatientFrictionReportPage />} />
+                      <Route path="assessment" element={<PatientAccessAssessment />} />
                       <Route path="notifications" element={<PatientNotifications />} />
                       <Route path="settings" element={<PatientSettings />} />
                     </Route>
@@ -223,7 +226,7 @@ export const App: React.FC = () => {
                     <Route path="/admin" element={<AdminLayout />}>
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />
                       <Route path="dashboard" element={<AdminDashboard />} />
-                      {/* Canonical SIH Judge Mode Evaluation Route */}
+                      {/* Platform Impact Evaluation Route */}
                       <Route path="judge-mode" element={<JudgeImpactDashboard />} />
                       <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
                       <Route path="judgeMode" element={<Navigate to="/admin/judge-mode" replace />} />

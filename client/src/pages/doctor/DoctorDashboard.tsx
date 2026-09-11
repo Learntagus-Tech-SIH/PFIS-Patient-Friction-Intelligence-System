@@ -48,7 +48,7 @@ export const DoctorDashboard: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-200 text-xs font-semibold uppercase tracking-wider">
               <Stethoscope className="w-3.5 h-3.5" />
-              <span>Doctor Portal — PFIS</span>
+              <span>Doctor Portal | PFIS</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Good Morning, {profile?.name || user?.name || 'Doctor'} 👋
@@ -136,7 +136,7 @@ export const DoctorDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Proactive Clinical Alerts (SIH Feature) */}
+      {/* Proactive Clinical Alerts */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
@@ -196,9 +196,9 @@ export const DoctorDashboard: React.FC = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { icon: <Users className="w-5 h-5 text-teal-600" />, label: 'Total Patients', value: stats?.totalPatients ?? '—', bg: 'bg-teal-50 border-teal-200' },
-          { icon: <ClipboardList className="w-5 h-5 text-indigo-600" />, label: 'Pending Requests', value: stats?.pendingRequests ?? '—', bg: 'bg-indigo-50 border-indigo-200' },
-          { icon: <CheckCircle2 className="w-5 h-5 text-emerald-600" />, label: 'Completed Cases', value: stats?.completedRequests ?? '—', bg: 'bg-emerald-50 border-emerald-200' },
+          { icon: <Users className="w-5 h-5 text-teal-600" />, label: 'Total Patients', value: stats?.totalPatients ?? '-', bg: 'bg-teal-50 border-teal-200' },
+          { icon: <ClipboardList className="w-5 h-5 text-indigo-600" />, label: 'Pending Requests', value: stats?.pendingRequests ?? '-', bg: 'bg-indigo-50 border-indigo-200' },
+          { icon: <CheckCircle2 className="w-5 h-5 text-emerald-600" />, label: 'Completed Cases', value: stats?.completedRequests ?? '-', bg: 'bg-emerald-50 border-emerald-200' },
           { icon: <Video className="w-5 h-5 text-blue-600" />, label: 'Teleconsults Today', value: stats?.activeTeleconsults ?? 0, bg: 'bg-blue-50 border-blue-200' },
         ].map((s, i) => (
           <div key={i} className={`rounded-2xl border p-4 ${s.bg} space-y-2`}>
@@ -256,7 +256,7 @@ export const DoctorDashboard: React.FC = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">{p.patientCode || 'Unknown'}</p>
-                  <p className="text-xs text-slate-500">{p.gender || '—'} • Age {p.age || '—'} • {p.preferredLanguage || 'Hindi'}</p>
+                  <p className="text-xs text-slate-500">{p.gender || '-'} • Age {p.age || '-'} • {p.preferredLanguage || 'Hindi'}</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${RISK_COLOR[p.riskCategory] || RISK_COLOR.LOW}`}>
                   {p.frictionLevel || 'LOW'} FRICTION

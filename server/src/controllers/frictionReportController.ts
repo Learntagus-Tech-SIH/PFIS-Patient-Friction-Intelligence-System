@@ -3,7 +3,7 @@ import { FrictionReport } from '../models/FrictionReport.js';
 import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
 
 export class FrictionReportController {
-  // Submit new friction report by patient
+  // Submit new healthcare barrier report by patient
   public static async createReport(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const patientId = req.user?._id || req.user?.id;
@@ -15,7 +15,10 @@ export class FrictionReportController {
         return;
       }
 
+      const reportId = `RPT-${Math.floor(100000 + Math.random() * 900000)}`;
+
       const report = await FrictionReport.create({
+        reportId,
         patientId: (patientId || req.user?._id || req.user?.id || 'PAT-DEMO').toString(),
         patientName,
         hospitalId: hospitalId || null,
@@ -23,13 +26,14 @@ export class FrictionReportController {
         category,
         severity: severity || 'MEDIUM',
         description,
-        status: 'PENDING',
+        status: 'SUBMITTED',
         createdAt: new Date(),
       });
 
       res.status(201).json({
         success: true,
-        message: 'Friction report submitted. Nodal health officers have been notified.',
+        message: 'Healthcare barrier report submitted successfully.',
+        reportId,
         report,
       });
     } catch (error: any) {
@@ -58,8 +62,8 @@ export class FrictionReportController {
     }
   }
 
-  // Resolve or update status of report
-  public static async resolveReport(req: AuthenticatedRequest, res: Response): Promise<void> {
+  // Update status of report (Submitted -> Under Review -> Action Taken -> Resolved)
+  public static async updateStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const { status, resolutionNotes } = req.body;
@@ -70,17 +74,26 @@ export class FrictionReportController {
         return;
       }
 
-      report.status = status || 'RESOLVED';
-      report.resolutionNotes = resolutionNotes || 'Investigated and resolved by nodal health grievance desk.';
+      if (status) {
+        report.status = status;
+      }
+      if (resolutionNotes) {
+        report.resolutionNotes = resolutionNotes;
+      }
       await report.save();
 
       res.status(200).json({
         success: true,
-        message: 'Friction incident marked as resolved.',
+        message: `Report status updated to ${report.status}.`,
         report,
       });
     } catch (error: any) {
-      res.status(500).json({ success: false, message: error.message || 'Failed to resolve report.' });
+      res.status(500).json({ success: false, message: error.message || 'Failed to update report status.' });
     }
+  }
+
+  // Resolve or update status of report (backward compatibility)
+  public static async resolveReport(req: AuthenticatedRequest, res: Response): Promise<void> {
+    return FrictionReportController.updateStatus(req, res);
   }
 }

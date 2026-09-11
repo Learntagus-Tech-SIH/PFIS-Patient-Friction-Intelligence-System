@@ -450,38 +450,48 @@ async function seedPublicHealthData(): Promise<void> {
       const diag = SEED_DIAGNOSTICS[i];
       const fac = seededFacilities[(i + 1) % seededFacilities.length];
       await db.query(
-        `INSERT INTO diagnostics (id, facility_id, facility_name, facility_tier, test_name, category, is_equipment_functional, operational_hours, technician_available, fee, tat_hours, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        `INSERT INTO diagnostics (id, facility_id, facility_name, facility_tier, service_name, category, description, equipment_status, availability_status, booking_status, technician_available, fee, fee_verified, opening_time, closing_time, tat_hours, verification_status, source, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`,
         [
           `dx-${i + 1}`,
           fac.id,
           fac.name,
           diag.facility_tier,
-          diag.test_name,
+          diag.service_name,
           diag.category,
-          diag.is_equipment_functional,
-          diag.operational_hours,
+          diag.description || null,
+          diag.equipment_status,
+          diag.availability_status,
+          diag.booking_status,
           diag.technician_available,
           diag.fee,
+          diag.fee_verified ?? true,
+          diag.opening_time || null,
+          diag.closing_time || null,
           diag.tat_hours,
+          diag.verification_status,
+          diag.source,
           new Date().toISOString(),
         ]
       );
     }
 
     // 4. High-Risk Registry
-    for (const hr of SEED_HIGH_RISK_PATIENTS) {
-      await PublicHealthRepository.createHighRiskEntry({
-        patient_id: patientId,
-        patient_name: hr.patient_name,
-        cohort_type: hr.cohort_type,
-        risk_level: hr.risk_level,
-        primary_condition: hr.primary_condition,
-        current_milestone: hr.current_milestone,
-        next_due_date: hr.next_due_date,
-        status: hr.status,
-        assigned_asha_name: hr.assigned_asha_name,
-        follow_up_notes: hr.follow_up_notes,
-      });
+    const existingHighRisk = await PublicHealthRepository.getHighRiskRegistry({ patient_id: patientId });
+    if (!existingHighRisk || existingHighRisk.length === 0) {
+      for (const hr of SEED_HIGH_RISK_PATIENTS) {
+        await PublicHealthRepository.createHighRiskEntry({
+          patient_id: patientId,
+          patient_name: hr.patient_name,
+          cohort_type: hr.cohort_type,
+          risk_level: hr.risk_level,
+          primary_condition: hr.primary_condition,
+          current_milestone: hr.current_milestone,
+          next_due_date: hr.next_due_date,
+          status: hr.status,
+          assigned_asha_name: hr.assigned_asha_name,
+          follow_up_notes: hr.follow_up_notes,
+        });
+      }
     }
 
     // 5. Frontline Tasks
@@ -498,6 +508,7 @@ async function seedPublicHealthData(): Promise<void> {
       record_type: 'OPD Consultation',
       record_date: '2026-08-14',
       diagnosis: 'Essential Hypertension Stage-2 with borderline Type 2 Diabetes Mellitus',
+      record_source: 'hospital_verified',
       vitals_json: JSON.stringify({ bp: '168/102 mmHg', pulse: '84 bpm', spo2: '97%', weightKg: '68' }),
       prescription_json: JSON.stringify([
         { name: 'Amlodipine 5mg', dosage: '1 Tab Daily OD Morning', duration: '30 Days' },
@@ -515,6 +526,7 @@ async function seedPublicHealthData(): Promise<void> {
       record_type: 'Diagnostic Report',
       record_date: '2026-07-02',
       diagnosis: 'Routine Non-Communicable Disease Pathology Evaluation',
+      record_source: 'hospital_verified',
       vitals_json: JSON.stringify({ fastingSugar: '142 mg/dL', ppSugar: '210 mg/dL', hba1c: '7.8%' }),
       notes: 'HbA1c elevated. Recommend continued adherence to Metformin and dietary counseling by ASHA.',
     });

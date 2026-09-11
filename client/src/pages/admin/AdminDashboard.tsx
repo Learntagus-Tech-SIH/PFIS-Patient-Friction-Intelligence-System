@@ -9,7 +9,6 @@ import {
   Users,
   Building2,
   ListOrdered,
-  Sparkles,
   TrendingUp,
   Cpu,
   Sliders,
@@ -92,9 +91,9 @@ export const AdminDashboard: React.FC = () => {
 
         <div className="flex flex-wrap gap-2.5">
           <Link to="/admin/judge-mode">
-            <button className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 transition-all">
-              <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
-              <span>SIH Judge Impact Evaluation</span>
+            <button className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-bold text-xs shadow-md transition-all">
+              <BarChart3 className="w-4 h-4 text-white" />
+              <span>System Impact Evaluation</span>
             </button>
           </Link>
           <Link to="/admin/simulator">
@@ -147,7 +146,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatCard
             title="Monitored Population"
-            value={stats?.totalPatients ?? '—'}
+            value={stats?.totalPatients ?? '-'}
             subtitle="Registered patients in registry"
             icon={Users}
             badge="Live DB"
@@ -156,7 +155,7 @@ export const AdminDashboard: React.FC = () => {
 
           <StatCard
             title="Connected Hospitals"
-            value={stats?.totalHospitals ?? '—'}
+            value={stats?.totalHospitals ?? '-'}
             subtitle="Verified facility network"
             icon={Building2}
             badge="State Network"
@@ -165,7 +164,7 @@ export const AdminDashboard: React.FC = () => {
 
           <StatCard
             title="Active Intake Requests"
-            value={stats?.activeRequests ?? '—'}
+            value={stats?.activeRequests ?? '-'}
             subtitle="Tokens & consults pending triage"
             icon={ListOrdered}
             badge="Needs Review"
@@ -174,7 +173,7 @@ export const AdminDashboard: React.FC = () => {
 
           <StatCard
             title="Avg Friction Index"
-            value={stats?.averageFrictionScore ?? '—'}
+            value={stats?.averageFrictionScore ?? '-'}
             subtitle="0 (Zero Friction) to 100"
             icon={TrendingUp}
             trend="State Target: <40"

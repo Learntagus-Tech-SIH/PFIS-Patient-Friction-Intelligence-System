@@ -42,7 +42,7 @@ export const config = {
   mysqlUser: sanitizeEnv(process.env.MYSQL_USER) || 'root',
   mysqlPassword: sanitizeEnv(process.env.MYSQL_PASSWORD) || '',
   mysqlDatabase: sanitizeEnv(process.env.MYSQL_DATABASE) || 'pfis',
-  jwtSecret: sanitizeEnv(process.env.JWT_SECRET) || 'pfis_super_secure_jwt_secret_key_2026_sih',
+  jwtSecret: sanitizeEnv(process.env.JWT_SECRET) || 'pfis_super_secure_jwt_secret_key_2026',
   jwtExpiresIn: '7d',
   googleMapsApiKey: sanitizeEnv(process.env.GOOGLE_MAPS_API_KEY),
   googleClientSecret: sanitizeEnv(process.env.GOOGLE_CLIENT_SECRET),

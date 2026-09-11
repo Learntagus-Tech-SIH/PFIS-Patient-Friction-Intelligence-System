@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "PFIS",
-    "appTagline": "Patient Friction Intelligence System",
+    "appTagline": "Patient Friction Index & Access Platform",
     "language": "Language",
     "dialect": "Dialect",
     "simpleLanguage": "Simple Language Mode",
@@ -64,10 +64,10 @@
     "auditLogs": "Audit Logs"
   },
   "landing": {
-    "heroTag": "National Healthcare Accessibility Platform • Non-Clinical Intelligence",
+    "heroTag": "National Healthcare Accessibility Platform • Non-Clinical Architecture",
     "heroTitle1": "Healthcare may be available.",
     "heroTitle2": "But is it actually accessible?",
-    "heroSubtitle": "PFIS identifies the practical barriers—from transit deficits and documentation gaps to wage loss—that prevent patients from completing care, helping healthcare systems choose high-impact interventions.",
+    "heroSubtitle": "PFIS identifies practical barriers (from transit deficits and documentation gaps to wage loss) preventing patients from completing care, helping healthcare systems choose high-impact interventions.",
     "findHospitals": "Find Nearby Hospitals",
     "patientLogin": "Patient Login",
     "hospitalPortal": "Hospital Portal",
@@ -91,14 +91,14 @@
     "nineStages": "The 9-Stage Healthcare Journey",
     "simulatorTitle": "Simulate community interventions to evaluate estimated access gains.",
     "simulatorDesc": "Model estimated care completion gains when community transport, satellite diagnostic camps, or community escorts are deployed.",
-    "ethicalTitle": "Ethical AI & Non-Clinical Safety Mandate",
+    "ethicalTitle": "Operational Safety & Non-Clinical Mandate",
     "zeroDiagnosis": "Zero Disease Diagnosis: PFIS does NOT diagnose diseases or prescribe medication.",
     "consentArch": "Patient Consent: No patient data is transmitted without explicit authorization.",
-    "explainableAI": "Explainable Science: Every barrier score provides transparent mathematical rationale."
+    "explainableAI": "Transparent Scoring: Every barrier score provides clear operational and mathematical rationale."
   },
   "auth": {
     "signInTitle": "Sign in to PFIS",
-    "signInSubtitle": "Access your non-clinical healthcare intelligence dashboard",
+    "signInSubtitle": "Access your non-clinical healthcare access dashboard",
     "patient": "Patient",
     "hospital": "Hospital",
     "admin": "Admin",

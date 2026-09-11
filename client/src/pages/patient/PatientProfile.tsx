@@ -6,7 +6,7 @@ import { Input, Select } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
 import { ErrorAlert } from '../../components/common/ErrorAlert';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
-import { MapPin, Sparkles, CheckCircle2, User, Save, RefreshCw } from 'lucide-react';
+import { MapPin, CheckCircle2, User, Save, RefreshCw } from 'lucide-react';
 
 export const PatientProfile: React.FC = () => {
   const { coords, requestCurrentLocation, isLoading: isLocLoading } = useLocation();

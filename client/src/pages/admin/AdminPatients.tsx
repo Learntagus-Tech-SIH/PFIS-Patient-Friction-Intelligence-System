@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
-import { Users, Search, MapPin, Sparkles } from 'lucide-react';
+import { Users, Search, MapPin } from 'lucide-react';
 
 export const AdminPatients: React.FC = () => {
   const [patients, setPatients] = useState<any[]>([]);

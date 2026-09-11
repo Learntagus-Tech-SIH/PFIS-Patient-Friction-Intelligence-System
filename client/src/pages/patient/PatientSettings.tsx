@@ -5,7 +5,6 @@ import {
   Globe,
   Mic,
   Volume2,
-  Sparkles,
   Save,
   CheckCircle2,
   ArrowRight,
@@ -121,7 +120,7 @@ export const PatientSettings: React.FC = () => {
         {currentLanguage.dialects && currentLanguage.dialects.length > 1 && (
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">
-              {t('settings.preferredDialect', 'Preferred Dialect (Optional)')} — {currentLanguage.nativeName}
+              {t('settings.preferredDialect', 'Preferred Dialect (Optional)')}: {currentLanguage.nativeName}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {currentLanguage.dialects.map((d) => {
@@ -146,59 +145,7 @@ export const PatientSettings: React.FC = () => {
         )}
       </div>
 
-      {/* Section 2: Simple Language Mode */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {t('settings.simpleModeSection', '2. Low-Literacy & Simple Language Mode')}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t(
-                  'settings.simpleModeDesc',
-                  'Replaces technical terms with short, everyday words and simpler sentences.'
-                )}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={toggleSimpleLanguageMode}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              simpleLanguageMode
-                ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20'
-                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-            }`}
-          >
-            {simpleLanguageMode ? 'ENABLED (सक्रिय)' : 'DISABLED (निष्क्रिय)'}
-          </button>
-        </div>
-
-        {/* Preview box */}
-        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-            Live Preview in {currentLanguage.nativeName}:
-          </div>
-          <div className="grid sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-              <span className="font-semibold text-slate-500 block mb-1">Standard Mode:</span>
-              <p className="text-slate-700 dark:text-slate-300">{sampleComplex}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-              <span className="font-semibold text-amber-700 dark:text-amber-300 block mb-1">
-                Simple Language Mode:
-              </span>
-              <p className="text-amber-900 dark:text-amber-200 font-medium">{sampleSimple}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 3: Voice & Audio Tools */}
+      {/* Section 2: Voice & Audio Tools */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
         <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
@@ -206,7 +153,7 @@ export const PatientSettings: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              {t('settings.speechSection', '3. Voice Input & Text-to-Speech (TTS)')}
+              {t('settings.speechSection', '2. Voice Input & Text-to-Speech (TTS)')}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t(

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { publicHealthService } from '../../services/publicHealthService';
 import { useToast } from '../../context/ToastContext';
@@ -27,6 +28,16 @@ export const EmergencySOSModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [dispatchData, setDispatchData] = useState<any>(null);
   const [emergencyType, setEmergencyType] = useState('Cardiac / Chest Pain');
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleTriggerSOS = async () => {
@@ -47,29 +58,36 @@ export const EmergencySOSModal: React.FC<Props> = ({ isOpen, onClose }) => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-rose-500/60 w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-[99999] overflow-y-auto p-4 sm:p-6 flex items-center justify-center bg-slate-950/80 backdrop-blur-md animate-fade-in"
+    >
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border-2 border-rose-500/60 w-full max-w-lg p-5 sm:p-7 shadow-2xl space-y-4 relative my-auto max-h-[92vh] overflow-y-auto shrink-0">
         {/* Top Emergency Beacon Effect */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-amber-500 to-rose-500 animate-pulse" />
 
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center animate-bounce">
+            <div className="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0">
               <Ambulance className="w-6 h-6" />
             </div>
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900">
                 108 Emergency Paramedic Network
               </span>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-0.5">
                 Emergency 108 Ambulance Dispatch
               </h3>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1 text-base font-bold cursor-pointer"
+            aria-label="Close"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -168,9 +186,18 @@ export const EmergencySOSModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <Ambulance className="w-5 h-5" />
               <span>{isDispatching ? 'Transmitting Distress Signal...' : 'CONFIRM & DISPATCH 108 AMBULANCE NOW'}</span>
             </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs transition-colors cursor-pointer text-center"
+            >
+              Cancel & Close Window
+            </button>
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

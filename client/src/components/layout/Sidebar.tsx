@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   MapPin,
-  Sparkles,
   ShieldAlert,
   FolderLock,
   User,
@@ -28,6 +27,7 @@ import {
   ToggleRight,
   Shield,
   Video,
+  Navigation,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -44,19 +44,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
 
   const patientLinks = [
     { name: t('nav.dashboard', 'Dashboard'), path: '/patient/dashboard', icon: LayoutDashboard },
-    { name: 'ABHA Consent & Privacy', path: '/patient/consent', icon: FolderLock },
-    { name: 'Report Friction Incident', path: '/patient/report-friction', icon: ShieldAlert },
-    { name: 'Digital Triage & Tier Router', path: '/patient/triage', icon: Activity },
+    { name: 'Report Healthcare Barrier', path: '/patient/report-friction', icon: ShieldAlert },
+    { name: 'Healthcare Access & Facility Router', path: '/patient/triage', icon: Navigation },
     { name: 'Referral Tracking Hub', path: '/patient/referrals', icon: GitFork },
     { name: 'Health Records & ABHA', path: '/patient/health-records', icon: FileText },
     { name: 'Diagnostic Network & Uptime', path: '/patient/diagnostics', icon: Activity },
     { name: 'e-Aushadhi Medicines', path: '/patient/medicines', icon: Pill },
     { name: 'High-Risk Care & Follow-up', path: '/patient/high-risk', icon: HeartPulse },
     { name: 'ASHA Frontline Seva', path: '/patient/frontline', icon: HeartHandshake },
-    { name: 'Digital Twin Simulator', path: '/patient/digital-twin', icon: Sparkles },
+    { name: 'Digital Twin Simulator', path: '/patient/digital-twin', icon: Sliders },
     { name: 'Live Teleconsultation', path: '/patient/teleconsult', icon: Layers },
     { name: t('nav.hospitals', 'Find Nearby Hospitals'), path: '/patient/hospitals', icon: MapPin },
-    { name: t('nav.frictionProfile', 'Friction Profile'), path: '/patient/friction', icon: Sparkles },
+    { name: t('nav.frictionProfile', 'Friction Profile'), path: '/patient/friction', icon: Activity },
     { name: t('nav.accessibilityRisk', 'Accessibility Risk'), path: '/patient/risk', icon: ShieldAlert },
     { name: t('nav.myRequests', 'My Hospital Requests'), path: '/patient/requests', icon: ListOrdered },
     { name: t('nav.myDocuments', 'Document Vault'), path: '/patient/documents', icon: FolderLock },
@@ -100,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
 
   const governmentLinks = [
     { name: 'State Health Overview', path: '/government/dashboard', icon: LayoutDashboard },
-    { name: 'SIH Judge Impact Mode', path: '/admin/judge-mode', icon: Sparkles },
+    { name: 'System Impact Evaluation', path: '/admin/judge-mode', icon: BarChart3 },
     { name: 'Hospital Bed Oversight', path: '/government/hospitals', icon: Building2 },
     { name: 'Population Friction Map', path: '/government/friction-map', icon: MapPin },
     { name: 'Resource Interventions', path: '/government/interventions', icon: Sliders },
@@ -109,11 +108,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
 
   const adminLinks = [
     { name: t('nav.dashboard', 'System Dashboard'), path: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'SIH Judge Impact Evaluation', path: '/admin/judge-mode', icon: Sparkles },
+    { name: 'System Impact Evaluation', path: '/admin/judge-mode', icon: BarChart3 },
     { name: 'State Referral Pipeline', path: '/admin/referrals', icon: GitFork },
     { name: 'High-Risk Follow-up Registry', path: '/admin/high-risk', icon: HeartPulse },
     { name: 'NQAS Facility Quality Index', path: '/admin/facility-metrics', icon: BarChart3 },
-    { name: 'Friction Digital Twin', path: '/admin/digital-twin', icon: Sparkles },
+    { name: 'Friction Digital Twin', path: '/admin/digital-twin', icon: Activity },
     { name: t('nav.whatIfSimulator', 'What-If Simulator'), path: '/admin/simulator', icon: Cpu },
     { name: t('nav.budgetOptimizer', 'Budget Optimizer'), path: '/admin/interventions', icon: Sliders },
     { name: t('nav.populationMap', 'Population Friction Map'), path: '/admin/friction-map', icon: MapPin },

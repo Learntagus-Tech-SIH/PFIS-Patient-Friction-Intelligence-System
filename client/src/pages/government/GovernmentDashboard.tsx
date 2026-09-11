@@ -104,11 +104,11 @@ export const GovernmentDashboard: React.FC = () => {
           { label: 'Total Requests', value: analytics?.totalRequests, icon: <BarChart3 className="w-4 h-4 text-blue-600" />, bg: 'bg-blue-50 border-blue-200' },
           { label: 'Completed', value: analytics?.completedRequests, icon: <CheckCircle2 className="w-4 h-4 text-emerald-600" />, bg: 'bg-emerald-50 border-emerald-200' },
           { label: 'High Risk', value: analytics?.highRiskPatients, icon: <AlertTriangle className="w-4 h-4 text-orange-600" />, bg: 'bg-orange-50 border-orange-200' },
-          { label: 'Care Rate %', value: analytics?.careCompletionRate != null ? `${analytics.careCompletionRate}%` : '—', icon: <TrendingUp className="w-4 h-4 text-violet-600" />, bg: 'bg-violet-50 border-violet-200' },
+          { label: 'Care Rate %', value: analytics?.careCompletionRate != null ? `${analytics.careCompletionRate}%` : '-', icon: <TrendingUp className="w-4 h-4 text-violet-600" />, bg: 'bg-violet-50 border-violet-200' },
         ].map((s, i) => (
           <div key={i} className={`rounded-2xl border p-4 ${s.bg} space-y-2`}>
             <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">{s.icon}</div>
-            <p className="text-xl font-black text-slate-900">{isLoading ? '…' : (s.value ?? '—')}</p>
+            <p className="text-xl font-black text-slate-900">{isLoading ? '…' : (s.value ?? '-')}</p>
             <p className="text-[11px] text-slate-500 font-medium">{s.label}</p>
           </div>
         ))}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import { useToast } from '../../context/ToastContext';
-import { Sparkles, ToggleLeft, ToggleRight, Shield, Users, Zap, Activity, RefreshCw } from 'lucide-react';
+import { ToggleLeft, ToggleRight, Shield, Users, Zap, Activity, RefreshCw } from 'lucide-react';
 
 const ROLE_COLORS: Record<string, string> = {
   patient: 'bg-teal-100 text-teal-700 border-teal-200',
@@ -17,7 +17,7 @@ const FLAG_ICONS: Record<string, React.ReactNode> = {
   digital_triage: <Activity className="w-5 h-5 text-teal-500" />,
   asha_portal: <Users className="w-5 h-5 text-green-500" />,
   government_analytics: <Shield className="w-5 h-5 text-violet-500" />,
-  default: <Sparkles className="w-5 h-5 text-indigo-500" />,
+  default: <Activity className="w-5 h-5 text-indigo-500" />,
 };
 
 export const AdminFeatureFlags: React.FC = () => {
@@ -63,7 +63,7 @@ export const AdminFeatureFlags: React.FC = () => {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-400/30 text-violet-200 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Activity className="w-3.5 h-3.5" />
               <span>Admin Feature Manager</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Feature Flags Control</h1>

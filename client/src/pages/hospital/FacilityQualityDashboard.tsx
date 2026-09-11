@@ -10,7 +10,6 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
   BarChart3,
   ShieldCheck,
   Users,
@@ -55,8 +54,8 @@ export const FacilityQualityDashboard: React.FC = () => {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>SIH 26133 • National Quality Assurance Standards (NQAS) & Operations</span>
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Healthcare Facility Operations • National Quality Assurance Standards (NQAS)</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Public Health Facility Operational Dashboard

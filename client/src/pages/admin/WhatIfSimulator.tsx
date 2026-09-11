@@ -6,7 +6,8 @@ import { Button } from '../../components/common/Button';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
 import {
   Cpu,
-  Sparkles,
+  Sliders,
+  Activity,
   Bus,
   Stethoscope,
   Users2,
@@ -103,7 +104,7 @@ export const WhatIfSimulator: React.FC = () => {
       case 'Administrative':
         return FileCheck2;
       default:
-        return Sparkles;
+        return Activity;
     }
   };
 
@@ -214,7 +215,7 @@ export const WhatIfSimulator: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-brand-500" />
+            <Sliders className="w-5 h-5 text-brand-500" />
             Select Interventions to Simulate ({selectedCodes.length} Active)
           </h3>
           <span className="text-xs text-slate-500">Click any card to toggle on/off</span>

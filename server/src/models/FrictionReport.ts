@@ -3,6 +3,7 @@ import { createSQLModel } from '../database/sqlModel.js';
 export interface IFrictionReport {
   _id?: string;
   id?: string;
+  reportId?: string;
   patientId: string;
   patientName: string;
   hospitalId?: string;
@@ -18,7 +19,7 @@ export interface IFrictionReport {
     | 'NAVIGATION_ISSUE';
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   description: string;
-  status: 'PENDING' | 'INVESTIGATING' | 'RESOLVED';
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'ACTION_TAKEN' | 'RESOLVED' | 'PENDING' | 'INVESTIGATING';
   resolutionNotes?: string;
   createdAt: Date | string;
   save?: () => Promise<any>;

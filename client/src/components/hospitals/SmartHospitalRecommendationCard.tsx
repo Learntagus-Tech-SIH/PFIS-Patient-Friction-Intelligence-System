@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Sparkles,
   Building2,
   MapPin,
   Clock,
@@ -43,12 +42,12 @@ export const SmartHospitalRecommendationCard: React.FC<SmartHospitalRecommendati
 
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-200 text-xs font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span>PFIS Smart Hospital Recommendation Engine • 98% Match Score</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-200 text-xs font-semibold">
+          <ShieldCheck className="w-3.5 h-3.5 text-teal-300" />
+          <span>Recommended Healthcare Center • Verified Transit & Direct Access</span>
         </div>
-        <span className="text-xs text-teal-200/80 font-medium">
-          Ranked #1 for Lowest Patient Friction & Rapid Intake
+        <span className="text-xs text-teal-200/90 font-medium">
+          Optimal facility for minimal travel and immediate OPD token
         </span>
       </div>
 
@@ -83,7 +82,7 @@ export const SmartHospitalRecommendationCard: React.FC<SmartHospitalRecommendati
         </div>
       </div>
 
-      {/* WHY THIS HOSPITAL IS RECOMMENDED (SIH Core Feature) */}
+      {/* WHY THIS HOSPITAL IS RECOMMENDED (Recommendation Engine) */}
       <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 space-y-3">
         <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
           <CheckCircle2 className="w-4 h-4" />

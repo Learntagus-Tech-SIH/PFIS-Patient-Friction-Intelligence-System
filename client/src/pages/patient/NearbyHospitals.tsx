@@ -27,7 +27,7 @@ import {
   CheckCircle2,
   Info,
   Calendar,
-  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const NearbyHospitals: React.FC = () => {
@@ -140,11 +140,11 @@ export const NearbyHospitals: React.FC = () => {
         </div>
       </div>
 
-      {/* Prototype Data Notice */}
-      <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+      {/* Non-Clinical Operational Logistics Notice */}
+      <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2.5">
+        <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
         <span>
-          Facility names and coordinates are retrieved via geographic mapping services. Operational fields (token seat counts, bed occupancy, ambulance status) reflect prototype demonstration data.
+          <strong>Non-Clinical Logistics Directory:</strong> Facility names, travel distance, and transit estimates are retrieved via geographic services. PFIS does not diagnose diseases or recommend medical treatments. Operational metrics (queue tokens, bed availability) reflect prototype demonstration data.
         </span>
       </div>
 
@@ -175,7 +175,7 @@ export const NearbyHospitals: React.FC = () => {
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
           <div className="relative flex-1">
             <Input
-              placeholder="Search by Hospital, City, Disease (e.g. Heart, Sugar, Dengue, Fracture), Doctor, or Department..."
+              placeholder="Search by Hospital name, City, Department (e.g. General OPD, Orthopedics, Pediatrics), or Doctor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               icon={<Search className="w-4 h-4" />}
@@ -193,7 +193,7 @@ export const NearbyHospitals: React.FC = () => {
         {/* Quick Suggestion Search Chips */}
         <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
           <span className="text-slate-400 font-semibold flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-teal-500" /> Quick Search:
+            <Search className="w-3 h-3 text-teal-500" /> Quick Search:
           </span>
           {['Phagwara', 'Jalandhar', 'Heart & BP', 'Sugar & Diabetes', 'Bone & Fractures', 'Fever & Dengue', 'Maternity / Delivery', 'Emergency 24/7'].map((chip) => (
             <button

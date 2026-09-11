@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ export const SimpleModeToggle: React.FC<SimpleModeToggleProps> = ({ className = 
           : t('common.simpleLanguage', 'Simple Language Mode')
       }
     >
-      <Sparkles className={`w-3.5 h-3.5 ${simpleLanguageMode ? 'text-amber-100 animate-spin-slow' : 'text-amber-500'}`} />
+      <BookOpen className={`w-3.5 h-3.5 ${simpleLanguageMode ? 'text-amber-100' : 'text-amber-500'}`} />
       <span className="hidden xl:inline">{t('common.simpleLanguage', 'Simple Language Mode')}</span>
       <span className="xl:hidden">Simple Mode</span>
       {simpleLanguageMode && (

@@ -7,7 +7,7 @@ export const About: React.FC = () => {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
           <Activity className="w-4 h-4" />
-          <span>Patient Friction Intelligence System (PFIS)</span>
+          <span>Patient Friction Index & Access Platform (PFIS)</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
           About the PFIS Platform
@@ -49,12 +49,12 @@ export const About: React.FC = () => {
       <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-xl border border-slate-800 space-y-4 text-xs leading-relaxed">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-teal-400" />
-          <h4 className="text-base font-bold text-white">Strict Non-Clinical AI Governance Mandate</h4>
+          <h4 className="text-base font-bold text-white">Strict Non-Clinical Operational Governance Mandate</h4>
         </div>
         <p className="text-slate-300">
           PFIS does NOT diagnose diseases, predict physiological pathology, or offer clinical treatment
-          recommendations. All metrics—including "Estimated Healthcare Journey Accessibility Risk" and
-          "Estimated Care Completion Probability"—are operational indicators designed exclusively for logistical
+          recommendations. All metrics (including "Estimated Healthcare Journey Accessibility Risk" and
+          "Estimated Care Completion Probability") are operational indicators designed exclusively for logistical
           triage, patient transportation assistance, and health policy planning.
         </p>
       </div>

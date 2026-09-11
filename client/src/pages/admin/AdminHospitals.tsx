@@ -23,7 +23,6 @@ import {
   FileText,
   Stethoscope,
   Printer,
-  Sparkles,
   AlertTriangle,
 } from 'lucide-react';
 

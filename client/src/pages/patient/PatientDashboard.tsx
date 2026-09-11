@@ -14,11 +14,10 @@ import { Button } from '../../components/common/Button';
 import { CompletionGauge } from '../../components/charts/CompletionGauge';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
 import { TTSButton } from '../../components/common/TTSButton';
-import { SimpleModeToggle } from '../../components/common/SimpleModeToggle';
 import { SmartHospitalRecommendationCard } from '../../components/hospitals/SmartHospitalRecommendationCard';
 import { LiveQueueTracker } from '../../components/queue/LiveQueueTracker';
 import {
-  Sparkles,
+  Activity,
   ShieldAlert,
   MapPin,
   Building2,
@@ -30,7 +29,6 @@ import {
   FolderLock,
   Plus,
   Laptop,
-  Activity,
   CheckCircle2,
   Clock,
   UserCheck,
@@ -46,7 +44,7 @@ import {
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { simpleLanguageMode, currentLanguage } = useLanguage();
+  const { currentLanguage } = useLanguage();
   const { coords, requestCurrentLocation, isLoading: isLocLoading } = useLocation();
 
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -168,35 +166,13 @@ export const PatientDashboard: React.FC = () => {
 
   const userAddressText = coords.address || patient?.location?.address || (coords.city ? `${coords.city}, ${coords.state || 'India'}` : patient?.location?.city || 'Location not available');
 
-  // Simple language explanation
-  const getSimpleExplanation = () => {
-    if (riskCategory === 'CRITICAL' || riskCategory === 'HIGH') {
-      return t('simple.accessibilityHigh', 'Getting to the hospital and completing treatment may be difficult for you due to travel distance.');
-    }
-    if (riskCategory === 'MODERATE') {
-      return t('simple.accessibilityMedium', 'You can reach the hospital, but you may face some travel or cost difficulties.');
-    }
-    return t('simple.accessibilityLow', 'You are close to the hospital and have good transport options to complete care.');
-  };
 
-  const getTopBarrierSimple = () => {
-    const tb = topBarrier.toLowerCase();
-    if (tb.includes('transport')) return t('simple.topBarrierTransport', 'It is hard to find a bus or ride to the hospital.');
-    if (tb.includes('travel') || tb.includes('distance')) return t('simple.topBarrierDistance', 'The hospital is far from your home.');
-    if (tb.includes('cost') || tb.includes('financial')) return t('simple.topBarrierCost', 'Travel tickets and medicines cost too much.');
-    if (tb.includes('timing') || tb.includes('wage') || tb.includes('queue')) return t('simple.topBarrierTiming', 'Morning clinic queues and daily work timing require coordination.');
-    if (tb.includes('digital')) return t('simple.topBarrierDigital', 'It is hard to book tokens on a smartphone.');
-    if (tb.includes('document')) return t('simple.topBarrierPaperwork', 'You need help with your Ayushman Bharat health card paperwork.');
-    return getSimpleExplanation();
-  };
 
   const dynamicDiagnosis = nearestHospital
     ? `User detected at ${userAddressText}. Nearest verified health center (${nearestHospital.name}) is ${realDistanceKm.toFixed(1)} km away (~${Math.max(5, Math.round(realDistanceKm * 3.5))} mins transit). Overall accessibility friction is evaluated at ${100 - accessibilityScore}/100 with ${completionProbability}% care completion probability.`
     : (frictionProfile?.explanation || `User located at ${userAddressText}. Nearby facility proximity represents manageable geographic travel.`);
 
-  const dashboardExplanation = simpleLanguageMode
-    ? `${getSimpleExplanation()} ${getTopBarrierSimple()}`
-    : dynamicDiagnosis;
+  const dashboardExplanation = dynamicDiagnosis;
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -241,7 +217,6 @@ export const PatientDashboard: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <SimpleModeToggle />
           <Link to="/patient/profile">
             <Button variant="outline" size="sm">
               {t('patient.editProfile', 'Edit Profile')}
@@ -340,7 +315,7 @@ export const PatientDashboard: React.FC = () => {
           >
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
-                <Sparkles className="w-5 h-5" />
+                <Activity className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-base leading-tight">Friction Digital Twin</h3>
               <p className="text-xs text-emerald-100 leading-relaxed">
@@ -375,12 +350,12 @@ export const PatientDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 2b. SIH 26133 Integrated Public Health Care-Access Suite */}
+      {/* 2b. Integrated Public Health Care-Access Suite */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 text-[10px] font-bold uppercase tracking-wider border border-teal-200 dark:border-teal-800">
-              <Sparkles className="w-3 h-3" /> SIH 26133 • Govt. of Maharashtra Public Health System
+              <Building2 className="w-3 h-3" /> Public Health Infrastructure • Regional Facility Network
             </div>
             <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
               Integrated Rural Care & Public Facility Support
@@ -521,7 +496,7 @@ export const PatientDashboard: React.FC = () => {
           title={t('patient.completionProb', 'Care Completion Prob.')}
           value={`${completionProbability}%`}
           subtitle={t('patient.completionProbDesc', 'Estimated journey completion forecast')}
-          icon={Sparkles}
+          icon={Activity}
           iconColor="text-teal-600 bg-teal-50 border-teal-100 dark:bg-teal-950/40"
           badge={`${completionProbability}%`}
           badgeType={completionProbability >= 70 ? 'success' : completionProbability >= 50 ? 'warning' : 'danger'}
@@ -583,14 +558,10 @@ export const PatientDashboard: React.FC = () => {
               </div>
 
               <div className="sm:col-span-2 space-y-3 text-xs">
-                <div className={`p-4 rounded-2xl border space-y-1.5 ${
-                  simpleLanguageMode
-                    ? 'bg-amber-50/80 border-amber-200 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200'
-                    : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                }`}>
+                <div className="p-4 rounded-2xl border space-y-1.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
                   <p className="font-bold text-xs flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    {simpleLanguageMode ? 'सरल भाषा विश्लेषण (Simple Summary):' : 'Deterministic Operational Diagnosis:'}
+                    <Activity className="w-3.5 h-3.5 text-teal-500" />
+                    Operational Access Diagnosis:
                   </p>
                   <p className="leading-relaxed">{dashboardExplanation}</p>
                 </div>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Award,
-  Sparkles,
   TrendingUp,
   Activity,
   CheckCircle2,
@@ -29,7 +28,7 @@ export const JudgeImpactDashboard: React.FC = () => {
     { id: 'friction', step: '03', title: 'Friction Index', subtitle: 'Explainable scoring engine: waiting, travel, costs' },
     { id: 'intelligence', step: '04', title: 'Intelligence & Alerts', subtitle: 'Risk detection, early warning & smart matching' },
     { id: 'intervention', step: '05', title: 'Targeted Interventions', subtitle: 'OPD digital queues, What-If simulator, triage' },
-    { id: 'impact', step: '06', title: 'Measurable Impact', subtitle: 'Quantified SIH evaluation outcomes' },
+    { id: 'impact', step: '06', title: 'Measurable Impact', subtitle: 'Quantified platform impact outcomes' },
   ];
 
   return (
@@ -41,13 +40,13 @@ export const JudgeImpactDashboard: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 text-xs font-bold uppercase tracking-wider">
               <Award className="w-4 h-4 text-amber-300" />
-              <span>Smart India Hackathon • SIH 2026 Evaluation Hub</span>
+              <span>Healthcare Operational Benchmarks • System Impact Hub</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
               PFIS End-to-End System Impact Dashboard
             </h1>
             <p className="text-sm text-purple-200/90 max-w-2xl">
-              Demonstrating how the Patient Friction Intelligence System shifts Indian public healthcare from reactive emergency management to proactive, data-driven friction mitigation.
+              Demonstrating how the Patient Friction Index System shifts public healthcare from reactive emergency management to proactive, data-driven friction mitigation.
             </p>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-900/60 border border-purple-400/30 text-[11px] text-purple-200">
               <span>Demonstration Projection • Modeled from pre-seeded district cohort data</span>
@@ -128,7 +127,7 @@ export const JudgeImpactDashboard: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
+              <Activity className="w-5 h-5 text-amber-500" />
               Explore the 6 Functional Healthcare Personas
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">

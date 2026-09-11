@@ -15,7 +15,7 @@ export const AuthLayout: React.FC = () => {
           <div className="flex flex-col">
             <span className="font-extrabold text-xl tracking-tight text-slate-900">PFIS</span>
             <span className="text-[10px] font-semibold text-slate-500 -mt-1">
-              Patient Friction Intelligence System
+              Patient Friction Index & Access Platform
             </span>
           </div>
         </Link>

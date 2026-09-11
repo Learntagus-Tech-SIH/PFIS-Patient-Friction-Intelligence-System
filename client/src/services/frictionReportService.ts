@@ -3,6 +3,7 @@ import { api } from './api';
 export interface FrictionReportItem {
   id?: string;
   _id?: string;
+  reportId?: string;
   patientId: string;
   patientName: string;
   hospitalId?: string;
@@ -10,7 +11,7 @@ export interface FrictionReportItem {
   category: string;
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   description: string;
-  status: 'PENDING' | 'INVESTIGATING' | 'RESOLVED';
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'ACTION_TAKEN' | 'RESOLVED' | 'PENDING' | 'INVESTIGATING';
   resolutionNotes?: string;
   createdAt: string;
 }
@@ -27,8 +28,13 @@ export const frictionReportService = {
     category: string;
     severity?: string;
     description: string;
-  }): Promise<{ success: boolean; message: string; report: FrictionReportItem }> {
+  }): Promise<{ success: boolean; message: string; reportId?: string; report: FrictionReportItem }> {
     const res = await api.post('/friction-reports', data);
+    return res.data;
+  },
+
+  async updateReportStatus(id: string, status: string, resolutionNotes?: string): Promise<{ success: boolean; message: string; report: FrictionReportItem }> {
+    const res = await api.patch(`/friction-reports/${id}/status`, { status, resolutionNotes });
     return res.data;
   },
 

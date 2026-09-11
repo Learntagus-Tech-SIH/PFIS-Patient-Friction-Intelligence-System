@@ -125,10 +125,10 @@ export const Register: React.FC = () => {
     <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-6">
       <div className="text-center space-y-1">
         <h2 className="text-2xl font-black text-slate-900 tracking-tight">Create an Account</h2>
-        <p className="text-xs text-slate-500">Join the Patient Friction Intelligence System</p>
+        <p className="text-xs text-slate-500">Join the Patient Friction Index & Access Platform</p>
       </div>
 
-      {/* Role Selector — 5 roles */}
+      {/* Role Selector: 5 roles */}
       <div className="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-100 rounded-2xl">
         {ROLES.map((r) => (
           <button

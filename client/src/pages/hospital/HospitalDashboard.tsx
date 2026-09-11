@@ -150,7 +150,7 @@ export const HospitalDashboard: React.FC = () => {
         />
       </div>
 
-      {/* Live Capacity & Operational Resource Tracker (SIH Core Feature) */}
+      {/* Live Capacity & Operational Resource Tracker */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
           <div>
@@ -215,7 +215,7 @@ export const HospitalDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Patient Flow Stage Friction Funnel (SIH Requirement) */}
+      {/* Patient Flow Stage Friction Funnel */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
           <div>

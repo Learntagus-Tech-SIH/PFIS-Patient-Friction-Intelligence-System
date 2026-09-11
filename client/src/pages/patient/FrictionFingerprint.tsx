@@ -8,7 +8,7 @@ import { StatusBadge } from '../../components/common/StatusBadge';
 import { Button } from '../../components/common/Button';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
 import {
-  Sparkles,
+  Activity,
   MapPin,
   Bus,
   Laptop,
@@ -86,7 +86,7 @@ export const FrictionFingerprint: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-brand-500" />
+                <Activity className="w-6 h-6 text-brand-500" />
                 Patient Friction Fingerprint™
               </h2>
               <StatusBadge status={frictionLevel} size="sm" />

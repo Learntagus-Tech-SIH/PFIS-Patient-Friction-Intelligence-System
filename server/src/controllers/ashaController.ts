@@ -5,6 +5,7 @@ import { Patient } from '../models/Patient.js';
 import { CareRisk } from '../models/CareRisk.js';
 import { FrictionProfile } from '../models/FrictionProfile.js';
 import { HospitalRequest } from '../models/HospitalRequest.js';
+import { PublicHealthRepository } from '../database/repositories/PublicHealthRepository.js';
 
 export class AshaController {
   public static async getMyProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -68,14 +69,19 @@ export class AshaController {
       const totalPatients = await Patient.countDocuments();
       const highRisk = await CareRisk.countDocuments({ riskCategory: { $in: ['HIGH', 'CRITICAL'] } });
       const totalRequests = await HospitalRequest.countDocuments();
+      const workerId = req.user?.id || (req.user as any)?._id;
+      const visits = await PublicHealthRepository.getFrontlineVisits(workerId ? { workerId } : undefined);
+      const tasks = await PublicHealthRepository.getFrontlineTasks(workerId ? { workerId } : undefined);
+      const pendingTasks = tasks.filter(t => t.status !== 'COMPLETED').length;
+
       res.status(200).json({
         success: true,
         stats: {
           totalPatientsTracked: totalPatients,
           highRiskPatients: highRisk,
-          fieldVisitsThisMonth: 12,
+          fieldVisitsThisMonth: visits.length,
           referralsMade: totalRequests,
-          pendingFollowUps: Math.max(0, highRisk - 2),
+          pendingFollowUps: pendingTasks,
         },
       });
     } catch (err: any) {

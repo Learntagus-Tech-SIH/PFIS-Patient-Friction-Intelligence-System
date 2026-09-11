@@ -82,7 +82,7 @@ export const AshaDashboard: React.FC = () => {
             <p className="text-green-100/80 text-sm">
               Zone: <strong>{profile?.zone || 'Zone A'}</strong> •
               District: <strong>{profile?.district || 'Local District'}</strong> •
-              ID: <strong>{profile?.ashaCode || '—'}</strong>
+              ID: <strong>{profile?.ashaCode || '-'}</strong>
             </p>
           </div>
           <Link
@@ -98,11 +98,11 @@ export const AshaDashboard: React.FC = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         {[
-          { label: 'Patients Tracked', value: stats?.totalPatientsTracked ?? '—', icon: <Users className="w-5 h-5 text-green-600" />, bg: 'bg-green-50 border-green-200' },
-          { label: 'High Risk Alerts', value: stats?.highRiskPatients ?? '—', icon: <AlertTriangle className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50 border-orange-200' },
-          { label: 'Field Visits / Month', value: stats?.fieldVisitsThisMonth ?? '—', icon: <MapPin className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50 border-blue-200' },
-          { label: 'Referrals Made', value: stats?.referralsMade ?? '—', icon: <ArrowRight className="w-5 h-5 text-violet-600" />, bg: 'bg-violet-50 border-violet-200' },
-          { label: 'Pending Follow-Ups', value: stats?.pendingFollowUps ?? '—', icon: <Clock className="w-5 h-5 text-rose-600" />, bg: 'bg-rose-50 border-rose-200' },
+          { label: 'Patients Tracked', value: stats?.totalPatientsTracked ?? '-', icon: <Users className="w-5 h-5 text-green-600" />, bg: 'bg-green-50 border-green-200' },
+          { label: 'High Risk Alerts', value: stats?.highRiskPatients ?? '-', icon: <AlertTriangle className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50 border-orange-200' },
+          { label: 'Field Visits / Month', value: stats?.fieldVisitsThisMonth ?? '-', icon: <MapPin className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50 border-blue-200' },
+          { label: 'Referrals Made', value: stats?.referralsMade ?? '-', icon: <ArrowRight className="w-5 h-5 text-violet-600" />, bg: 'bg-violet-50 border-violet-200' },
+          { label: 'Pending Follow-Ups', value: stats?.pendingFollowUps ?? '-', icon: <Clock className="w-5 h-5 text-rose-600" />, bg: 'bg-rose-50 border-rose-200' },
         ].map((s, i) => (
           <div key={i} className={`rounded-2xl border p-4 ${s.bg} space-y-2`}>
             <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">{s.icon}</div>
@@ -129,7 +129,7 @@ export const AshaDashboard: React.FC = () => {
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                 required
               >
-                <option value="">— Select a patient —</option>
+                <option value="">Select a patient</option>
                 {patients.map((p: any) => (
                   <option key={p._id || p.id} value={p._id || p.id}>
                     {p.patientCode} | Age {p.age} | {p.gender}

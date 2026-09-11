@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { patientService } from '../../services/patientService';
+import {
+  digitalTwinService,
+  NonClinicalIntervention,
+  FacilityContextItem,
+  SimulationResult,
+  SavedSimulationEntity,
+} from '../../services/digitalTwinService';
 import { Button } from '../../components/common/Button';
 import { CompletionGauge } from '../../components/charts/CompletionGauge';
 import { TTSButton } from '../../components/common/TTSButton';
 import {
   Activity,
-  Sparkles,
+  Sliders,
   MapPin,
   Bus,
   Building2,
@@ -17,612 +22,1050 @@ import {
   AlertTriangle,
   RotateCcw,
   Play,
-  Pause,
   ShieldAlert,
   Users2,
   Laptop,
   Coins,
   ArrowRight,
+  BookmarkPlus,
+  History,
+  Trash2,
   FileCheck2,
-  Languages,
+  Sparkles,
+  Info,
+  Clock,
+  Navigation,
+  Accessibility,
+  Check,
+  X,
+  RefreshCw,
 } from 'lucide-react';
 
-interface JourneyStep {
-  id: number;
-  title: string;
-  stageName: string;
-  description: string;
-  baseFriction: string;
-  mitigatedBy: string;
-  icon: any;
-  status: 'pending' | 'active' | 'passed' | 'failed';
-  failureReason?: string;
-}
-
 export const DigitalTwinSimulator: React.FC = () => {
-  const { t } = useTranslation();
   const { user } = useAuth();
 
-  // Patient Profile State for Digital Twin
-  const [patientName, setPatientName] = useState('Sunita Devi (Digital Twin)');
-  const [distanceKm, setDistanceKm] = useState(65);
-  const [transportAccess, setTransportAccess] = useState<'none' | 'low' | 'moderate' | 'high'>('low');
-  const [digitalLiteracy, setDigitalLiteracy] = useState<'none' | 'basic' | 'moderate' | 'high'>('none');
-  const [familySupport, setFamilySupport] = useState<'none' | 'low' | 'moderate' | 'high'>('low');
-  const [wageCommitment, setWageCommitment] = useState<'inflexible_daily_wage' | 'rigid_hours' | 'flexible'>('inflexible_daily_wage');
-  const [docReadiness, setDocReadiness] = useState<'incomplete' | 'partial' | 'complete'>('partial');
+  // Context & Data State
+  const [loadingContext, setLoadingContext] = useState(true);
+  const [facilities, setFacilities] = useState<FacilityContextItem[]>([]);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
+  const [interventionsCatalog, setInterventionsCatalog] = useState<NonClinicalIntervention[]>([]);
+  const [modelVersion, setModelVersion] = useState('PFIS-DT-v2.4');
 
-  // Active Interventions Toggles
-  const [hasTransportShuttle, setHasTransportShuttle] = useState(false);
-  const [hasSatelliteDiagnostics, setHasSatelliteDiagnostics] = useState(false);
-  const [hasAshaEscort, setHasAshaEscort] = useState(false);
-  const [hasTeleconsultation, setHasTeleconsultation] = useState(false);
-  const [hasMedicineDelivery, setHasMedicineDelivery] = useState(false);
-  const [hasVoiceIVR, setHasVoiceIVR] = useState(false);
-  const [hasOfflineDesk, setHasOfflineDesk] = useState(false);
+  // Simulation Form Controls
+  const [selectedFacilityId, setSelectedFacilityId] = useState<string>('');
+  const [selectedInterventions, setSelectedInterventions] = useState<string[]>([]);
+  
+  // Non-Clinical Profile Overrides
+  const [distanceKm, setDistanceKm] = useState<number>(15);
+  const [transportMode, setTransportMode] = useState<string>('bus');
+  const [digitalLiteracy, setDigitalLiteracy] = useState<string>('basic');
+  const [familySupport, setFamilySupport] = useState<string>('moderate');
+  const [wageLossRisk, setWageLossRisk] = useState<string>('moderate');
+  const [smartphoneAccess, setSmartphoneAccess] = useState<boolean>(true);
+  const [internetType, setInternetType] = useState<string>('4g_5g');
+  const [disabilityNeeds, setDisabilityNeeds] = useState<string>('none');
+  const [isRural, setIsRural] = useState<boolean>(true);
+  const [docReadiness, setDocReadiness] = useState<string>('partial');
 
-  // Simulation Timeline State
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [simulationLog, setSimulationLog] = useState<string[]>([]);
-  const [simulationOutcome, setSimulationOutcome] = useState<'IN_PROGRESS' | 'COMPLETED' | 'LEAKED_DROPOUT'>('IN_PROGRESS');
+  // Active Simulation Results
+  const [simulation, setSimulation] = useState<SimulationResult | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Dynamic Metrics Calculation
-  const calculateProbability = () => {
-    let score = 30; // base for rural constrained
-    if (distanceKm < 20) score += 20;
-    else if (distanceKm < 40) score += 10;
+  // Save Scenario & History State
+  const [savingScenario, setSavingScenario] = useState(false);
+  const [scenarioNotes, setScenarioNotes] = useState('');
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [savedSimulations, setSavedSimulations] = useState<SavedSimulationEntity[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
-    if (transportAccess === 'high') score += 25;
-    else if (transportAccess === 'moderate') score += 15;
-    else if (transportAccess === 'low') score += 5;
-
-    if (familySupport === 'high') score += 15;
-    else if (familySupport === 'moderate') score += 8;
-
-    if (digitalLiteracy === 'high') score += 10;
-    else if (digitalLiteracy === 'moderate') score += 5;
-
-    if (wageCommitment === 'flexible') score += 10;
-
-    // Apply Active Interventions
-    if (hasTransportShuttle) score += 26;
-    if (hasSatelliteDiagnostics) score += 18;
-    if (hasAshaEscort) score += 14;
-    if (hasTeleconsultation) score += 12;
-    if (hasMedicineDelivery) score += 8;
-    if (hasVoiceIVR) score += 7;
-    if (hasOfflineDesk) score += 6;
-
-    return Math.min(96, Math.max(12, score));
-  };
-
-  const completionProb = calculateProbability();
-
-  // Steps in Virtual Healthcare Journey
-  const journeySteps: JourneyStep[] = [
-    {
-      id: 1,
-      title: '1. Home Origin & Triage',
-      stageName: 'Referral & Token Booking',
-      description: 'Patient experiences chronic symptoms at home and seeks initial hospital intake.',
-      baseFriction: digitalLiteracy === 'none' ? 'Cannot use mobile slot booking app' : 'Standard digital slot booked',
-      mitigatedBy: hasVoiceIVR || hasAshaEscort ? 'Voice IVR / ASHA booked token locally' : 'None',
-      icon: MapPin,
-      status: currentStepIndex > 0 ? 'passed' : currentStepIndex === 0 ? 'active' : 'pending',
-    },
-    {
-      id: 2,
-      title: '2. Transit & Travel Route',
-      stageName: 'Geographic Transit (65 km)',
-      description: 'Navigating rural roads to reach the district hospital with irregular bus timings.',
-      baseFriction: !hasTransportShuttle && transportAccess !== 'high' ? 'No direct bus; 3-hour walk / costly shared auto' : 'Shuttle connected',
-      mitigatedBy: hasTransportShuttle ? 'Scheduled Community Health Shuttle provided' : 'None',
-      icon: Bus,
-      status: currentStepIndex > 1 ? 'passed' : currentStepIndex === 1 ? 'active' : 'pending',
-    },
-    {
-      id: 3,
-      title: '3. Hospital Intake & Registration',
-      stageName: 'Queue & Token Verification',
-      description: 'Physical OPD registration, Ayushman Bharat scheme verification, and department queue.',
-      baseFriction: docReadiness === 'incomplete' && !hasOfflineDesk ? 'Physical card missing; queue token exhausted' : 'Verified',
-      mitigatedBy: hasOfflineDesk || hasAshaEscort ? 'ASHA Escort navigated queues & verified scheme' : 'None',
-      icon: Building2,
-      status: currentStepIndex > 2 ? 'passed' : currentStepIndex === 2 ? 'active' : 'pending',
-    },
-    {
-      id: 4,
-      title: '4. Diagnostic Investigations',
-      stageName: 'Pathology & Digital X-Ray',
-      description: 'Specialist orders baseline blood tests and chest imaging before prescribing treatment.',
-      baseFriction: !hasSatelliteDiagnostics ? 'Lab reports require 2-day return trip back to city' : 'PoC tests conducted',
-      mitigatedBy: hasSatelliteDiagnostics ? 'Point-of-Care satellite diagnostic camp provided instant report' : 'None',
-      icon: Activity,
-      status: currentStepIndex > 3 ? 'passed' : currentStepIndex === 3 ? 'active' : 'pending',
-    },
-    {
-      id: 5,
-      title: '5. Doctor Consultation',
-      stageName: 'Clinical Specialist Review',
-      description: 'Consultation with Cardiology/Orthopedic specialist for diagnosis & prescription.',
-      baseFriction: wageCommitment === 'inflexible_daily_wage' && !hasTeleconsultation ? 'Morning clinic clashes with daily wage work' : 'Completed',
-      mitigatedBy: hasTeleconsultation ? 'Teleconsultation triage completed seamlessly' : 'None',
-      icon: Stethoscope,
-      status: currentStepIndex > 4 ? 'passed' : currentStepIndex === 4 ? 'active' : 'pending',
-    },
-    {
-      id: 6,
-      title: '6. Medicine Delivery & Adherence',
-      stageName: 'Pharmacy Fulfillment',
-      description: 'Receiving 60-day maintenance hypertension/cardiac prescription medicines.',
-      baseFriction: !hasMedicineDelivery ? 'Pharmacy queue exhausted; out-of-pocket high cost' : 'Delivered to doorstep',
-      mitigatedBy: hasMedicineDelivery ? 'Essential postal medicine delivery dispatched' : 'None',
-      icon: Pill,
-      status: currentStepIndex > 5 ? 'passed' : currentStepIndex === 5 ? 'active' : 'pending',
-    },
-    {
-      id: 7,
-      title: '7. 30-Day Follow-up & Care Completed',
-      stageName: 'Full Journey Completion',
-      description: 'Patient successfully adheres to care protocol without premature dropout.',
-      baseFriction: 'Post-treatment abandonment',
-      mitigatedBy: 'Complete Community Care Continuum',
-      icon: CheckCircle2,
-      status: currentStepIndex > 6 ? 'passed' : currentStepIndex === 6 ? 'active' : 'pending',
-    },
-  ];
-
-  // Simulation Loop
+  // 1. Initial Data Fetching: Context + Interventions
   useEffect(() => {
-    let timer: any;
-    if (isRunning) {
-      timer = setInterval(() => {
-        setCurrentStepIndex((prev) => {
-          if (prev >= journeySteps.length - 1) {
-            setIsRunning(false);
-            setSimulationOutcome(completionProb >= 60 ? 'COMPLETED' : 'LEAKED_DROPOUT');
-            return prev;
-          }
+    let isMounted = true;
+    const loadInitialData = async () => {
+      try {
+        setLoadingContext(true);
+        setErrorMsg(null);
+        const [contextRes, catalog] = await Promise.all([
+          digitalTwinService.getContext(),
+          digitalTwinService.getInterventions(),
+        ]);
 
-          // Check for dropouts during step 2 (transit) or step 4 (diagnostics)
-          if (prev === 1 && !hasTransportShuttle && transportAccess === 'none' && Math.random() > 0.4) {
-            setIsRunning(false);
-            setSimulationOutcome('LEAKED_DROPOUT');
-            setSimulationLog((l) => [...l, '⚠️ [DROPOUT at Step 2] Patient abandoned journey due to lack of transport & 65km distance barrier.']);
-            return prev;
-          }
+        if (!isMounted) return;
 
-          if (prev === 3 && !hasSatelliteDiagnostics && docReadiness === 'incomplete' && Math.random() > 0.5) {
-            setIsRunning(false);
-            setSimulationOutcome('LEAKED_DROPOUT');
-            setSimulationLog((l) => [...l, '⚠️ [DROPOUT at Step 4] Patient could not afford repeat diagnostic trip to city center.']);
-            return prev;
-          }
+        setInterventionsCatalog(catalog);
+        setFacilities(contextRes.facilities || []);
+        setModelVersion(contextRes.modelVersion || 'PFIS-DT-v2.4');
 
-          const next = prev + 1;
-          setSimulationLog((l) => [...l, `✅ [Step ${next}] ${journeySteps[next].title} successfully navigated.`]);
-          return next;
-        });
-      }, 1500);
+        if (contextRes.facilities && contextRes.facilities.length > 0) {
+          setSelectedFacilityId(contextRes.facilities[0].id);
+        }
+
+        if (contextRes.profile) {
+          setUserProfile(contextRes.profile);
+          // Pre-populate non-clinical parameters from real database profile
+          if (contextRes.profile.distance_to_hospital_km) {
+            setDistanceKm(Number(contextRes.profile.distance_to_hospital_km));
+          }
+          if (contextRes.profile.transport_mode) {
+            setTransportMode(contextRes.profile.transport_mode.toLowerCase());
+          }
+          if (contextRes.profile.digital_literacy) {
+            setDigitalLiteracy(contextRes.profile.digital_literacy.toLowerCase());
+          }
+          if (contextRes.profile.family_support) {
+            setFamilySupport(contextRes.profile.family_support.toLowerCase());
+          }
+          if (contextRes.profile.wage_loss_risk) {
+            setWageLossRisk(contextRes.profile.wage_loss_risk.toLowerCase());
+          }
+          if (contextRes.profile.smartphone_access !== undefined) {
+            setSmartphoneAccess(Boolean(contextRes.profile.smartphone_access));
+          }
+          if (contextRes.profile.internet_type) {
+            setInternetType(contextRes.profile.internet_type.toLowerCase());
+          }
+          if (contextRes.profile.disability_needs) {
+            setDisabilityNeeds(contextRes.profile.disability_needs);
+          }
+          if (contextRes.profile.is_rural !== undefined) {
+            setIsRural(Boolean(contextRes.profile.is_rural));
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setErrorMsg(err.message || 'Failed to load simulator data');
+        }
+      } finally {
+        if (isMounted) setLoadingContext(false);
+      }
+    };
+
+    loadInitialData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Update distance when facility changes if facility has precomputed distanceKm
+  useEffect(() => {
+    if (selectedFacilityId && facilities.length > 0) {
+      const selected = facilities.find((f) => f.id === selectedFacilityId);
+      if (selected?.distanceKm) {
+        setDistanceKm(Math.round(selected.distanceKm * 10) / 10);
+      }
     }
-    return () => clearInterval(timer);
-  }, [isRunning, completionProb, hasTransportShuttle, hasSatelliteDiagnostics, docReadiness, transportAccess]);
+  }, [selectedFacilityId, facilities]);
 
-  const handleStartSimulation = () => {
-    setCurrentStepIndex(0);
-    setSimulationOutcome('IN_PROGRESS');
-    setSimulationLog(['🚀 Starting Virtual Patient Digital Twin Journey Simulation...']);
-    setIsRunning(true);
+  // 2. Run Simulation Execution
+  const runSimulation = useCallback(async () => {
+    if (!selectedFacilityId) return;
+    try {
+      setIsSimulating(true);
+      setErrorMsg(null);
+      const result = await digitalTwinService.runSimulation({
+        facilityId: selectedFacilityId,
+        selectedInterventions,
+        profileOverrides: {
+          distance_to_hospital_km: distanceKm,
+          transport_mode: transportMode,
+          digital_literacy: digitalLiteracy,
+          family_support: familySupport,
+          wage_loss_risk: wageLossRisk,
+          smartphone_access: smartphoneAccess,
+          internet_type: internetType,
+          disability_needs: disabilityNeeds,
+          is_rural: isRural,
+          document_readiness: docReadiness,
+        },
+      });
+      setSimulation(result);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Simulation execution failed');
+    } finally {
+      setIsSimulating(false);
+    }
+  }, [
+    selectedFacilityId,
+    selectedInterventions,
+    distanceKm,
+    transportMode,
+    digitalLiteracy,
+    familySupport,
+    wageLossRisk,
+    smartphoneAccess,
+    internetType,
+    disabilityNeeds,
+    isRural,
+    docReadiness,
+  ]);
+
+  // Trigger simulation once initial context is loaded
+  useEffect(() => {
+    if (!loadingContext && selectedFacilityId) {
+      runSimulation();
+    }
+  }, [loadingContext, selectedFacilityId, runSimulation]);
+
+  // 3. Toggle Intervention
+  const toggleIntervention = (code: string) => {
+    setSelectedInterventions((prev) =>
+      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    );
   };
 
-  const handleResetSimulation = () => {
-    setIsRunning(false);
-    setCurrentStepIndex(0);
-    setSimulationOutcome('IN_PROGRESS');
-    setSimulationLog([]);
+  // 4. Save Simulation
+  const handleSaveScenario = async () => {
+    if (!simulation) return;
+    try {
+      setSavingScenario(true);
+      await digitalTwinService.saveSimulation(simulation, scenarioNotes);
+      setShowSaveModal(false);
+      setScenarioNotes('');
+      setSaveSuccessMsg('Simulation scenario successfully saved to database.');
+      setTimeout(() => setSaveSuccessMsg(null), 4000);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to save scenario');
+    } finally {
+      setSavingScenario(false);
+    }
   };
+
+  // 5. Load History
+  const openHistoryModal = async () => {
+    setShowHistoryModal(true);
+    try {
+      setLoadingHistory(true);
+      const role = (user?.role || '').toLowerCase();
+      const isAdmin = role === 'admin' || role === 'government';
+      const history = await digitalTwinService.getHistory(isAdmin);
+      setSavedSimulations(history);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to load simulation history');
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleDeleteSaved = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this saved simulation record?')) return;
+    try {
+      await digitalTwinService.deleteById(id);
+      setSavedSimulations((prev) => prev.filter((item) => item.id !== id));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete record');
+    }
+  };
+
+  const handleLoadSaved = (saved: SavedSimulationEntity) => {
+    if (saved.facility_id) {
+      setSelectedFacilityId(saved.facility_id);
+    }
+    setSelectedInterventions(saved.selected_interventions || []);
+    if (saved.profile_snapshot) {
+      const snap = saved.profile_snapshot;
+      if (snap.distance_to_hospital_km) setDistanceKm(snap.distance_to_hospital_km);
+      if (snap.transport_mode) setTransportMode(snap.transport_mode);
+      if (snap.digital_literacy) setDigitalLiteracy(snap.digital_literacy);
+      if (snap.family_support) setFamilySupport(snap.family_support);
+      if (snap.wage_loss_risk) setWageLossRisk(snap.wage_loss_risk);
+      if (snap.smartphone_access !== undefined) setSmartphoneAccess(snap.smartphone_access);
+      if (snap.is_rural !== undefined) setIsRural(snap.is_rural);
+    }
+    setShowHistoryModal(false);
+  };
+
+  const selectedFacility = facilities.find((f) => f.id === selectedFacilityId);
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-tr from-slate-900 via-navy-900 to-slate-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100/70 to-indigo-50/40 p-4 sm:p-6 lg:p-8">
+      {/* Top Header & Disclaimers */}
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/90 backdrop-blur-md p-6 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-950 text-teal-300 text-xs font-bold border border-teal-800 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-              <span>PFIS Core Engine: Friction Digital Twin</span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                {modelVersion}
+              </span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Pure Non-Clinical Twin
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 flex items-center gap-3">
+              <Activity className="w-8 h-8 text-indigo-600" />
               Patient Friction Digital Twin Simulator
             </h1>
-            <p className="text-xs text-slate-300">
-              Simulate a real-world virtual patient journey through healthcare barriers, testing practical interventions in real time
+            <p className="text-sm text-slate-600 mt-1 max-w-2xl">
+              Simulates how transport availability, physical distance, queue congestion, digital access, and daily wage vulnerability impact healthcare journey completion.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <TTSButton
-              text={`Patient Friction Digital Twin Simulator. Current estimated care completion probability is ${completionProb} percent.`}
+              text="PFIS Patient Friction Digital Twin Simulator. Models non-clinical access friction across 9 operational dimensions and 7 virtual journey milestones."
+              label="Listen"
             />
             <Button
               variant="outline"
               size="sm"
-              className="text-slate-900 bg-white hover:bg-slate-100"
-              onClick={handleResetSimulation}
-              icon={<RotateCcw className="w-3.5 h-3.5" />}
+              onClick={openHistoryModal}
+              className="flex items-center gap-2"
             >
-              Reset Simulation
+              <History className="w-4 h-4 text-slate-600" />
+              History
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setShowSaveModal(true)}
+              disabled={!simulation}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              <BookmarkPlus className="w-4 h-4" />
+              Save Scenario
             </Button>
           </div>
         </div>
 
-        {/* Safety Disclaimer Banner */}
-        <div className="p-3 bg-slate-800/90 rounded-xl text-xs text-slate-300 flex items-center gap-2.5">
-          <ShieldAlert className="w-4 h-4 text-teal-400 flex-shrink-0" />
-          <span>
-            <strong className="text-teal-300">Non-Clinical Digital Twin:</strong> Models socio-geographic,
-            transit, and operational bottlenecks. Does NOT model disease pathophysiology or medical outcomes.
-          </span>
+        {/* Mandatory Non-Clinical Regulatory Notice */}
+        <div className="bg-amber-50/90 border border-amber-200/90 rounded-xl p-4 flex items-start gap-3 shadow-xs">
+          <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="text-xs sm:text-sm text-amber-900 leading-relaxed">
+            <span className="font-semibold">Non-Clinical Operational Simulation Only: </span>
+            This simulator models socio-geographic, transport, queue waiting, and economic barriers to care navigation. It strictly does NOT diagnose medical conditions, predict clinical disease progression, suggest treatments, or replace professional healthcare judgment.
+          </div>
         </div>
-      </div>
 
-      {/* 2-Column: Left (Twin Parameters & Interventions) | Right (Live Gauge & Journey Stepper) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (5 Cols): Patient Parameters & Interventions */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Virtual Patient Profile Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-teal-100 dark:bg-teal-950 flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold text-sm">
-                  👤
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">{patientName}</h3>
-                  <p className="text-[11px] text-slate-500">Virtual Patient Parameters</p>
-                </div>
+        {/* Notifications / Alerts */}
+        {saveSuccessMsg && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-2 text-emerald-800 text-sm">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            {saveSuccessMsg}
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2 text-red-800 text-sm">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            {errorMsg}
+          </div>
+        )}
+
+        {/* Primary Simulation Workspace Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* LEFT COLUMN: Profile & Parameters (4 cols) */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Facility Selector Card */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-indigo-600" />
+                  Target Facility Destination
+                </h3>
+                <span className="text-xs text-slate-500 font-medium">
+                  {facilities.length} in registry
+                </span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                60 Yrs • Rural
-              </span>
+
+              {loadingContext ? (
+                <div className="py-6 text-center text-xs text-slate-500">Loading facility registry...</div>
+              ) : (
+                <div className="space-y-3">
+                  <select
+                    value={selectedFacilityId}
+                    onChange={(e) => setSelectedFacilityId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  >
+                    {facilities.map((fac) => (
+                      <option key={fac.id} value={fac.id}>
+                        {fac.name} {fac.distanceKm !== undefined ? `(~${fac.distanceKm} km)` : ''} - {fac.city || 'Punjab'}
+                      </option>
+                    ))}
+                  </select>
+
+                  {selectedFacility && (
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2 text-xs text-slate-600">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Type:</span>
+                        <span className="font-semibold text-slate-700">{selectedFacility.type || 'Secondary Hospital'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Bed Availability:</span>
+                        <span className="font-semibold text-emerald-700">
+                          {selectedFacility.available_beds ?? '--'} / {selectedFacility.total_beds ?? '--'} Available
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">24/7 Emergency:</span>
+                        <span className="font-semibold text-slate-700">
+                          {selectedFacility.emergency_24x7 ? 'Yes (Active Triage)' : 'Standard Hours'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Teleconsult Desk:</span>
+                        <span className="font-semibold text-indigo-700">
+                          {selectedFacility.teleconsult_available ? 'Available' : 'Unavailable'}
+                        </span>
+                      </div>
+                      {selectedFacility.accessibility_facilities && (
+                        <div className="pt-1 border-t border-slate-200/60">
+                          <span className="text-slate-500 block mb-0.5">Accessibility Features:</span>
+                          <span className="text-slate-700">{selectedFacility.accessibility_facilities}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Config Sliders & Selectors */}
-            <div className="space-y-3 text-xs">
-              <div>
-                <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  <span>Distance to Hospital:</span>
-                  <span className="text-teal-700 dark:text-teal-400 font-bold">{distanceKm} km</span>
+            {/* Patient Access Profile (Non-Clinical Parameters) */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-indigo-600" />
+                  Access Constraints
+                </h3>
+                {userProfile ? (
+                  <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">
+                    Profile Synced
+                  </span>
+                ) : (
+                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+                    Manual Sandbox
+                  </span>
+                )}
+              </div>
+
+              {/* Distance Slider */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-medium text-slate-700">
+                  <span className="flex items-center gap-1.5">
+                    <Navigation className="w-3.5 h-3.5 text-slate-500" /> One-Way Travel Distance:
+                  </span>
+                  <span className="font-bold text-indigo-600">{distanceKm} km</span>
                 </div>
                 <input
                   type="range"
-                  min="5"
+                  min="1"
                   max="120"
                   value={distanceKm}
-                  onChange={(e) => setDistanceKm(parseInt(e.target.value))}
-                  className="w-full accent-teal-600"
+                  onChange={(e) => setDistanceKm(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Transport:</label>
-                  <select
-                    value={transportAccess}
-                    onChange={(e: any) => setTransportAccess(e.target.value)}
-                    className="w-full p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                  >
-                    <option value="none">None / Walk</option>
-                    <option value="low">Low (Infrequent Bus)</option>
-                    <option value="moderate">Moderate Public Transit</option>
-                    <option value="high">Personal Vehicle</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Digital Literacy:</label>
-                  <select
-                    value={digitalLiteracy}
-                    onChange={(e: any) => setDigitalLiteracy(e.target.value)}
-                    className="w-full p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                  >
-                    <option value="none">None (Feature Phone)</option>
-                    <option value="basic">Basic Smartphone</option>
-                    <option value="moderate">Moderate Literacy</option>
-                    <option value="high">Self-Sufficient</option>
-                  </select>
+                <div className="flex justify-between text-[10px] text-slate-400">
+                  <span>1 km (Local)</span>
+                  <span>50 km (Regional)</span>
+                  <span>120 km (Remote)</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Family Support:</label>
-                  <select
-                    value={familySupport}
-                    onChange={(e: any) => setFamilySupport(e.target.value)}
-                    className="w-full p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                  >
-                    <option value="none">Lives Alone</option>
-                    <option value="low">Caregiver Constrained</option>
-                    <option value="moderate">Weekend Support</option>
-                    <option value="high">Dedicated Escort</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Wage Timing:</label>
-                  <select
-                    value={wageCommitment}
-                    onChange={(e: any) => setWageCommitment(e.target.value)}
-                    className="w-full p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                  >
-                    <option value="inflexible_daily_wage">Daily Wage Loss</option>
-                    <option value="rigid_hours">Rigid Shift</option>
-                    <option value="flexible">Flexible Timing</option>
-                  </select>
-                </div>
+              {/* Transport Mode */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                  <Bus className="w-3.5 h-3.5 text-slate-500" /> Transport Mode
+                </label>
+                <select
+                  value={transportMode}
+                  onChange={(e) => setTransportMode(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium text-slate-800 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="walking">Walking / Unassisted</option>
+                  <option value="bicycle">Bicycle</option>
+                  <option value="bus">Public Rural Bus</option>
+                  <option value="auto_rickshaw">Shared Auto-Rickshaw</option>
+                  <option value="train">Passenger Train</option>
+                  <option value="ambulance">Government / 108 Ambulance</option>
+                  <option value="private_vehicle">Private Motorcycle / Car</option>
+                </select>
               </div>
+
+              {/* Wage Loss Risk */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                  <Coins className="w-3.5 h-3.5 text-slate-500" /> Economic / Wage Loss Risk
+                </label>
+                <select
+                  value={wageLossRisk}
+                  onChange={(e) => setWageLossRisk(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium text-slate-800 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="critical_daily_wage">Critical Daily Wage Earner (Forfeits income)</option>
+                  <option value="high">High Economic Sensitivity</option>
+                  <option value="moderate">Moderate Financial Cushion</option>
+                  <option value="low">Low Economic Sensitivity / Salaried</option>
+                </select>
+              </div>
+
+              {/* Digital Literacy */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                  <Laptop className="w-3.5 h-3.5 text-slate-500" /> Digital Literacy
+                </label>
+                <select
+                  value={digitalLiteracy}
+                  onChange={(e) => setDigitalLiteracy(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium text-slate-800 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="none">None / Feature Phone Only</option>
+                  <option value="basic">Basic (Assisted App Usage)</option>
+                  <option value="intermediate">Intermediate (Self Navigation)</option>
+                  <option value="advanced">Advanced Tech Competency</option>
+                </select>
+              </div>
+
+              {/* Family / Escort Support */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                  <Users2 className="w-3.5 h-3.5 text-slate-500" /> Caregiver / Escort Availability
+                </label>
+                <select
+                  value={familySupport}
+                  onChange={(e) => setFamilySupport(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium text-slate-800 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="none">None (Traveling Completely Alone)</option>
+                  <option value="dependent_elderly">Dependent Elderly / Constrained</option>
+                  <option value="single_parent">Single Parent with Dependent</option>
+                  <option value="moderate">Moderate Family Support</option>
+                  <option value="high">Dedicated Adult Escort Available</option>
+                </select>
+              </div>
+
+              {/* Physical Accessibility Needs */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                  <Accessibility className="w-3.5 h-3.5 text-slate-500" /> Disability / Mobility Needs
+                </label>
+                <select
+                  value={disabilityNeeds}
+                  onChange={(e) => setDisabilityNeeds(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium text-slate-800 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="none">No Physical Mobility Constraints</option>
+                  <option value="wheelchair">Wheelchair / Ramp Dependent</option>
+                  <option value="mobility_restricted">Limited Mobility / Walking Stick</option>
+                  <option value="vision_impaired">Visually Impaired / Guided</option>
+                  <option value="hearing_impaired">Hearing / Communication Impairment</option>
+                </select>
+              </div>
+
+              {/* Toggles: Smartphone & Rural */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <label className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={smartphoneAccess}
+                    onChange={(e) => setSmartphoneAccess(e.target.checked)}
+                    className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <span>Smartphone Owner</span>
+                </label>
+
+                <label className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={isRural}
+                    onChange={(e) => setIsRural(e.target.checked)}
+                    className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <span>Rural Habitation</span>
+                </label>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={runSimulation}
+                disabled={isSimulating}
+                className="w-full flex items-center justify-center gap-2 mt-2"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
+                Recalculate Access Friction
+              </Button>
             </div>
           </div>
 
-          {/* Practical Interventions Toggles */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-card space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-                Deploy Practical Interventions
-              </h3>
-              <span className="text-[10px] text-teal-600 font-bold">Toggle to Mitigate</span>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <label className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer select-none transition-all ${
-                hasTransportShuttle ? 'bg-teal-50/80 border-teal-300 dark:bg-teal-950/40 dark:border-teal-800' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <Bus className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">Community Health Shuttle</span>
-                    <span className="text-[10px] text-slate-500">Fixed-schedule rural mini-bus</span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={hasTransportShuttle}
-                  onChange={(e) => setHasTransportShuttle(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4"
-                />
-              </label>
-
-              <label className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer select-none transition-all ${
-                hasSatelliteDiagnostics ? 'bg-teal-50/80 border-teal-300 dark:bg-teal-950/40 dark:border-teal-800' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">Point-of-Care Diagnostic Camp</span>
-                    <span className="text-[10px] text-slate-500">Satellite mobile blood tests & X-ray</span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={hasSatelliteDiagnostics}
-                  onChange={(e) => setHasSatelliteDiagnostics(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4"
-                />
-              </label>
-
-              <label className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer select-none transition-all ${
-                hasAshaEscort ? 'bg-teal-50/80 border-teal-300 dark:bg-teal-950/40 dark:border-teal-800' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <Users2 className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">Dedicated ASHA Worker Escort</span>
-                    <span className="text-[10px] text-slate-500">Queue navigation & scheme guidance</span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={hasAshaEscort}
-                  onChange={(e) => setHasAshaEscort(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4"
-                />
-              </label>
-
-              <label className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer select-none transition-all ${
-                hasTeleconsultation ? 'bg-teal-50/80 border-teal-300 dark:bg-teal-950/40 dark:border-teal-800' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <Laptop className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">Village Teleconsultation Kiosk</span>
-                    <span className="text-[10px] text-slate-500">Video triage to avoid physical travel</span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={hasTeleconsultation}
-                  onChange={(e) => setHasTeleconsultation(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4"
-                />
-              </label>
-
-              <label className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer select-none transition-all ${
-                hasMedicineDelivery ? 'bg-teal-50/80 border-teal-300 dark:bg-teal-950/40 dark:border-teal-800' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <Pill className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">Home Essential Drug Delivery</span>
-                    <span className="text-[10px] text-slate-500">Postal 60-day prescription delivery</span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={hasMedicineDelivery}
-                  onChange={(e) => setHasMedicineDelivery(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4"
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column (7 Cols): Live Gauge, Journey Timeline & Live Log */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* Live Digital Twin Gauge & Simulation Controls */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-              <div className="sm:col-span-1 flex justify-center">
-                <CompletionGauge
-                  score={completionProb}
-                  size={160}
-                  label="Care Completion"
-                  sublabel="Digital Twin Index"
-                />
-              </div>
-
-              <div className="sm:col-span-2 space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-bold">Simulation Status:</span>
-                  <span className={`px-2.5 py-1 rounded-full font-black ${
-                    simulationOutcome === 'COMPLETED'
-                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                      : simulationOutcome === 'LEAKED_DROPOUT'
-                      ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                      : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                  }`}>
-                    {simulationOutcome === 'COMPLETED'
-                      ? '✅ Care Completed Successfully'
-                      : simulationOutcome === 'LEAKED_DROPOUT'
-                      ? '🔴 Care Leakage Dropout Detected'
-                      : isRunning
-                      ? '⏳ Simulating Healthcare Journey...'
-                      : 'Ready to Run'}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1">
-                  <p className="font-bold text-slate-800 dark:text-slate-200">
-                    Forecast: {completionProb >= 70 ? 'High Completion Likelihood' : completionProb >= 45 ? 'Moderate Risk of Drop-out' : 'High Operational Leakage Risk'}
-                  </p>
-                  <p className="text-slate-500 dark:text-slate-400">
-                    {hasTransportShuttle && hasSatelliteDiagnostics
-                      ? 'Active transport shuttle and satellite diagnostics remove 84% of transit friction, enabling successful journey completion.'
-                      : 'Without transport and diagnostic mitigation, patient has high probability of dropping out before prescription fulfillment.'}
+          {/* RIGHT COLUMN: Interventions & Simulation Results (8 cols) */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Non-Clinical Interventions Catalog */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-indigo-600" />
+                    Non-Clinical Intervention Modeling
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Select operational support measures to simulate barrier reduction and journey completion rate.
                   </p>
                 </div>
-
-                <div className="pt-2 flex items-center gap-2">
-                  <Button
-                    variant="primary"
-                    size="md"
-                    className="flex-1"
-                    onClick={handleStartSimulation}
-                    disabled={isRunning}
-                    icon={isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                  >
-                    {isRunning ? 'Running Journey...' : 'Run Live Virtual Journey'}
-                  </Button>
-                </div>
+                <span className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-100">
+                  {selectedInterventions.length} Active
+                </span>
               </div>
-            </div>
-          </div>
 
-          {/* Virtual Patient Journey Timeline Stepper */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Activity className="w-4 h-4 text-teal-600" />
-                Virtual Healthcare Journey Pathway (7 Milestones)
-              </h3>
-              <span className="text-[11px] text-slate-400">Step {currentStepIndex + 1} of 7</span>
-            </div>
-
-            <div className="space-y-3">
-              {journeySteps.map((step, idx) => {
-                const Icon = step.icon;
-                const isCurrent = currentStepIndex === idx && isRunning;
-                const isPassed = currentStepIndex > idx || simulationOutcome === 'COMPLETED';
-                const isFailed = simulationOutcome === 'LEAKED_DROPOUT' && currentStepIndex === idx;
-
-                return (
-                  <div
-                    key={step.id}
-                    className={`p-3.5 rounded-2xl border transition-all flex items-start gap-3 text-xs ${
-                      isCurrent
-                        ? 'bg-teal-50 dark:bg-teal-950/50 border-teal-400 ring-2 ring-teal-500/20 shadow-sm'
-                        : isPassed
-                        ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900'
-                        : isFailed
-                        ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300'
-                        : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-800 opacity-70'
-                    }`}
-                  >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {interventionsCatalog.map((interv) => {
+                  const isSelected = selectedInterventions.includes(interv.code);
+                  return (
                     <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border ${
-                        isPassed
-                          ? 'bg-emerald-600 text-white border-emerald-700'
-                          : isFailed
-                          ? 'bg-rose-600 text-white border-rose-700'
-                          : isCurrent
-                          ? 'bg-teal-600 text-white border-teal-700 animate-pulse'
-                          : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300'
+                      key={interv.code}
+                      onClick={() => toggleIntervention(interv.code)}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${
+                        isSelected
+                          ? 'bg-indigo-50/70 border-indigo-300 ring-2 ring-indigo-500/20 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                    </div>
-
-                    <div className="flex-1 space-y-0.5">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-slate-900 dark:text-white">{step.title}</h4>
-                        <span className={`text-[10px] font-bold px-2 py-0.2 rounded-full ${
-                          isPassed
-                            ? 'text-emerald-700 bg-emerald-100 dark:bg-emerald-950'
-                            : isFailed
-                            ? 'text-rose-700 bg-rose-100 dark:bg-rose-950'
-                            : isCurrent
-                            ? 'text-teal-700 bg-teal-100 dark:bg-teal-950'
-                            : 'text-slate-400'
-                        }`}>
-                          {isPassed ? 'PASSED' : isFailed ? 'DROPOUT' : isCurrent ? 'NAVIGATING...' : 'PENDING'}
-                        </span>
-                      </div>
-
-                      <p className="text-slate-600 dark:text-slate-400 text-[11px]">{step.description}</p>
-
-                      <div className="pt-1 flex items-center gap-3 text-[10px]">
-                        <span className="text-slate-500">
-                          <strong>Active Friction:</strong> {step.baseFriction}
-                        </span>
-                        {step.mitigatedBy !== 'None' && (
-                          <span className="text-teal-700 dark:text-teal-300 font-bold">
-                            ✨ Mitigated by: {step.mitigatedBy}
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                              interv.category === 'CARE'
+                                ? 'bg-pink-100 text-pink-700'
+                                : interv.category === 'TRANSPORT'
+                                ? 'bg-blue-100 text-blue-700'
+                                : interv.category === 'DIGITAL'
+                                ? 'bg-purple-100 text-purple-700'
+                                : interv.category === 'FINANCIAL'
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-emerald-100 text-emerald-700'
+                            }`}
+                          >
+                            {interv.category}
                           </span>
-                        )}
+                          <div
+                            className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
+                              isSelected ? 'bg-indigo-600 text-white' : 'border border-slate-300'
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3" />}
+                          </div>
+                        </div>
+
+                        <h4 className="text-xs font-bold text-slate-900">{interv.name}</h4>
+                        <p className="text-[11px] text-slate-600 mt-1 line-clamp-2 leading-relaxed">
+                          {interv.description}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2 border-t border-slate-100 text-[10px] font-medium text-indigo-700">
+                        {interv.friction_reduction_description}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Live Journey Event Log */}
-            {simulationLog.length > 0 && (
-              <div className="p-3 bg-slate-900 text-slate-200 rounded-xl font-mono text-[11px] space-y-1 max-h-32 overflow-y-auto">
-                <div className="text-[10px] text-teal-400 uppercase font-bold tracking-wider">
-                  Digital Twin Real-Time Telemetry Log:
+            {/* Live Metrics Comparison Scoreboard */}
+            {simulation && (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-emerald-600" />
+                      Simulation Assessment Scorecard
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Calculated from live facility operational load and patient socio-geographic constraints.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-500">Reduction:</span>
+                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      -{simulation.friction_reduction_points} Points Friction
+                    </span>
+                  </div>
                 </div>
-                {simulationLog.map((log, i) => (
-                  <div key={i}>{log}</div>
-                ))}
+
+                {/* Scorecards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Baseline Friction */}
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Baseline Friction
+                    </span>
+                    <div className="my-2">
+                      <span className="text-3xl font-black text-slate-900">
+                        {simulation.baseline_friction_score}
+                      </span>
+                      <span className="text-xs text-slate-400 font-medium ml-1">/ 100</span>
+                    </div>
+                    <span className="text-[11px] font-medium text-amber-700">
+                      Unmitigated Barrier Load
+                    </span>
+                  </div>
+
+                  {/* Simulated Friction */}
+                  <div className="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200/80 flex flex-col justify-between">
+                    <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wider">
+                      Simulated Friction
+                    </span>
+                    <div className="my-2">
+                      <span className="text-3xl font-black text-indigo-900">
+                        {simulation.simulated_friction_score}
+                      </span>
+                      <span className="text-xs text-indigo-500 font-medium ml-1">/ 100</span>
+                    </div>
+                    <span className="text-[11px] font-medium text-indigo-700">
+                      With Active Interventions
+                    </span>
+                  </div>
+
+                  {/* Baseline Completion Rate */}
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Baseline Completion
+                    </span>
+                    <div className="my-2">
+                      <span className="text-3xl font-black text-slate-800">
+                        {simulation.baseline_completion_rate}%
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      Estimated Unassisted Journey
+                    </span>
+                  </div>
+
+                  {/* Simulated Completion Rate */}
+                  <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 flex flex-col justify-between">
+                    <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
+                      Simulated Completion
+                    </span>
+                    <div className="my-2">
+                      <span className="text-3xl font-black text-emerald-800">
+                        {simulation.simulated_completion_rate}%
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-medium text-emerald-700">
+                      +{simulation.simulated_completion_rate - simulation.baseline_completion_rate}% Lift
+                    </span>
+                  </div>
+                </div>
+
+                {/* 9-Dimension Friction Breakdown Progress Bars */}
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Non-Clinical Access Dimension Comparison (Baseline vs Mitigated)
+                  </h4>
+
+                  <div className="space-y-2.5 text-xs">
+                    {[
+                      { key: 'travel_burden_score', label: 'Travel Distance Burden', base: simulation.sub_scores.travel_burden_score, mit: simulation.mitigated_sub_scores.travel_burden_score },
+                      { key: 'transport_burden_score', label: 'Transport Frequency / Absence', base: simulation.sub_scores.transport_burden_score, mit: simulation.mitigated_sub_scores.transport_burden_score },
+                      { key: 'waiting_burden_score', label: 'Queue / Wait Time Congestion', base: simulation.sub_scores.waiting_burden_score, mit: simulation.mitigated_sub_scores.waiting_burden_score },
+                      { key: 'digital_access_burden_score', label: 'Digital Literacy & Mobile Access', base: simulation.sub_scores.digital_access_burden_score, mit: simulation.mitigated_sub_scores.digital_access_burden_score },
+                      { key: 'caregiver_burden_score', label: 'Caregiver / Escort Requirement', base: simulation.sub_scores.caregiver_burden_score, mit: simulation.mitigated_sub_scores.caregiver_burden_score },
+                      { key: 'diagnostic_burden_score', label: 'Diagnostic Test Availability', base: simulation.sub_scores.diagnostic_burden_score, mit: simulation.mitigated_sub_scores.diagnostic_burden_score },
+                      { key: 'medicine_burden_score', label: 'Essential Medicine Formulary Stock', base: simulation.sub_scores.medicine_burden_score, mit: simulation.mitigated_sub_scores.medicine_burden_score },
+                      { key: 'accessibility_burden_score', label: 'Facility Physical Navigation', base: simulation.sub_scores.accessibility_burden_score, mit: simulation.mitigated_sub_scores.accessibility_burden_score },
+                    ].map((row) => (
+                      <div key={row.key} className="space-y-1">
+                        <div className="flex justify-between font-medium">
+                          <span className="text-slate-700">{row.label}</span>
+                          <span className="text-slate-500">
+                            <span className="line-through text-slate-400 mr-2">{row.base}</span>
+                            <span className="font-bold text-indigo-700">{row.mit} / 100</span>
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
+                          <div
+                            className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${row.mit}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 7 Virtual Journey Milestones */}
+            {simulation && (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <Navigation className="w-5 h-5 text-indigo-600" />
+                      7 Virtual Patient Journey Milestones
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Simulated stage progression evaluating non-clinical dropout risks along the healthcare access corridor.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {simulation.journey_milestones.map((milestone) => {
+                    const isMitigated = milestone.simulated_status === 'MITIGATED_PASS';
+                    const isBarrier = milestone.simulated_status === 'BARRIER_ENCOUNTERED';
+
+                    return (
+                      <div
+                        key={milestone.milestone_id}
+                        className={`p-4 rounded-xl border transition-all ${
+                          isMitigated
+                            ? 'bg-emerald-50/40 border-emerald-200'
+                            : isBarrier
+                            ? 'bg-amber-50/40 border-amber-200'
+                            : 'bg-slate-50/60 border-slate-200'
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
+                              {milestone.step_number}
+                            </span>
+                            <h4 className="text-sm font-bold text-slate-900">
+                              {milestone.name}
+                            </h4>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span
+                              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                                milestone.stage_friction_level === 'CRITICAL'
+                                  ? 'bg-red-100 text-red-800'
+                                  : milestone.stage_friction_level === 'HIGH'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : milestone.stage_friction_level === 'MODERATE'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              {milestone.stage_friction_level} Friction
+                            </span>
+
+                            <span
+                              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
+                                isMitigated
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : isBarrier
+                                  ? 'bg-amber-100 text-amber-900'
+                                  : 'bg-slate-200 text-slate-800'
+                              }`}
+                            >
+                              {isMitigated ? (
+                                <>
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                  Mitigated Pass
+                                </>
+                              ) : isBarrier ? (
+                                <>
+                                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                                  Barrier Encountered
+                                </>
+                              ) : (
+                                <>
+                                  <Check className="w-3 h-3 text-slate-600" />
+                                  Normal Clearance
+                                </>
+                              )}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Friction factors list */}
+                        <div className="text-xs text-slate-600 space-y-1 mt-2">
+                          <span className="font-semibold text-slate-700 block text-[11px]">
+                            Operational Factors:
+                          </span>
+                          <ul className="list-disc list-inside space-y-0.5 pl-1">
+                            {milestone.friction_factors.map((factor, idx) => (
+                              <li key={idx} className="text-slate-600 text-xs">
+                                {factor}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Mitigations applied */}
+                        {milestone.active_mitigations && milestone.active_mitigations.length > 0 && (
+                          <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[11px] font-semibold text-emerald-800">
+                              Active Mitigations:
+                            </span>
+                            {milestone.active_mitigations.map((code) => {
+                              const interv = interventionsCatalog.find((c) => c.code === code);
+                              return (
+                                <span
+                                  key={code}
+                                  className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded-md"
+                                >
+                                  {interv?.name || code}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Save Scenario Modal */}
+      {showSaveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <BookmarkPlus className="w-5 h-5 text-indigo-600" />
+                Save Digital Twin Scenario
+              </h3>
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Persist this simulation run to the database under your authenticated account for auditing, longitudinal comparison, or frontline coordination.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700">
+                Optional Notes / Context
+              </label>
+              <textarea
+                value={scenarioNotes}
+                onChange={(e) => setScenarioNotes(e.target.value)}
+                placeholder="e.g., Pre-operative secondary visit assessment with ASHA companion."
+                rows={3}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSaveModal(false)}
+                disabled={savingScenario}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveScenario}
+                disabled={savingScenario}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5"
+              >
+                {savingScenario ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                Confirm & Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Simulation History Modal */}
+      {showHistoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <History className="w-5 h-5 text-indigo-600" />
+                Saved Simulation History
+              </h3>
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto space-y-3 flex-1">
+              {loadingHistory ? (
+                <div className="py-12 text-center text-xs text-slate-500">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-600" />
+                  Loading simulation history...
+                </div>
+              ) : savedSimulations.length === 0 ? (
+                <div className="py-12 text-center text-slate-500 text-sm">
+                  No saved simulation records found. Run a simulation and click "Save Scenario" to store records.
+                </div>
+              ) : (
+                savedSimulations.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleLoadSaved(item)}
+                    className="p-4 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900">
+                          {item.facility_name}
+                        </span>
+                        <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                          {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-slate-600 mt-1">
+                        <span>
+                          Friction: <strong className="text-slate-900">{item.baseline_friction_score}</strong> → <strong className="text-indigo-700">{item.simulated_friction_score}</strong> (-{item.friction_reduction_points} pts)
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Completion: <strong className="text-emerald-700">{item.simulated_completion_rate}%</strong>
+                        </span>
+                      </div>
+                      {item.notes && (
+                        <p className="text-xs text-slate-500 mt-1 italic">"{item.notes}"</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLoadSaved(item);
+                        }}
+                        className="text-xs"
+                      >
+                        Load Parameters
+                      </Button>
+                      <button
+                        onClick={(e) => handleDeleteSaved(item.id, e)}
+                        className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        title="Delete simulation"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="p-4 border-t border-slate-100 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowHistoryModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

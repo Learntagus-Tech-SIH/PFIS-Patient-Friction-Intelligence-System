@@ -14,12 +14,12 @@ export const Footer: React.FC = () => {
                 <Activity className="w-5 h-5" />
               </div>
               <span className="font-extrabold text-base tracking-tight text-white">
-                Patient Friction Intelligence System (PFIS)
+                Patient Friction Index & Access Platform (PFIS)
               </span>
             </div>
             <p className="text-xs text-slate-400 max-w-md leading-relaxed">
               Healthcare may be available, but is it practically accessible? PFIS identifies non-clinical
-              socio-geographic barriers—from transit deficits to loss of daily subsistence wages—and empowers
+              socio-geographic barriers (from transit deficits to loss of daily subsistence wages) and empowers
               health administrators to simulate high-yield community interventions.
             </p>
             <div className="flex items-center gap-4 text-xs text-slate-400 pt-2">
@@ -29,7 +29,7 @@ export const Footer: React.FC = () => {
               </span>
               <span className="flex items-center gap-1">
                 <HeartHandshake className="w-4 h-4 text-teal-400" />
-                Zero Medical Diagnostic AI
+                Zero Clinical Diagnosis
               </span>
             </div>
           </div>
@@ -90,10 +90,10 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
-          <p>© {new Date().getFullYear()} Patient Friction Intelligence System (PFIS). All rights reserved.</p>
+        <div className="border-t border-slate-800 pt-6 pb-12 sm:pb-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3 sm:pl-48">
+          <p>© {new Date().getFullYear()} Patient Friction Index & Access Platform (PFIS). All rights reserved.</p>
           <p className="text-[11px] text-slate-400 text-center sm:text-right">
-            Non-Clinical Healthcare Access Intelligence • Operational Decision Support System
+            Non-Clinical Healthcare Accessibility Platform • Operational Decision Support
           </p>
         </div>
       </div>

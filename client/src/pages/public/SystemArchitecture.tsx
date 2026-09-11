@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/common/Button';
 import { TTSButton } from '../../components/common/TTSButton';
 import {
-  Sparkles,
   ShieldCheck,
   Activity,
   Cpu,
@@ -124,16 +123,16 @@ export const SystemArchitecture: React.FC = () => {
       {/* Hero Banner */}
       <div className="bg-gradient-to-tr from-slate-900 via-navy-900 to-slate-800 text-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-slate-800 space-y-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-950 text-teal-300 text-xs font-bold border border-teal-800">
-          <Sparkles className="w-4 h-4 text-teal-400" />
-          <span>National Healthcare Accessibility Intelligence Architecture</span>
+          <Layers className="w-4 h-4 text-teal-400" />
+          <span>National Healthcare Accessibility System Architecture</span>
         </div>
 
         <div className="space-y-3 max-w-3xl">
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-            Patient Friction Intelligence System (PFIS)
+            Patient Friction Index & Access Platform (PFIS)
           </h1>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium">
-            Predicting and eliminating the non-clinical operational barriers—travel, transport, digital literacy, documentation, and daily wages—that prevent patients from successfully completing treatment.
+            Predicting and eliminating the non-clinical operational barriers (travel, transport, digital literacy, documentation, and daily wages) that prevent patients from successfully completing treatment.
           </p>
         </div>
 
@@ -143,7 +142,7 @@ export const SystemArchitecture: React.FC = () => {
             🎯 Platform Mission & Mandate:
           </div>
           <p className="text-white italic font-medium leading-relaxed">
-            "We do not diagnose diseases. We predict whether a patient can successfully navigate the physical, geographic, and socio-economic healthcare journey—and then simulate the most cost-effective community interventions to prevent care failure."
+            "We do not diagnose diseases. We analyze whether a patient can successfully navigate the physical, geographic, and socio-economic healthcare journey, and model the most cost-effective community interventions to prevent care failure."
           </p>
         </div>
 
@@ -159,7 +158,7 @@ export const SystemArchitecture: React.FC = () => {
             </Button>
           </Link>
           <TTSButton
-            text="Patient Friction Intelligence System. Predicting and eliminating non-clinical barriers that cause care failure."
+            text="Patient Friction Index System. Predicting and eliminating non-clinical barriers that cause care failure."
             label="Listen Audio Overview"
           />
         </div>
@@ -262,15 +261,15 @@ export const SystemArchitecture: React.FC = () => {
         </div>
       </div>
 
-      {/* Non-Clinical AI Mandate Callout */}
+      {/* Non-Clinical Operational Governance Callout */}
       <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400">
-            <ShieldCheck className="w-4 h-4" /> Non-Clinical AI Governance Protocol
+            <ShieldCheck className="w-4 h-4" /> Non-Clinical Operational Governance Protocol
           </div>
-          <h3 className="text-xl font-bold">Strict Ethical AI Boundaries</h3>
+          <h3 className="text-xl font-bold">Strict Operational Boundaries</h3>
           <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-            PFIS is strictly an operational intelligence layer. It never provides medical diagnoses, never replaces doctors, and operates transparently on explainable deterministic algorithms and counterfactual simulations.
+            PFIS is strictly an operational logistics layer. It never provides medical diagnoses, never replaces doctors, and operates transparently on explainable deterministic algorithms and counterfactual simulations.
           </p>
         </div>
 

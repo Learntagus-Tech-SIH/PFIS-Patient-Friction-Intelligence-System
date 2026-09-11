@@ -5,7 +5,6 @@ import { Input } from '../../components/common/Input';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
 import {
   Sliders,
-  Sparkles,
   Coins,
   TrendingUp,
   CheckCircle2,

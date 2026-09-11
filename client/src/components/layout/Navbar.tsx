@@ -11,7 +11,6 @@ import {
   Building2,
   Menu,
   X,
-  Sparkles,
   Settings as SettingsIcon,
   Laptop,
   Layers,
@@ -26,11 +25,11 @@ import {
   BarChart3,
   ChevronDown,
   FolderLock,
+  Sliders,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { LanguageSelector } from '../common/LanguageSelector';
-import { SimpleModeToggle } from '../common/SimpleModeToggle';
 import { OfflineSyncIndicator } from '../common/OfflineSyncIndicator';
 import { EmergencySOSModal } from '../common/EmergencySOSModal';
 
@@ -122,7 +121,7 @@ export const Navbar: React.FC = () => {
                   PFIS
                 </span>
                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 -mt-0.5 hidden sm:inline">
-                  Patient Friction Intelligence
+                  Patient Friction Index & Access Platform
                 </span>
               </div>
             </Link>
@@ -165,7 +164,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:text-teal-600 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <Sliders className="w-3.5 h-3.5 text-teal-600" />
                   <span>Digital Twin</span>
                 </Link>
 
@@ -251,7 +250,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-purple-700 dark:text-purple-400 font-semibold'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  <BarChart3 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                   <span>Judge Mode</span>
                 </Link>
                 <Link
@@ -273,7 +272,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <Sliders className="w-3.5 h-3.5 text-amber-500" />
                   <span>Digital Twin</span>
                 </Link>
                 <Link
@@ -309,15 +308,6 @@ export const Navbar: React.FC = () => {
             {!isAuthenticated && (
               <>
                 <Link
-                  to="/admin/judge-mode"
-                  className={`px-3 py-1.5 rounded-xl text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 font-bold transition-colors flex items-center gap-1.5 border border-purple-200 dark:border-purple-800 ${
-                    isActive('/admin/judge-mode') ? 'ring-2 ring-purple-500/30 shadow-xs' : ''
-                  }`}
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 animate-pulse" />
-                  <span>SIH Judge Mode</span>
-                </Link>
-                <Link
                   to="/patient/hospitals"
                   className="px-3 py-1.5 rounded-xl hover:text-teal-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5"
                 >
@@ -325,10 +315,17 @@ export const Navbar: React.FC = () => {
                   <span>Find Hospitals</span>
                 </Link>
                 <Link
+                  to="/assessment"
+                  className="px-3 py-1.5 rounded-xl hover:text-teal-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200"
+                >
+                  <Activity className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Access Assessment</span>
+                </Link>
+                <Link
                   to="/architecture"
                   className="px-3 py-1.5 rounded-xl text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/50 hover:bg-teal-100 font-bold transition-colors flex items-center gap-1.5 border border-teal-200 dark:border-teal-800"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                  <Layers className="w-3.5 h-3.5 text-teal-600" />
                   <span>System Architecture</span>
                 </Link>
                 <Link
@@ -347,22 +344,17 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsEmergencyModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black uppercase tracking-wider shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all cursor-pointer animate-pulse"
+              className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-black tracking-wide border border-red-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none"
               title="Emergency 108 SOS Paramedic Dispatch"
             >
-              <Ambulance className="w-3.5 h-3.5" />
-              <span>108 SOS</span>
+              <Ambulance className="w-4 h-4 text-white shrink-0" />
+              <span className="font-extrabold tracking-wider">108 SOS</span>
             </button>
 
             {/* Desktop & Tablet Action Controls */}
             <div className="hidden sm:flex items-center gap-2 sm:gap-2.5">
               {/* Offline Sync Indicator */}
               <OfflineSyncIndicator />
-
-              {/* Simple Mode Toggle (Desktop only) */}
-              <div className="hidden xl:block">
-                <SimpleModeToggle />
-              </div>
 
               {/* Global Language Selector (Compact on md, full on xl) */}
               <div className="hidden md:block">
@@ -544,10 +536,10 @@ export const Navbar: React.FC = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <Link
-                    to="/login?role=admin"
+                    to="/login"
                     className="text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-teal-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
-                    {t('nav.login', 'Admin Sign In')}
+                    {t('nav.login', 'Sign In')}
                   </Link>
                   <Link
                     to="/register"
@@ -664,12 +656,12 @@ export const Navbar: React.FC = () => {
               ) : (
                 <div className="space-y-2">
                   <Link
-                    to="/login?role=admin"
+                    to="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
                   >
-                    <Shield className="w-4 h-4 mr-2 text-amber-300" />
-                    Admin Sign In
+                    <UserIcon className="w-4 h-4 mr-2 text-teal-300" />
+                    Sign In
                   </Link>
                   <Link
                     to="/register"
@@ -702,6 +694,45 @@ export const Navbar: React.FC = () => {
                 </Link>
 
                 <Link
+                  to="/assessment"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
+                    isActive('/assessment')
+                      ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Activity className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+                  <span>Patient Access Assessment</span>
+                </Link>
+
+                <Link
+                  to="/architecture"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
+                    isActive('/architecture')
+                      ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Layers className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+                  <span>System Architecture</span>
+                </Link>
+
+                <Link
+                  to="/about"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
+                    isActive('/about')
+                      ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
+                  <span>About Platform</span>
+                </Link>
+
+                <Link
                   to={user?.role === 'hospital' ? '/hospital/teleconsult' : '/patient/teleconsult'}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
@@ -723,7 +754,7 @@ export const Navbar: React.FC = () => {
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                  <Sliders className="w-4 h-4 text-amber-500 shrink-0" />
                   <span>Digital Twin Simulator</span>
                 </Link>
 
@@ -749,16 +780,12 @@ export const Navbar: React.FC = () => {
                   <span>{t('nav.dashboard', 'Dashboard')}</span>
                 </Link>
 
-                {/* Public Health & Universal Access (SIH 26133) */}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
-                  <div className="flex items-center justify-between px-2 pt-1 pb-0.5">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
-                      Public Health Grid (SIH 26133)
-                    </p>
-                    <span className="text-[9px] bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold px-1.5 py-0.5 rounded">
-                      MahaGov
-                    </span>
-                  </div>
+                {/* Public Health & Universal Access */}
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                    Public Health Network Grid
+                  </p>
+
 
                   <Link
                     to="/patient/triage"
@@ -881,7 +908,7 @@ export const Navbar: React.FC = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
-                      <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+                      <Activity className="w-4 h-4 text-teal-600 shrink-0" />
                       <span>{t('nav.frictionProfile', 'Friction Profile')}</span>
                     </Link>
                     <Link
@@ -939,10 +966,10 @@ export const Navbar: React.FC = () => {
                     <Link
                       to="/admin/judge-mode"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800"
+                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800"
                     >
-                      <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
-                      <span>SIH Judge Impact Evaluation</span>
+                      <BarChart3 className="w-4 h-4 text-teal-600 shrink-0" />
+                      <span>System Impact Evaluation</span>
                     </Link>
                     <Link
                       to="/admin/simulator"
@@ -975,19 +1002,11 @@ export const Navbar: React.FC = () => {
                 {!isAuthenticated && (
                   <>
                     <Link
-                      to="/admin/judge-mode"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800"
-                    >
-                      <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
-                      <span>SIH 2026 Judge Mode</span>
-                    </Link>
-                    <Link
                       to="/architecture"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800"
                     >
-                      <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+                      <Layers className="w-4 h-4 text-teal-600 shrink-0" />
                       <span>System Architecture</span>
                     </Link>
                     <Link
@@ -1056,13 +1075,8 @@ export const Navbar: React.FC = () => {
               {/* Preferences & Language Group */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
                 <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Preferences & Language
+                  Language Preferences
                 </p>
-
-                {/* Simple Language Mode switch */}
-                <div className="px-1">
-                  <SimpleModeToggle />
-                </div>
 
                 {/* Language Selector (Full-Width) */}
                 <div className="px-1">
@@ -1099,8 +1113,8 @@ export const Navbar: React.FC = () => {
                   <span>{t('nav.logout', 'Sign Out of System')}</span>
                 </button>
               ) : (
-                <p className="text-[10px] text-center text-slate-400">
-                  Patient Friction Intelligence System • Non-Clinical Access Engine
+                <p className="text-[11px] text-slate-400">
+                  Patient Friction Index System • Non-Clinical Access Platform
                 </p>
               )}
             </div>

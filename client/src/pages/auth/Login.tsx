@@ -14,7 +14,7 @@ import {
   Building2,
   Shield,
   CheckCircle2,
-  Sparkles,
+  Activity,
   ArrowRight,
   KeyRound,
   ShieldCheck,
@@ -259,7 +259,7 @@ export const Login: React.FC = () => {
         const targetUrl = (redirectParam && redirectParam.startsWith('/'))
           ? redirectParam
           : (roleRedirectMap[res.user.role] || '/patient/dashboard');
-        setRedirectingMessage(`Welcome back! Redirecting to ${targetUrl.includes('judge-mode') ? 'SIH Judge Mode' : role + ' dashboard'}...`);
+        setRedirectingMessage(`Welcome back! Redirecting to ${targetUrl.includes('judge-mode') ? 'Impact Evaluation Dashboard' : role + ' dashboard'}...`);
         setTimeout(() => {
           navigate(targetUrl, { replace: true });
         }, 200);
@@ -342,13 +342,6 @@ export const Login: React.FC = () => {
             <ShieldCheck className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
             <span>PFIS Integrated Multi-Role Healthcare Portal</span>
           </div>
-          <Link
-            to="/admin/judge-mode"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all shadow-xs"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 animate-pulse" />
-            <span>SIH 2026 Judge Evaluation Hub →</span>
-          </Link>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           {currentPortalConfig.title} Sign In
@@ -443,7 +436,7 @@ export const Login: React.FC = () => {
       <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <Activity className="w-3.5 h-3.5 text-amber-500" />
             <span>Portal Capabilities for {currentPortalConfig.title}:</span>
           </span>
           <span className="text-[10px] text-slate-400">Live Dynamic System</span>

@@ -5,7 +5,7 @@ import { Sidebar } from '../components/layout/Sidebar';
 import { Footer } from '../components/layout/Footer';
 import { DemoModeBanner } from '../components/common/DemoModeBanner';
 import { useAuth } from '../context/AuthContext';
-import { Loader2, Sparkles, LogIn } from 'lucide-react';
+import { Loader2, BarChart3, LogIn } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -19,7 +19,7 @@ export const AdminLayout: React.FC = () => {
     );
   }
 
-  // Detect whether the current admin route is the SIH Judge Impact Evaluation Mode
+  // Detect whether the current admin route is the Platform Impact Evaluation Mode
   const isJudgeMode = location.pathname.toLowerCase().includes('judge-mode');
 
   // Authorization check:
@@ -46,9 +46,9 @@ export const AdminLayout: React.FC = () => {
       {isJudgeMode && (!isAuthenticated || user?.role !== 'admin') ? (
         <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-950 text-white px-4 py-2.5 border-b border-purple-500/30 text-xs flex flex-wrap items-center justify-between gap-3 shadow-md">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+            <BarChart3 className="w-4 h-4 text-amber-300" />
             <span className="font-semibold text-purple-100">
-              SIH 2026 Evaluation Hub • Viewing as Guest Evaluator with Evaluation Privileges
+              System Impact Evaluation Hub • Viewing with Evaluator Privileges
             </span>
           </div>
           <Link
@@ -60,7 +60,7 @@ export const AdminLayout: React.FC = () => {
           </Link>
         </div>
       ) : (
-        <DemoModeBanner message="ADMINISTRATIVE HEALTH INTELLIGENCE SUITE: Population friction heatmaps, care leakage analytics, and What-If budget intervention simulations." />
+        <DemoModeBanner message="ADMINISTRATIVE HEALTH OPERATIONS SUITE: Population friction heatmaps, care leakage analytics, and intervention budget simulations." />
       )}
       <Navbar />
       <div className="flex-grow flex max-w-7xl mx-auto w-full">
