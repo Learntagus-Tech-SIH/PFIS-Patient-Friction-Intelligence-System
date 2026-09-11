@@ -21,7 +21,23 @@ export const JourneyTimeline: React.FC<{
   stages: JourneyStage[];
   currentStageIndex?: number;
 }> = ({ stages, currentStageIndex = 2 }) => {
-  if (!stages || stages.length === 0) return null;
+  let parsedStages: JourneyStage[] = [];
+  if (Array.isArray(stages)) {
+    parsedStages = stages;
+  } else if (typeof stages === 'string') {
+    try {
+      const parsed = JSON.parse(stages);
+      if (Array.isArray(parsed)) {
+        parsedStages = parsed;
+      }
+    } catch {
+      parsedStages = [];
+    }
+  }
+
+  if (!parsedStages || !Array.isArray(parsedStages) || parsedStages.length === 0) {
+    return null;
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-card space-y-6">
@@ -35,13 +51,13 @@ export const JourneyTimeline: React.FC<{
           </p>
         </div>
         <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-          Stage {currentStageIndex + 1} of 9
+          Stage {currentStageIndex + 1} of {parsedStages.length}
         </span>
       </div>
 
       <div className="relative">
         <div className="space-y-4">
-          {stages.map((stage, idx) => {
+          {parsedStages.map((stage, idx) => {
             const isCurrent = idx === currentStageIndex;
             const isCompleted = stage.status === 'COMPLETED';
             const isAtRisk = stage.status === 'AT_RISK' || stage.frictionLevel === 'CRITICAL';

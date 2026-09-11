@@ -77,7 +77,7 @@ export const InterventionOptimizer: React.FC = () => {
             Intervention Budget Allocation Optimizer
           </h1>
           <p className="text-xs text-slate-300">
-            Algorithmic portfolio optimizer selecting highest accessibility ROI interventions for any available grant budget
+            Applies 0/1 knapsack optimization across cataloged interventions to select combinations with the highest estimated completion gain within a specified budget
           </p>
         </div>
 

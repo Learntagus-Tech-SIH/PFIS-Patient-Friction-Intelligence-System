@@ -243,6 +243,19 @@ export class PatientController {
         });
       }
 
+      if (risk) {
+        if (typeof risk.primaryRiskFactors === 'string') {
+          try {
+            risk.primaryRiskFactors = JSON.parse(risk.primaryRiskFactors);
+          } catch {}
+        }
+        if (typeof risk.mitigationPathways === 'string') {
+          try {
+            risk.mitigationPathways = JSON.parse(risk.mitigationPathways);
+          } catch {}
+        }
+      }
+
       res.status(200).json({
         success: true,
         careRisk: risk,
@@ -265,7 +278,13 @@ export class PatientController {
 
       let journey = await CareJourney.findOne({ patientId: patient._id }).sort({ createdAt: -1 });
 
-      if (!journey) {
+      if (journey && typeof journey.stages === 'string') {
+        try {
+          journey.stages = JSON.parse(journey.stages);
+        } catch {}
+      }
+
+      if (!journey || !journey.stages || !Array.isArray(journey.stages) || journey.stages.length === 0) {
         // Initialize 9 standard stages
         const stages = [
           {
@@ -334,12 +353,25 @@ export class PatientController {
           },
         ];
 
-        journey = await CareJourney.create({
-          patientId: patient._id,
-          stages: stages as any,
-          currentStageIndex: 2,
-          overallJourneyHealth: 'SLIGHT_FRICTION',
-        });
+        if (!journey) {
+          journey = await CareJourney.create({
+            patientId: patient._id,
+            stages: stages as any,
+            currentStageIndex: 2,
+            overallJourneyHealth: 'SLIGHT_FRICTION',
+          });
+        } else {
+          journey.stages = stages;
+          if (typeof journey.currentStageIndex !== 'number') journey.currentStageIndex = 2;
+          if (!journey.overallJourneyHealth) journey.overallJourneyHealth = 'SLIGHT_FRICTION';
+          await journey.save();
+        }
+      }
+
+      if (journey && typeof journey.stages === 'string') {
+        try {
+          journey.stages = JSON.parse(journey.stages);
+        } catch {}
       }
 
       res.status(200).json({

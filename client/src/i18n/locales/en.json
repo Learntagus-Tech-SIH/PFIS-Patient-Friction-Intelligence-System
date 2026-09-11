@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "appName": "PFIS",
     "appTagline": "Patient Friction Intelligence System",
@@ -89,8 +89,8 @@
     "paperworkGapsDesc": "Missing identity links preventing cashless Ayushman Bharat (PM-JAY) claims.",
     "eightDimensions": "The 8 Dimensions of Healthcare Accessibility",
     "nineStages": "The 9-Stage Healthcare Journey",
-    "simulatorTitle": "Simulate high-impact community interventions with precision.",
-    "simulatorDesc": "Model the exact care completion improvement when community transport, satellite diagnostic camps, or ASHA escorts are deployed.",
+    "simulatorTitle": "Simulate community interventions to evaluate estimated access gains.",
+    "simulatorDesc": "Model estimated care completion gains when community transport, satellite diagnostic camps, or community escorts are deployed.",
     "ethicalTitle": "Ethical AI & Non-Clinical Safety Mandate",
     "zeroDiagnosis": "Zero Disease Diagnosis: PFIS does NOT diagnose diseases or prescribe medication.",
     "consentArch": "Patient Consent: No patient data is transmitted without explicit authorization.",

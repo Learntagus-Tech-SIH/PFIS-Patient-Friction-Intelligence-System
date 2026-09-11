@@ -116,13 +116,13 @@ export const PatientConsentCenter: React.FC = () => {
         </button>
       </div>
 
-      {/* Security Guarantee Banner */}
+      {/* Consent Policy Banner */}
       <div className="p-4 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/80 rounded-2xl flex items-center gap-3.5 text-xs text-teal-900 dark:text-teal-200">
         <Lock className="w-5 h-5 text-teal-600 shrink-0" />
         <div className="flex-1">
-          <strong className="block font-bold">Patient Data Ownership & Zero-Knowledge Architecture</strong>
+          <strong className="block font-bold">Patient Data Ownership & Consent-Gated Access</strong>
           <span className="text-teal-800 dark:text-teal-300">
-            You hold total control over your health records. Healthcare providers, doctors, and diagnostic labs can only view documents when an active consent token is verified.
+            Healthcare providers, doctors, and diagnostic labs can only view documents when an active consent token is verified.
           </span>
         </div>
       </div>

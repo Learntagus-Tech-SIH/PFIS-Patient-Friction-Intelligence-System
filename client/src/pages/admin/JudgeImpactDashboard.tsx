@@ -49,12 +49,15 @@ export const JudgeImpactDashboard: React.FC = () => {
             <p className="text-sm text-purple-200/90 max-w-2xl">
               Demonstrating how the Patient Friction Intelligence System shifts Indian public healthcare from reactive emergency management to proactive, data-driven friction mitigation.
             </p>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-900/60 border border-purple-400/30 text-[11px] text-purple-200">
+              <span>Demonstration Projection • Modeled from pre-seeded district cohort data</span>
+            </div>
           </div>
 
           <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-center shrink-0">
             <span className="text-[11px] uppercase tracking-wider text-purple-200 font-bold block">Overall Friction Reduction</span>
             <p className="text-3xl font-black text-emerald-400 mt-0.5">-41.6%</p>
-            <span className="text-[10px] text-purple-200 block mt-0.5">Across 12 District Facilities</span>
+            <span className="text-[10px] text-purple-200 block mt-0.5">Simulated Demonstration Projection (12 Facilities)</span>
           </div>
         </div>
       </div>

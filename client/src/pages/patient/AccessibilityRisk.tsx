@@ -16,10 +16,31 @@ export const AccessibilityRisk: React.FC = () => {
     const loadRisk = async () => {
       try {
         const rRes = await patientService.getAccessibilityRisk();
-        if (rRes.success) setCareRisk(rRes.careRisk);
+        if (rRes.success && rRes.careRisk) {
+          const risk = { ...rRes.careRisk };
+          if (typeof risk.primaryRiskFactors === 'string') {
+            try {
+              risk.primaryRiskFactors = JSON.parse(risk.primaryRiskFactors);
+            } catch {}
+          }
+          if (typeof risk.mitigationPathways === 'string') {
+            try {
+              risk.mitigationPathways = JSON.parse(risk.mitigationPathways);
+            } catch {}
+          }
+          setCareRisk(risk);
+        }
 
         const jRes = await patientService.getCareJourney();
-        if (jRes.success) setCareJourney(jRes.careJourney);
+        if (jRes.success && jRes.careJourney) {
+          const journey = { ...jRes.careJourney };
+          if (typeof journey.stages === 'string') {
+            try {
+              journey.stages = JSON.parse(journey.stages);
+            } catch {}
+          }
+          setCareJourney(journey);
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -95,7 +116,7 @@ export const AccessibilityRisk: React.FC = () => {
                 Primary Socio-Geographic Risk Drivers
               </span>
               <div className="space-y-1.5">
-                {(careRisk?.primaryRiskFactors || []).map((rf, i) => (
+                {(Array.isArray(careRisk?.primaryRiskFactors) ? careRisk.primaryRiskFactors : []).map((rf, i) => (
                   <div
                     key={i}
                     className="flex items-start justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs"
@@ -113,7 +134,7 @@ export const AccessibilityRisk: React.FC = () => {
         </div>
 
         {/* Recommended Mitigation Pathways */}
-        {careRisk?.mitigationPathways && careRisk.mitigationPathways.length > 0 && (
+        {Array.isArray(careRisk?.mitigationPathways) && careRisk.mitigationPathways.length > 0 && (
           <div className="pt-4 border-t border-slate-100 space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-teal-800">
               Recommended Community Mitigation Pathways

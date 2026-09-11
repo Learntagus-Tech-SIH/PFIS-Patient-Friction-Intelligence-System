@@ -124,7 +124,7 @@ export const AdminDashboard: React.FC = () => {
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-              Role: System Health Director • Permanent Master Admin Security • MongoDB Storage Active
+              Role: System Health Director • System Administration • Relational Database Active
             </p>
           </div>
         </div>
@@ -191,10 +191,10 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-1">
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <Activity className="w-5 h-5 text-brand-600" />
-              <span>Live User Logins & Real-Time Security Feed</span>
+              <span>User Logins & Security Activity Feed</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Live audit stream showing who is logging in (Google accounts, patients, hospitals, admin) saved in MongoDB.
+              Audit log stream recording user logins and operational administrative events.
             </p>
           </div>
 

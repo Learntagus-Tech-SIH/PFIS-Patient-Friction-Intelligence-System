@@ -43,11 +43,11 @@ export const CareFailure: React.FC = () => {
                 Why Did Care Fail? Engine
               </h2>
               <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200">
-                Non-Clinical Causal Attribution
+                Operational Barrier Attribution
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Root-cause operational classification of factors triggering premature journey dropouts
+              Operational classification of factors contributing to premature journey dropouts
             </p>
           </div>
         </div>
@@ -66,7 +66,7 @@ export const CareFailure: React.FC = () => {
 
         <div className="lg:col-span-2 space-y-3">
           <h3 className="text-base font-bold text-slate-900">
-            Causal Distribution Breakdown ({attributionData?.totalEvaluatedCases || 1000} Cases)
+            Attribution Distribution Breakdown ({attributionData?.totalEvaluatedCases || 1000} Demonstration Cases)
           </h3>
 
           <div className="space-y-3">

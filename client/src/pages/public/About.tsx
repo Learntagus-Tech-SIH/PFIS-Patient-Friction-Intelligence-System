@@ -13,7 +13,7 @@ export const About: React.FC = () => {
           About the PFIS Platform
         </h1>
         <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          Pioneering deterministic, non-clinical healthcare accessibility intelligence for vulnerable
+          Non-clinical healthcare accessibility analysis and operational routing for vulnerable
           and rural populations across India.
         </p>
       </div>
@@ -40,7 +40,7 @@ export const About: React.FC = () => {
           <div className="p-4 bg-teal-50 rounded-2xl border border-teal-200 text-xs space-y-1 text-teal-950">
             <strong className="block font-bold">2. Knapsack Budget Optimization</strong>
             <p className="text-teal-800">
-              Helps state health ministries allocate finite intervention budgets to maximize patient completion rates.
+              Evaluates combinations of interventions to model estimated completion gains within a specified budget.
             </p>
           </div>
         </div>

@@ -114,7 +114,7 @@ export const Login: React.FC = () => {
           callback: async (response: any) => {
             if (response.credential) {
               setIsGoogleLoading(true);
-              setRedirectingMessage('Verifying Google credentials with MongoDB...');
+              setRedirectingMessage('Verifying Google credentials...');
               try {
                 const res = await loginWithGoogle(response.credential, activePortalRef.current);
                 if (res.success) {

@@ -165,8 +165,8 @@ export class RealHospitalDiscoveryService {
   }
 
   /**
-   * Syncs discovered real hospitals into MongoDB so they have active doctor rosters,
-   * OPD token capacity, departments, and booking support.
+   * Persists discovered hospitals into the database with demonstration departments,
+   * doctor rosters, and initial token capacities for operational simulation.
    */
   public static async syncDiscoveredHospitalsToDatabase(
     discoveredList: DiscoveredPlace[]

@@ -67,7 +67,7 @@ export const SystemArchitecture: React.FC = () => {
       number: '5',
       title: 'What-If Intervention Simulator',
       concept: 'Counterfactual Scenario Modeling',
-      description: 'Enables healthcare administrators to toggle community transport, PoC labs, or ASHA escorts and instantly observe simulated care completion gains (37% → 91%).',
+      description: 'Enables healthcare administrators to toggle community transport, PoC labs, or ASHA escorts and observe simulated care completion gains under configurable assumptions.',
       link: '/admin/simulator',
       buttonText: 'Run Live Simulator',
       icon: Cpu,
@@ -204,7 +204,7 @@ export const SystemArchitecture: React.FC = () => {
                 Patient → Need → (+Travel +Transport +Digital +Cost +Language +Escort) → Can Patient Finish?
               </div>
               <p>
-                <strong>The Solution:</strong> PFIS maps all 8 non-clinical friction dimensions, models compound barrier interactions, and simulates the most cost-effective interventions (e.g. Community Shuttle + PoC Labs) to guarantee treatment completion.
+                <strong>The Solution:</strong> PFIS maps all 8 non-clinical friction dimensions, models compound barrier interactions, and simulates cost-effective interventions (e.g. Community Shuttle + PoC Labs) to mitigate drop-out risk and support treatment completion.
               </p>
             </div>
           </div>
@@ -218,7 +218,7 @@ export const SystemArchitecture: React.FC = () => {
             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               The 10 Core Architectural Pillars
             </h2>
-            <p className="text-xs text-slate-500">Every module in the platform architecture, fully functional, explainable, and production ready</p>
+            <p className="text-xs text-slate-500">Each architectural pillar operates on transparent deterministic rules, explainable heuristics, and simulated demonstration models</p>
           </div>
         </div>
 

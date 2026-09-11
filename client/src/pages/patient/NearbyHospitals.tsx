@@ -119,12 +119,12 @@ export const NearbyHospitals: React.FC = () => {
               {t('patient.findNearbyHospital', 'Nearby Hospitals & Health Facilities')}
             </h2>
             <TTSButton
-              text={`${t('patient.findNearbyHospital')} - ${hospitals.length} facilities discovered with live doctor and seat availability`}
+              text={`${t('patient.findNearbyHospital')} - ${hospitals.length} facilities discovered near your location`}
               label={t('common.listen', 'Listen')}
             />
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Real-time verified hospitals with active doctor rosters, live OPD token seats, bed availability & transit friction
+            Discovered healthcare facilities with department schedules, estimated bed capacity, and transit friction calculations
           </p>
         </div>
 
@@ -138,6 +138,14 @@ export const NearbyHospitals: React.FC = () => {
             <span>{isLocLoading ? 'Detecting GPS Location...' : 'Use My Live GPS Location'}</span>
           </button>
         </div>
+      </div>
+
+      {/* Prototype Data Notice */}
+      <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2.5">
+        <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+        <span>
+          Facility names and coordinates are retrieved via geographic mapping services. Operational fields (token seat counts, bed occupancy, ambulance status) reflect prototype demonstration data.
+        </span>
       </div>
 
       {locError && (

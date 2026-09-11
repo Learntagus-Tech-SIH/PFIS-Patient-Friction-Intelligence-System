@@ -74,7 +74,7 @@ export class AdminController {
   }
 
   /**
-   * Dynamically aggregates geographic clusters from real Patient and FrictionProfile documents in MongoDB
+   * Aggregates geographic clusters from Patient and FrictionProfile records
    */
   public static async getPopulationFrictionMap(req: Request, res: Response): Promise<void> {
     try {
@@ -87,7 +87,7 @@ export class AdminController {
         return;
       }
 
-      // Group dynamically by city / region from real MongoDB records
+      // Group dynamically by city / region
       const clusterMap: Record<
         string,
         {
@@ -228,7 +228,7 @@ export class AdminController {
   }
 
   /**
-   * Dynamically evaluates care leakage milestones directly from MongoDB
+   * Evaluates care leakage milestones from recorded requests
    */
   public static async getCareLeakage(req: Request, res: Response): Promise<void> {
     try {
@@ -423,7 +423,7 @@ export class AdminController {
         },
       });
     } catch (error: any) {
-      res.status(500).json({ success: false, message: error.message || 'Failed to fetch causal attribution.' });
+      res.status(500).json({ success: false, message: error.message || 'Failed to fetch barrier attribution.' });
     }
   }
 
@@ -496,7 +496,7 @@ export class AdminController {
   }
 
   /**
-   * Create a new hospital facility in MongoDB Atlas dynamically
+   * Create a new hospital facility in database
    */
   public static async createHospital(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
@@ -607,7 +607,7 @@ export class AdminController {
 
       res.status(201).json({
         success: true,
-        message: 'Hospital created successfully in MongoDB Atlas.',
+        message: 'Hospital created successfully.',
         hospital,
       });
     } catch (error: any) {
@@ -616,7 +616,7 @@ export class AdminController {
   }
 
   /**
-   * Update an existing hospital facility in MongoDB Atlas
+   * Update an existing hospital facility in database
    */
   public static async updateHospital(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
@@ -646,7 +646,7 @@ export class AdminController {
 
       res.status(200).json({
         success: true,
-        message: 'Hospital updated successfully in MongoDB Atlas.',
+        message: 'Hospital updated successfully.',
         hospital,
       });
     } catch (error: any) {
@@ -655,7 +655,7 @@ export class AdminController {
   }
 
   /**
-   * Delete a hospital facility and its departments from MongoDB Atlas
+   * Delete a hospital facility and its departments from database
    */
   public static async deleteHospital(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
@@ -677,7 +677,7 @@ export class AdminController {
 
       res.status(200).json({
         success: true,
-        message: 'Hospital and associated departments deleted from MongoDB Atlas.',
+        message: 'Hospital and associated departments deleted successfully.',
       });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message || 'Failed to delete hospital.' });

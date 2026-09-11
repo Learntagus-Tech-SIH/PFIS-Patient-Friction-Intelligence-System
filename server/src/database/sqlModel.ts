@@ -183,6 +183,20 @@ function wrapModelInstance(tableName: string, raw: any): any {
     created_at: 'createdAt',
     updatedat: 'updatedAt',
     updated_at: 'updatedAt',
+    currentstageindex: 'currentStageIndex',
+    current_stage_index: 'currentStageIndex',
+    overalljourneyhealth: 'overallJourneyHealth',
+    overall_journey_health: 'overallJourneyHealth',
+    primaryriskfactors: 'primaryRiskFactors',
+    primary_risk_factors: 'primaryRiskFactors',
+    mitigationpathways: 'mitigationPathways',
+    mitigation_pathways: 'mitigationPathways',
+    bottleneckstage: 'bottleneckStage',
+    bottleneck_stage: 'bottleneckStage',
+    carecompletionprobability: 'careCompletionProbability',
+    accessibilityriskpercentage: 'accessibilityRiskPercentage',
+    riskcategory: 'riskCategory',
+    frictionprofileid: 'frictionProfileId',
   };
 
   for (const [lowerK, camelK] of Object.entries(keyMap)) {
@@ -223,12 +237,29 @@ function wrapModelInstance(tableName: string, raw: any): any {
     'geoJSON',
     'dataShared',
     'documentIds',
+    'stages',
+    'primaryRiskFactors',
+    'mitigationPathways',
+    'primaryriskfactors',
+    'mitigationpathways',
   ];
 
   for (const f of jsonFields) {
     if (typeof instance[f] === 'string' && (instance[f].startsWith('{') || instance[f].startsWith('['))) {
       try {
         instance[f] = JSON.parse(instance[f]);
+      } catch {}
+    }
+  }
+
+  // Parse any remaining stringified JSON arrays or objects on the instance
+  for (const k of Object.keys(instance)) {
+    if (
+      typeof instance[k] === 'string' &&
+      (instance[k].startsWith('{') || instance[k].startsWith('['))
+    ) {
+      try {
+        instance[k] = JSON.parse(instance[k]);
       } catch {}
     }
   }
