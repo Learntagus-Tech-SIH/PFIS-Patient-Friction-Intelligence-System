@@ -286,11 +286,11 @@ export const Login: React.FC = () => {
       </div>
 
       {/* Enterprise Role Context Selector */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-          Select Portal Role:
+          Select Portal Context:
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {portals.map((portal) => {
             const isSelected = activePortal === portal.id;
             return (
@@ -298,21 +298,32 @@ export const Login: React.FC = () => {
                 key={portal.id}
                 type="button"
                 onClick={() => handlePortalSwitch(portal.id)}
-                className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                   isSelected
                     ? `bg-slate-50 dark:bg-slate-800/90 border-2 shadow-sm ${portal.accentBorder}`
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">
+                  <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
                     {portal.icon}
                   </div>
-                  {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />}
+                  {isSelected ? (
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${portal.badgeColor}`}>
+                      Selected
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400 font-medium">{portal.badge}</span>
+                  )}
                 </div>
-                <span className="text-xs font-bold text-slate-900 dark:text-white block leading-tight truncate">
-                  {portal.title}
-                </span>
+                <div>
+                  <span className="text-xs font-extrabold text-slate-900 dark:text-white block leading-snug">
+                    {portal.title}
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5 line-clamp-1">
+                    {portal.subtitle}
+                  </span>
+                </div>
               </button>
             );
           })}
