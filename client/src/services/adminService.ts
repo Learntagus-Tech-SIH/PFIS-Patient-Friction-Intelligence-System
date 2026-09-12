@@ -109,7 +109,7 @@ export const adminService = {
     return res.data;
   },
 
-  async getPermissionsMatrix(): Promise<{ success: boolean; matrix: any[] }> {
+  async getPermissionsMatrix(): Promise<{ success: boolean; matrix: any[]; rolesSummary?: any[] }> {
     const res = await api.get('/admin/permissions');
     return res.data;
   },

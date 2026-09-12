@@ -15,14 +15,20 @@ import {
 export const AdminPermissions: React.FC = () => {
   const { showToast } = useToast();
   const [matrix, setMatrix] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [rolesSummary, setRolesSummary] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
     try {
       const res = await adminService.getPermissionsMatrix();
       if (res.success) {
-        setMatrix(res.matrix || []);
+        if (Array.isArray(res.matrix) && res.matrix.length > 0) {
+          setMatrix(res.matrix);
+        }
+        if (Array.isArray(res.rolesSummary)) {
+          setRolesSummary(res.rolesSummary);
+        }
       }
     } catch {
       showToast('Failed to load permissions matrix.', 'error');
@@ -35,16 +41,20 @@ export const AdminPermissions: React.FC = () => {
     loadData();
   }, []);
 
-  const defaultMatrix = matrix.length > 0 ? matrix : [
+  const defaultMatrix = [
     { capability: 'View Own Health Records & Tokens', patient: true, doctor: true, asha: false, hospital: true, government: false, admin: true, description: 'Direct longitudinal EHR and consultation logs' },
+    { capability: 'Conduct Clinical Consultations & Checkups', patient: false, doctor: true, asha: false, hospital: true, government: false, admin: true, description: 'Patient OPD queue review, clinical examination & diagnostic checkup' },
     { capability: 'Prescribe Medicines & Lab Orders', patient: false, doctor: true, asha: false, hospital: false, government: false, admin: false, description: 'Clinical therapeutic decision authority' },
+    { capability: 'Initiate & Process Inter-Facility Referrals', patient: false, doctor: true, asha: true, hospital: true, government: true, admin: true, description: 'Inter-hospital emergency and specialty referral network' },
     { capability: 'Conduct Household Visits & High-Risk Triage', patient: false, doctor: false, asha: true, hospital: false, government: false, admin: true, description: 'Frontline field outreach and community registry' },
     { capability: 'Manage Hospital Bed Census & ICU Bays', patient: false, doctor: false, asha: false, hospital: true, government: false, admin: true, description: 'Facility capacity updating and inward admitting' },
     { capability: 'Verify Hospital Licenses & NQAS Approval', patient: false, doctor: false, asha: false, hospital: false, government: true, admin: true, description: 'State and district regulatory accreditation' },
     { capability: 'View De-Identified District Friction Telemetry', patient: false, doctor: false, asha: false, hospital: true, government: true, admin: true, description: 'Macro PFI analytics and access barrier distribution' },
     { capability: 'Read Private Identifiable Clinical Notes', patient: true, doctor: true, asha: false, hospital: true, government: false, admin: false, description: 'Protected clinical notes (Privacy Safeguard: Government/Admin restricted)' },
-    { capability: 'Modify Platform Feature Flags & System Config', patient: false, doctor: false, asha: false, hospital: false, government: false, admin: true, description: 'Global administrative configuration' },
+    { capability: 'Modify Platform Feature Flags & System Config', patient: false, doctor: false, asha: false, hospital: false, government: false, admin: true, description: 'Global administrative configuration & permission controls' },
   ];
+
+  const activeMatrix = matrix.length > 0 && matrix[0].capability ? matrix : defaultMatrix;
 
   return (
     <div className="space-y-6">
@@ -103,7 +113,7 @@ export const AdminPermissions: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {defaultMatrix.map((item, idx) => (
+              {activeMatrix.map((item: any, idx: number) => (
                 <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-all">
                   <td className="p-4">
                     <div className="font-bold text-slate-900 dark:text-white">{item.capability}</div>

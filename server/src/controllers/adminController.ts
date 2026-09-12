@@ -690,11 +690,44 @@ export class AdminController {
 
   public static async getAuditLogs(req: Request, res: Response): Promise<void> {
     try {
-      const limit = parseInt(req.query.limit as string, 10) || 50;
-      const logs = await AuditLog.find()
+      const limit = parseInt(req.query.limit as string, 10) || 100;
+      const rawLogs = await AuditLog.find()
         .populate('userId', 'name email role')
-        .sort({ timestamp: -1 })
+        .sort({ timestamp: -1, createdAt: -1 })
         .limit(limit);
+
+      const logs = (rawLogs || []).map((l: any) => {
+        const logObj = typeof l.toObject === 'function' ? l.toObject() : l;
+        const userObj = logObj.userId && typeof logObj.userId === 'object' ? logObj.userId : null;
+        
+        let actorRole = logObj.actorRole || logObj.actor_role;
+        if (!actorRole || actorRole === 'system' || actorRole === 'user') {
+          if (userObj?.role) {
+            actorRole = userObj.role;
+          } else if (logObj.details?.role) {
+            actorRole = logObj.details.role;
+          } else if (logObj.details?.email?.includes('patient')) {
+            actorRole = 'patient';
+          } else if (logObj.details?.email?.includes('doctor')) {
+            actorRole = 'doctor';
+          } else if (logObj.details?.email?.includes('admin')) {
+            actorRole = 'admin';
+          } else if (logObj.details?.email?.includes('hospital')) {
+            actorRole = 'hospital';
+          } else if (logObj.details?.email?.includes('gov')) {
+            actorRole = 'government';
+          } else {
+            actorRole = userObj?.role || 'patient';
+          }
+        }
+
+        return {
+          ...logObj,
+          actorRole: actorRole.toLowerCase(),
+          timestamp: logObj.timestamp || logObj.createdAt || logObj.created_at || new Date().toISOString(),
+          user: userObj ? { name: userObj.name, email: userObj.email, role: userObj.role } : null,
+        };
+      });
 
       res.status(200).json({
         success: true,
@@ -1021,9 +1054,25 @@ export class AdminController {
   /**
    * Platform RBAC Permissions Matrix
    */
+  /**
+   * Platform RBAC Permissions Matrix
+   */
   public static async getPermissionsMatrix(req: Request, res: Response): Promise<void> {
     try {
       const matrix = [
+        { capability: 'View Own Health Records & Tokens', patient: true, doctor: true, asha: false, hospital: true, government: false, admin: true, description: 'Direct longitudinal EHR and consultation logs' },
+        { capability: 'Conduct Clinical Consultations & Checkups', patient: false, doctor: true, asha: false, hospital: true, government: false, admin: true, description: 'Patient OPD queue review, clinical examination & diagnostic checkup' },
+        { capability: 'Prescribe Medicines & Lab Orders', patient: false, doctor: true, asha: false, hospital: false, government: false, admin: false, description: 'Clinical therapeutic decision authority' },
+        { capability: 'Initiate & Process Inter-Facility Referrals', patient: false, doctor: true, asha: true, hospital: true, government: true, admin: true, description: 'Inter-hospital emergency and specialty referral network' },
+        { capability: 'Conduct Household Visits & High-Risk Triage', patient: false, doctor: false, asha: true, hospital: false, government: false, admin: true, description: 'Frontline field outreach and community registry' },
+        { capability: 'Manage Hospital Bed Census & ICU Bays', patient: false, doctor: false, asha: false, hospital: true, government: false, admin: true, description: 'Facility capacity updating and inward admitting' },
+        { capability: 'Verify Hospital Licenses & NQAS Accreditation', patient: false, doctor: false, asha: false, hospital: false, government: true, admin: true, description: 'State and district regulatory accreditation' },
+        { capability: 'View De-Identified District Friction Telemetry', patient: false, doctor: false, asha: false, hospital: true, government: true, admin: true, description: 'Macro PFI analytics and access barrier distribution' },
+        { capability: 'Read Private Identifiable Clinical Notes', patient: true, doctor: true, asha: false, hospital: true, government: false, admin: false, description: 'Protected clinical notes (Privacy Safeguard: Government/Admin restricted)' },
+        { capability: 'Modify Platform Feature Flags & System Config', patient: false, doctor: false, asha: false, hospital: false, government: false, admin: true, description: 'Global administrative configuration & role permission controls' },
+      ];
+
+      const rolesSummary = [
         {
           role: 'PATIENT',
           label: 'Citizen & Patient',
@@ -1067,7 +1116,8 @@ export class AdminController {
           restrictions: ['Must adhere to immutable system audit logs for all configuration changes'],
         },
       ];
-      res.status(200).json({ success: true, matrix });
+
+      res.status(200).json({ success: true, matrix, rolesSummary });
     } catch (err: any) {
       res.status(500).json({ success: false, message: err.message });
     }
