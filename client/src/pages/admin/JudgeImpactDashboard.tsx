@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const JudgeImpactDashboard: React.FC = () => {
+  console.log('[DEBUG] JudgeImpactDashboard mounting/rendering');
   const [activeStage, setActiveStage] = useState<'problem' | 'data' | 'friction' | 'intelligence' | 'intervention' | 'impact'>('impact');
 
   const STAGES = [
