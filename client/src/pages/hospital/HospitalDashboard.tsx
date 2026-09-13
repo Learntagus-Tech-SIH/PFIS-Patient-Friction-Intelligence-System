@@ -30,18 +30,21 @@ export const HospitalDashboard: React.FC = () => {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const hRes = await hospitalService.getMyProfile().catch(() => null);
-        if (hRes?.success && hRes.hospital) {
-          setHospital(hRes.hospital);
-          setDepartments(hRes.departments || []);
+        const [hRes, rRes] = await Promise.allSettled([
+          hospitalService.getMyProfile(),
+          requestService.getHospitalRequests(),
+        ]);
+
+        if (hRes.status === 'fulfilled' && hRes.value?.success && hRes.value.hospital) {
+          setHospital(hRes.value.hospital);
+          setDepartments(hRes.value.departments || []);
           setError(null);
-        } else {
+        } else if (hRes.status === 'rejected' || !hRes.value?.success) {
           setError('Could not load hospital profile. Please ensure your account is linked to a facility.');
         }
 
-        const rRes = await requestService.getHospitalRequests().catch(() => null);
-        if (rRes?.success) {
-          setRequests(rRes.requests || []);
+        if (rRes.status === 'fulfilled' && rRes.value?.success) {
+          setRequests(rRes.value.requests || []);
         }
       } catch (e) {
         console.error(e);

@@ -43,44 +43,47 @@ import {
 
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { currentLanguage } = useLanguage();
   const { coords, requestCurrentLocation, isLoading: isLocLoading } = useLocation();
 
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [patient, setPatient] = useState<Patient | null>(profile || null);
   const [frictionProfile, setFrictionProfile] = useState<FrictionProfile | null>(null);
   const [careRisk, setCareRisk] = useState<CareRisk | null>(null);
   const [activeRequests, setActiveRequests] = useState<HospitalRequest[]>([]);
   const [recentDocs, setRecentDocs] = useState<PatientDocument[]>([]);
   const [nearestHospital, setNearestHospital] = useState<Hospital | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!profile);
 
   useEffect(() => {
     const loadDashboard = async () => {
-      setIsLoading(true);
       try {
-        const pRes = await patientService.getMe().catch(() => null);
-        if (pRes?.success && pRes.patient) {
-          setPatient(pRes.patient);
-          setActiveRequests(pRes.activeRequests || []);
+        const lat = coords.latitude || patient?.location?.latitude || profile?.location?.latitude || 31.2533;
+        const lng = coords.longitude || patient?.location?.longitude || profile?.location?.longitude || 75.7042;
+
+        const [pRes, fRes, rRes, dRes, hRes] = await Promise.allSettled([
+          patientService.getMe(),
+          patientService.getFrictionProfile(),
+          patientService.getAccessibilityRisk(),
+          documentService.getPatientDocuments(),
+          hospitalService.getNearby({ lat, lng, radiusKm: 60 }),
+        ]);
+
+        if (pRes.status === 'fulfilled' && pRes.value?.success && pRes.value.patient) {
+          setPatient(pRes.value.patient);
+          setActiveRequests(pRes.value.activeRequests || []);
         }
-        // No fallback: if no patient profile exists, show onboarding state below
-
-        const fRes = await patientService.getFrictionProfile().catch(() => null);
-        if (fRes?.success) setFrictionProfile(fRes.frictionProfile);
-
-        const rRes = await patientService.getAccessibilityRisk().catch(() => null);
-        if (rRes?.success) setCareRisk(rRes.careRisk);
-
-        const dRes = await documentService.getPatientDocuments().catch(() => null);
-        if (dRes?.success) setRecentDocs(dRes.documents.slice(0, 3));
-
-        // Fetch nearest real hospital dynamically from user's live GPS coordinates
-        const lat = coords.latitude || pRes?.patient?.location?.latitude || 31.2533;
-        const lng = coords.longitude || pRes?.patient?.location?.longitude || 75.7042;
-        const hRes = await hospitalService.getNearby({ lat, lng, radiusKm: 60 }).catch(() => null);
-        if (hRes?.success && hRes.hospitals?.length > 0) {
-          setNearestHospital(hRes.hospitals[0]);
+        if (fRes.status === 'fulfilled' && fRes.value?.success) {
+          setFrictionProfile(fRes.value.frictionProfile);
+        }
+        if (rRes.status === 'fulfilled' && rRes.value?.success) {
+          setCareRisk(rRes.value.careRisk);
+        }
+        if (dRes.status === 'fulfilled' && dRes.value?.success) {
+          setRecentDocs(dRes.value.documents.slice(0, 3));
+        }
+        if (hRes.status === 'fulfilled' && hRes.value?.success && hRes.value.hospitals?.length > 0) {
+          setNearestHospital(hRes.value.hospitals[0]);
         }
       } catch (e) {
         console.error('[PatientDashboard Error]', e);

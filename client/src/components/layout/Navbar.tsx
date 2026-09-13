@@ -104,7 +104,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
               aria-expanded={isMobileMenuOpen}
-              className="xl:hidden touch-target flex items-center justify-center p-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors relative cursor-pointer"
+              className="lg:hidden touch-target flex items-center justify-center p-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors relative cursor-pointer"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               {isAuthenticated && unreadCount > 0 && !isMobileMenuOpen && (
@@ -128,7 +128,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Center Navigation Links (Laptop & Desktop Only) */}
-          <nav className="hidden xl:flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
             {/* PATIENT NAV */}
             {user?.role === 'patient' && (
               <>
@@ -554,9 +554,9 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile & Tablet Slide Drawer (Slide from Left) */}
+          {/* Mobile & Tablet Slide Drawer (Slide from Left) */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 xl:hidden flex justify-start">
+        <div className="fixed inset-0 z-50 lg:hidden flex justify-start">
           {/* Backdrop overlay */}
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
