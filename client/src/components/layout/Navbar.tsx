@@ -341,17 +341,6 @@ export const Navbar: React.FC = () => {
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* Helpline Phone Number Badge */}
-            <a
-              href="tel:+917256052183"
-              className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer whitespace-nowrap"
-              title="Call PFIS Voice Helpline (+91 7256052183)"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="hidden xl:inline text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-400">Toll-Free:</span>
-              <span className="font-extrabold tracking-tight text-emerald-900 dark:text-emerald-100">+91 7256052183</span>
-            </a>
-
             {/* 108 Emergency SOS Button */}
             <button
               type="button"

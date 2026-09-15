@@ -85,40 +85,40 @@ export const LandingPage: React.FC = () => {
               />
             </div>
 
-            {/* Refined Action Buttons with Visual Hierarchy */}
+            {/* Refined Action Buttons with High-Contrast Solid Colors */}
             <div className="pt-3 sm:pt-5">
-              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-2xl mx-auto">
-                <Link to="/assessment">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    icon={<Activity className="w-4 h-4 shrink-0" />}
-                    className="min-h-[46px] px-6 text-sm font-bold shadow-md bg-teal-600 hover:bg-teal-700 text-white cursor-pointer border border-teal-600"
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-3xl mx-auto">
+                {/* 1. Primary CTA: Start Access Assessment */}
+                <Link to="/assessment" className="w-full sm:w-auto">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl font-bold bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer border border-teal-600"
                   >
-                    START ACCESS ASSESSMENT
-                  </Button>
+                    <Activity className="w-4 h-4 text-white shrink-0" />
+                    <span>START ACCESS ASSESSMENT</span>
+                  </button>
                 </Link>
 
-                <Link to="/patient/hospitals">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    icon={<MapPin className="w-4 h-4 shrink-0" />}
-                    className="min-h-[46px] px-6 text-sm font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 shadow-sm cursor-pointer"
+                {/* 2. Secondary CTA: Find Healthcare */}
+                <Link to="/patient/hospitals" className="w-full sm:w-auto">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer border border-slate-900"
                   >
-                    FIND HEALTHCARE
-                  </Button>
+                    <MapPin className="w-4 h-4 text-white shrink-0" />
+                    <span>FIND HEALTHCARE</span>
+                  </button>
                 </Link>
 
-                <Button
-                  variant="outline"
-                  size="lg"
+                {/* 3. Voice CTA: Call Helpline */}
+                <button
+                  type="button"
                   onClick={() => setVoiceModalOpen(true)}
-                  icon={<PhoneCall className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
-                  className="min-h-[46px] px-6 text-sm font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 shadow-sm cursor-pointer whitespace-nowrap"
+                  className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer border border-emerald-600 whitespace-nowrap"
                 >
-                  CALL +91 7256052183
-                </Button>
+                  <PhoneCall className="w-4 h-4 text-white shrink-0" />
+                  <span>CALL +91 7256052183</span>
+                </button>
               </div>
 
               {!isAuthenticated ? (
@@ -143,7 +143,7 @@ export const LandingPage: React.FC = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="pt-4">
+                <div className="pt-4 flex justify-center">
                   <Link
                     to={
                       user?.role === 'patient'
@@ -153,14 +153,13 @@ export const LandingPage: React.FC = () => {
                         : '/admin/dashboard'
                     }
                   >
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      icon={<ArrowRight className="w-4 h-4 shrink-0" />}
-                      className="min-h-[42px] px-5 text-xs font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-sm cursor-pointer"
+                    <button
+                      type="button"
+                      className="min-h-[42px] px-5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white border border-slate-900 shadow-sm flex items-center gap-2 cursor-pointer"
                     >
-                      {t('landing.goToDashboard', 'Go to Your Dashboard')}
-                    </Button>
+                      <ArrowRight className="w-4 h-4 text-white shrink-0" />
+                      <span>{t('landing.goToDashboard', 'Go to Your Dashboard')}</span>
+                    </button>
                   </Link>
                 </div>
               )}
