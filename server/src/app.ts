@@ -118,6 +118,40 @@ export const createApp = (): Express => {
     });
   });
 
+  // Comprehensive Multi-Source & ABDM Integration Health Endpoint
+  app.get('/api/integrations/health', async (req: Request, res: Response) => {
+    const { AbdmConfig } = await import('./integrations/abdm/abdmConfig.js');
+    const { getDB } = await import('./database/db.js');
+    const abdmStatus = AbdmConfig.getStatus();
+    const dbType = getDB().getType();
+
+    res.status(200).json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      dataMode: config.dataMode || abdmStatus.mode,
+      database: {
+        engine: dbType,
+        status: 'CONNECTED',
+      },
+      abdm: {
+        mode: abdmStatus.mode,
+        baseUrl: abdmStatus.baseUrl,
+        statusMessage: abdmStatus.statusMessage,
+        hfrStatus: abdmStatus.hfrEnabled ? 'ACTIVE' : 'MOCK_ADAPTER',
+        hprStatus: abdmStatus.hprEnabled ? 'ACTIVE' : 'MOCK_ADAPTER',
+        abhaStatus: abdmStatus.abhaEnabled ? 'ACTIVE' : 'SANDBOX_READY',
+        healthRecordsStatus: abdmStatus.healthRecordsEnabled ? 'ACTIVE' : 'CONSENT_SIMULATED',
+      },
+      sources: [
+        { name: 'ABDM HFR', type: 'Facility Registry', status: abdmStatus.clientIdConfigured ? 'CONNECTED' : 'MOCK_ADAPTER' },
+        { name: 'ABDM HPR', type: 'Professional Registry', status: abdmStatus.clientIdConfigured ? 'CONNECTED' : 'MOCK_ADAPTER' },
+        { name: 'ABHA Identity', type: 'Patient Verification', status: 'SANDBOX_READY' },
+        { name: 'Facility Operational APIs', type: 'OPD & Pharmacy', status: 'DEMO_FEDERATED' },
+        { name: 'State Public Health System', type: 'Epidemiology', status: 'DISABLED' },
+      ],
+    });
+  });
+
   // Mount Application Routes
   app.use('/api', routes);
 

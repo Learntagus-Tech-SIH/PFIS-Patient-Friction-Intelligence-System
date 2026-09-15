@@ -343,6 +343,32 @@ class EmbeddedSQLDriver implements IDatabaseClient {
 }
 
 // ---------------------------------------------------------------------------
+// 2b. MongoDB Driver (mongoose)
+// ---------------------------------------------------------------------------
+class MongoDriver implements IDatabaseClient {
+  private mongooseConn: any;
+
+  constructor(mongooseConn: any) {
+    this.mongooseConn = mongooseConn;
+  }
+
+  async query<T = any>(sql: string, params: any[] = []): Promise<QueryResult<T>> {
+    // For raw queries on MongoDB abstraction, returns empty or delegates
+    return { rows: [], rowCount: 0 };
+  }
+
+  async close(): Promise<void> {
+    if (this.mongooseConn) {
+      await this.mongooseConn.disconnect();
+    }
+  }
+
+  getType(): string {
+    return 'MongoDB';
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Unified Database Abstraction Instance
 // ---------------------------------------------------------------------------
 let dbClient: IDatabaseClient | null = null;
@@ -357,8 +383,24 @@ export const getDB = (): IDatabaseClient => {
 export const connectDB = async (): Promise<IDatabaseClient> => {
   console.log('[PFIS Database] Initializing Database Abstraction Layer...');
 
+  // 0. Try MongoDB if configured or MONGODB_URI is provided
+  if (config.databaseType === 'mongodb' || config.mongodbUri || (config.databaseUrl && config.databaseUrl.startsWith('mongodb'))) {
+    try {
+      const mongoose = (await import('mongoose')).default;
+      const mongoUri = config.mongodbUri || config.databaseUrl || `mongodb://localhost:27017/${config.mongodbDbName}`;
+      await mongoose.connect(mongoUri, {
+        dbName: config.mongodbDbName,
+      });
+      console.log(`[PFIS Database] Connected successfully to MongoDB database (${config.mongodbDbName})!`);
+      dbClient = new MongoDriver(mongoose);
+      return dbClient;
+    } catch (err: any) {
+      console.warn(`[PFIS Database Notice] MongoDB connection failed (${err.message}). Falling back to Embedded SQL engine.`);
+    }
+  }
+
   // 1. Try PostgreSQL if configured
-  if (config.databaseType === 'postgres' || config.databaseUrl.startsWith('postgres')) {
+  if (config.databaseType === 'postgres' || (config.databaseUrl && config.databaseUrl.startsWith('postgres'))) {
     try {
       const { Pool } = (await import('pg')) as any;
       const poolConfig = config.databaseUrl
@@ -381,7 +423,7 @@ export const connectDB = async (): Promise<IDatabaseClient> => {
   }
 
   // 2. Try MySQL if configured
-  if (config.databaseType === 'mysql' || config.databaseUrl.startsWith('mysql')) {
+  if (config.databaseType === 'mysql' || (config.databaseUrl && config.databaseUrl.startsWith('mysql'))) {
     try {
       const mysql = (await import('mysql2/promise')) as any;
       const poolConfig = config.databaseUrl

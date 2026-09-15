@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,14 +22,17 @@ import {
   CheckCircle2,
   Compass,
   Ticket,
+  PhoneCall,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/common/Button';
 import { TTSButton } from '../components/common/TTSButton';
+import { VoiceSimulatorModal } from '../components/voice/VoiceSimulatorModal';
 
 export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
 
   return (
     <div className="space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 pb-16 overflow-hidden">
@@ -41,27 +44,27 @@ export const LandingPage: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-4 sm:space-y-6">
-            {/* Tag Badge */}
+            {/* Tagline Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-semibold border border-teal-200/80 dark:border-teal-800 shadow-xs mb-2 sm:mb-3 max-w-full">
               <Compass className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
-              <span className="truncate">Healthcare Accessibility & Logistics Intelligence</span>
+              <span className="truncate">PFIS — Turning Patient Journeys into Actionable Insights</span>
             </div>
 
             {/* Hero Main Heading */}
             <h1 className="text-[clamp(1.875rem,5.2vw,4.25rem)] font-black text-slate-900 tracking-tight leading-[1.15] max-w-4xl mx-auto">
-              {t('landing.heroTitle1', 'Healthcare may be available.')}{' '}
+              {t('landing.heroTitle1', 'Making Rural Healthcare')}{' '}
               <span className="bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 bg-clip-text text-transparent block mt-1">
-                {t('landing.heroTitle2', 'But is it actually accessible?')}
+                {t('landing.heroTitle2', 'Easier to Reach, Navigate and Improve.')}
               </span>
             </h1>
 
             {/* Subheading with Audio Read */}
             <div className="flex flex-col items-center gap-3">
-              <p className="w-full max-w-[720px] mx-auto px-4 sm:px-0 text-[clamp(0.9375rem,1.2vw,1.125rem)] text-slate-600 leading-relaxed">
-                PFIS identifies practical non-clinical barriers, including transit deficits, documentation gaps, and daily wage loss, that prevent patients from completing care. This helps healthcare planners deploy targeted interventions.
+              <p className="w-full max-w-[760px] mx-auto px-4 sm:px-0 text-[clamp(0.9375rem,1.2vw,1.125rem)] text-slate-600 leading-relaxed">
+                PFIS identifies barriers in the patient journey, measures healthcare access friction, and recommends actionable interventions for patients, frontline workers, healthcare providers and administrators.
               </p>
               <TTSButton
-                text="Healthcare may be available. But is it actually accessible? PFIS identifies practical non-clinical barriers, including transit deficits, documentation gaps, and daily wage loss, that prevent patients from completing care. This helps healthcare planners deploy targeted interventions."
+                text="Making Rural Healthcare Easier to Reach, Navigate and Improve. PFIS identifies barriers in the patient journey, measures healthcare access friction, and recommends actionable interventions for patients, frontline workers, healthcare providers and administrators."
                 label={t('common.listen', 'Listen')}
               />
             </div>
@@ -90,6 +93,18 @@ export const LandingPage: React.FC = () => {
                     {t('landing.findHospitals', 'Find Nearby Hospitals')}
                   </Button>
                 </Link>
+
+                <div className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setVoiceModalOpen(true)}
+                    icon={<PhoneCall className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+                    className="w-full min-h-[48px] px-6 text-sm sm:text-base font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 shadow-md cursor-pointer"
+                  >
+                    Call PFIS — Voice Helpline 📞
+                  </Button>
+                </div>
 
                 {!isAuthenticated ? (
                   <Link to="/login" className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
@@ -718,6 +733,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+      <VoiceSimulatorModal isOpen={voiceModalOpen} onClose={() => setVoiceModalOpen(false)} />
     </div>
   );
 };

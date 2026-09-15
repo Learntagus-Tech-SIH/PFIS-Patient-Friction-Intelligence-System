@@ -57,8 +57,10 @@ if (isProd && (rawCallbackUrl.includes('localhost') || rawCallbackUrl.includes('
 
 export const config = {
   port: parseInt(rawPort, 10),
-  databaseType: sanitizeEnv(process.env.DATABASE_TYPE) || 'auto', // 'postgres' | 'mysql' | 'auto'
+  databaseType: sanitizeEnv(process.env.DATABASE_TYPE) || 'auto', // 'postgres' | 'mysql' | 'mongodb' | 'auto'
   databaseUrl: sanitizeEnv(process.env.DATABASE_URL),
+  mongodbUri: sanitizeEnv(process.env.MONGODB_URI),
+  mongodbDbName: sanitizeEnv(process.env.MONGODB_DB_NAME) || 'pfis',
   pgHost: sanitizeEnv(process.env.PG_HOST) || 'localhost',
   pgPort: parseInt(sanitizeEnv(process.env.PG_PORT) || '5432', 10),
   pgUser: sanitizeEnv(process.env.PG_USER) || 'postgres',
@@ -79,6 +81,28 @@ export const config = {
   googleCallbackUrl: rawCallbackUrl.replace(/\/+$/, ''),
   nodeEnv,
   maxFileSizeMb: parseInt(sanitizeEnv(process.env.MAX_FILE_SIZE_MB) || '10', 10),
+
+  // ABDM (Ayushman Bharat Digital Mission) Configuration
+  abdmMode: (sanitizeEnv(process.env.ABDM_MODE) || 'sandbox').toLowerCase(), // 'sandbox' | 'demo' | 'production'
+  abdmBaseUrl: sanitizeEnv(process.env.ABDM_BASE_URL) || 'https://dev.abdm.gov.in/api/v1',
+  abdmClientId: sanitizeEnv(process.env.ABDM_CLIENT_ID),
+  abdmClientSecret: sanitizeEnv(process.env.ABDM_CLIENT_SECRET),
+  abdmRedirectUri: sanitizeEnv(process.env.ABDM_REDIRECT_URI),
+  abdmHfrEnabled: (sanitizeEnv(process.env.ABDM_HFR_ENABLED) || 'false').toLowerCase() === 'true',
+  abdmHprEnabled: (sanitizeEnv(process.env.ABDM_HPR_ENABLED) || 'false').toLowerCase() === 'true',
+  abdmAbhaEnabled: (sanitizeEnv(process.env.ABDM_ABHA_ENABLED) || 'false').toLowerCase() === 'true',
+  abdmHealthRecordsEnabled: (sanitizeEnv(process.env.ABDM_HEALTH_RECORDS_ENABLED) || 'false').toLowerCase() === 'true',
+  dataMode: (sanitizeEnv(process.env.DATA_MODE) || 'demo').toLowerCase(), // 'demo' | 'sandbox' | 'production'
+
+  // Voice AI Toll-Free Helpline Configuration
+  voiceMode: (sanitizeEnv(process.env.VOICE_MODE) || 'demo').toLowerCase(), // 'demo' | 'sandbox' | 'production'
+  voiceProvider: sanitizeEnv(process.env.VOICE_PROVIDER) || 'demo', // 'demo' | 'twilio' | 'exotel' | 'plivo' | 'asterisk'
+  voiceTollFreeNumber: sanitizeEnv(process.env.VOICE_TOLL_FREE_NUMBER) || '', // e.g. 1800-XXX-PFIS when provisioned
+  voiceAccountId: sanitizeEnv(process.env.VOICE_ACCOUNT_ID),
+  voiceAuthToken: sanitizeEnv(process.env.VOICE_AUTH_TOKEN),
+  voiceWebhookSecret: sanitizeEnv(process.env.VOICE_WEBHOOK_SECRET),
+  voiceRecordingEnabled: (sanitizeEnv(process.env.VOICE_RECORDING_ENABLED) || 'false').toLowerCase() === 'true',
+  voiceRetentionDays: parseInt(sanitizeEnv(process.env.VOICE_RETENTION_DAYS) || '30', 10),
 };
 
 /**

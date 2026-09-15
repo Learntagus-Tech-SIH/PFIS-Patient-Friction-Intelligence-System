@@ -36,6 +36,7 @@ router.get('/permissions', AdminController.getPermissionsMatrix);
 router.get('/system-health', AdminController.getSystemHealth);
 router.get('/system-map', AdminController.getSystemMap);
 router.get('/reports', AdminController.getAdminReports);
+router.get('/provenance', AdminController.getDataProvenance);
 
 export default router;
 

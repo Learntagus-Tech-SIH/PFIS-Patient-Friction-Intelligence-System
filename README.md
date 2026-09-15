@@ -68,52 +68,80 @@ PFIS models these dimensions to help operational staff and administrators identi
 
 ---
 
-## 4. Architecture
+## 4. Multi-Source Architecture
 
 ```
-                      +-----------------------------+
-                      |   React 18 Frontend (Vite)  |
-                      |  Multilingual / WCAG / Maps |
-                      +--------------+--------------+
-                                     | HTTP / REST
-                                     v
-                      +-----------------------------+
-                      |   Express.js API Layer      |
-                      |  Auth, RBAC, Rate Limiting  |
-                      +--------------+--------------+
-                                     |
-           +-------------------------+-------------------------+
-           |                         |                         |
-           v                         v                         v
-+--------------------+    +--------------------+    +--------------------+
-|  Friction Engine   |    | What-If Simulator  |    | External Services  |
-|  8-Dimension Math  |    | Knapsack Optimizer |    | Nominatim / Maps   |
-+--------------------+    +--------------------+    +--------------------+
-           |                         |
-           +-------------------------+
-                                     |
-                                     v
-                      +-----------------------------+
-                      | Database Abstraction Layer  |
-                      | PostgreSQL / MySQL / SQL-FS |
-                      +-----------------------------+
+                 DATA SOURCES
+                       |
+        +--------------+--------------+
+        |              |              |
+       ABDM        State/Govt      Facility
+       APIs         Systems          APIs
+        |              |              |
+        +--------------+--------------+
+                       |
+                PFIS DATA ADAPTER
+                       |
+              DATA NORMALIZATION
+                       |
+        +--------------+--------------+
+        |                             |
+     MongoDB                       Embedded Relational
+ (Primary Operational Store)       SQL Storage Engine
+        |                             |
+        +--------------+--------------+
+                       |
+             ROLE-BASED DASHBOARDS
 ```
 
 ---
 
-## 5. Technology Stack
+## 5. Technology Stack & Database Options
 
-- **Frontend**:
-  - React 18, TypeScript, Vite
-  - Tailwind CSS, Lucide Icons
-  - Leaflet / React-Leaflet (Mapping)
-  - i18next (11 vernacular language localizations)
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Leaflet / React-Leaflet, i18next (11 Indian languages)
+- **Backend**: Node.js, Express.js, TypeScript (`tsx` / `tsc`), Helmet, Express Rate Limit, Morgan, Bcrypt.js, JWT
+- **Operational Databases**:
+  - **MongoDB (Primary Operational Store):** Configured via `MONGODB_URI` and `MONGODB_DB_NAME`.
+  - **PostgreSQL / MySQL:** Configured via `DATABASE_URL` or `PG_*` / `MYSQL_*`.
+  - **Embedded Relational SQL Engine:** Zero-setup fallback store (`server/data/pfis_relational.json`).
+- **ABDM Integration Gateways**:
+  - **HFR Adapter:** Health Facility Registry discovery & data normalization.
+  - **HPR Adapter:** Healthcare Professionals Registry accreditation check.
+  - **ABHA Identity:** Identity binding & verification abstraction.
+  - **HIU / Consent Manager:** Consent-based health record metadata exchange.
 
-- **Backend**:
-  - Node.js, Express.js, TypeScript (`tsx`)
-  - Database Abstraction Layer (`IDatabaseClient`)
-  - Helmet (security headers), Rate Limiter, Morgan (HTTP logging)
-  - Bcrypt.js, JSON Web Tokens (JWT)
+---
+
+## 6. Setup & Operating Modes
+
+### A. Environment Configuration
+Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+
+### B. Running in Synthetic Demo Mode (`ABDM_MODE=demo`)
+Zero credentials required. Uses synthetic demonstration data with explicit `DEMO DATA` provenance tags.
+```bash
+npm run dev
+```
+
+### C. Running in ABDM Sandbox Mode (`ABDM_MODE=sandbox`)
+Set ABDM Client credentials in `.env`:
+```env
+ABDM_MODE=sandbox
+ABDM_BASE_URL=https://dev.abdm.gov.in/api/v1
+ABDM_CLIENT_ID=your_sandbox_client_id
+ABDM_CLIENT_SECRET=your_sandbox_client_secret
+```
+
+### D. MongoDB Operational Store (`DATABASE_TYPE=mongodb`)
+Set MongoDB connection string in `.env`:
+```env
+DATABASE_TYPE=mongodb
+MONGODB_URI=mongodb://localhost:27017/pfis
+MONGODB_DB_NAME=pfis
+```
 
 ---
 

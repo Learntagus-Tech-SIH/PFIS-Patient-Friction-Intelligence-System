@@ -18,6 +18,8 @@ import queueRoutes from './queueRoutes.js';
 import frictionReportRoutes from './frictionReportRoutes.js';
 import digitalTwinRoutes from './digitalTwinRoutes.js';
 
+import voiceRoutes from './voiceRoutes.js';
+
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -39,5 +41,6 @@ router.use('/government', governmentRoutes);
 router.use('/queue', queueRoutes);
 router.use('/friction-reports', frictionReportRoutes);
 router.use('/digital-twin', digitalTwinRoutes);
+router.use('/voice', voiceRoutes);
 
 export default router;
