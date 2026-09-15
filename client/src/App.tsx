@@ -206,6 +206,10 @@ export const App: React.FC = () => {
                     <Route path="/hospital" element={<HospitalLayout />}>
                       <Route index element={<Navigate to="/hospital/dashboard" replace />} />
                       <Route path="dashboard" element={<HospitalDashboard />} />
+                      <Route path="beds" element={<GovernmentBeds />} />
+                      <Route path="opd-queue" element={<DoctorOPDQueue />} />
+                      <Route path="incoming" element={<HospitalRequests />} />
+                      <Route path="interventions" element={<InterventionOptimizer />} />
                       <Route path="triage" element={<DigitalTriagePage />} />
                       <Route path="referrals" element={<ReferralTrackingPage />} />
                       <Route path="health-records" element={<LongitudinalRecordsPage />} />
