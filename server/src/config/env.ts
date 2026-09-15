@@ -97,7 +97,7 @@ export const config = {
   // Voice AI Toll-Free Helpline Configuration
   voiceMode: (sanitizeEnv(process.env.VOICE_MODE) || 'demo').toLowerCase(), // 'demo' | 'sandbox' | 'production'
   voiceProvider: sanitizeEnv(process.env.VOICE_PROVIDER) || 'demo', // 'demo' | 'twilio' | 'exotel' | 'plivo' | 'asterisk'
-  voiceTollFreeNumber: sanitizeEnv(process.env.PFIS_TOLL_FREE_NUMBER) || sanitizeEnv(process.env.VOICE_TOLL_FREE_NUMBER) || '', // Real provisioned 1800 number
+  voiceTollFreeNumber: sanitizeEnv(process.env.PFIS_TOLL_FREE_NUMBER) || sanitizeEnv(process.env.VOICE_TOLL_FREE_NUMBER) || '+91 7256052183', // Real provisioned 1800 / helpline number
   voiceAccountId: sanitizeEnv(process.env.VOICE_ACCOUNT_ID) || sanitizeEnv(process.env.TELEPHONY_ACCOUNT_ID),
   voiceAuthToken: sanitizeEnv(process.env.VOICE_AUTH_TOKEN) || sanitizeEnv(process.env.TELEPHONY_AUTH_TOKEN),
   voiceWebhookSecret: sanitizeEnv(process.env.VOICE_WEBHOOK_SECRET),

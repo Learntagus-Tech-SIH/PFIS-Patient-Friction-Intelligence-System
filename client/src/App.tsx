@@ -8,6 +8,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { ToastProvider } from './context/ToastContext';
 import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageModal';
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
+import { FloatingHelplineWidget } from './components/common/FloatingHelplineWidget';
 
 // Layouts
 import { MainLayout } from './layouts/MainLayout';
@@ -341,6 +342,7 @@ export const App: React.FC = () => {
                     <Route path="*" element={<NotFound />} />
 
                   </Routes>
+                  <FloatingHelplineWidget />
                 </NotificationProvider>
               </LocationProvider>
             </AuthProvider>

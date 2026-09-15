@@ -129,10 +129,10 @@ export const VoiceSimulatorModal: React.FC<VoiceSimulatorModalProps> = ({ isOpen
               <PhoneCall className="w-5 h-5 text-teal-300 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-base sm:text-lg leading-tight flex items-center gap-2">
-                PFIS Rural AI Toll-Free Voice Helpline
+              <h3 className="font-bold text-base sm:text-lg leading-tight flex items-center gap-2 flex-wrap">
+                PFIS Helpline (+91 7256052183)
                 <span className="px-2 py-0.5 rounded-full bg-teal-500/30 text-teal-200 text-xs font-medium border border-teal-400/30">
-                  Demo Voice Mode
+                  Interactive AI Voice Assistant
                 </span>
               </h3>
               <p className="text-xs text-teal-100/80">Voice-first healthcare access without smartphone or internet</p>

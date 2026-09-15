@@ -115,9 +115,9 @@ export const LandingPage: React.FC = () => {
                   size="lg"
                   onClick={() => setVoiceModalOpen(true)}
                   icon={<PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />}
-                  className="min-h-[46px] px-6 text-sm font-semibold text-emerald-300 bg-emerald-950/40 border-emerald-800 hover:bg-emerald-900/60 cursor-pointer"
+                  className="min-h-[46px] px-6 text-sm font-bold text-emerald-300 bg-emerald-950/40 border-emerald-800 hover:bg-emerald-900/60 cursor-pointer whitespace-nowrap"
                 >
-                  CALL PFIS
+                  CALL +91 7256052183
                 </Button>
               </div>
 
