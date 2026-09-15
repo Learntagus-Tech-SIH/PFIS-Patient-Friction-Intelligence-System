@@ -97,12 +97,22 @@ export const config = {
   // Voice AI Toll-Free Helpline Configuration
   voiceMode: (sanitizeEnv(process.env.VOICE_MODE) || 'demo').toLowerCase(), // 'demo' | 'sandbox' | 'production'
   voiceProvider: sanitizeEnv(process.env.VOICE_PROVIDER) || 'demo', // 'demo' | 'twilio' | 'exotel' | 'plivo' | 'asterisk'
-  voiceTollFreeNumber: sanitizeEnv(process.env.VOICE_TOLL_FREE_NUMBER) || '', // e.g. 1800-XXX-PFIS when provisioned
-  voiceAccountId: sanitizeEnv(process.env.VOICE_ACCOUNT_ID),
-  voiceAuthToken: sanitizeEnv(process.env.VOICE_AUTH_TOKEN),
+  voiceTollFreeNumber: sanitizeEnv(process.env.PFIS_TOLL_FREE_NUMBER) || sanitizeEnv(process.env.VOICE_TOLL_FREE_NUMBER) || '', // Real provisioned 1800 number
+  voiceAccountId: sanitizeEnv(process.env.VOICE_ACCOUNT_ID) || sanitizeEnv(process.env.TELEPHONY_ACCOUNT_ID),
+  voiceAuthToken: sanitizeEnv(process.env.VOICE_AUTH_TOKEN) || sanitizeEnv(process.env.TELEPHONY_AUTH_TOKEN),
   voiceWebhookSecret: sanitizeEnv(process.env.VOICE_WEBHOOK_SECRET),
   voiceRecordingEnabled: (sanitizeEnv(process.env.VOICE_RECORDING_ENABLED) || 'false').toLowerCase() === 'true',
   voiceRetentionDays: parseInt(sanitizeEnv(process.env.VOICE_RETENTION_DAYS) || '30', 10),
+
+  // OpenAI Realtime AI Voice Configuration
+  openaiApiKey: sanitizeEnv(process.env.OPENAI_API_KEY),
+  openaiRealtimeModel: sanitizeEnv(process.env.OPENAI_REALTIME_MODEL) || 'gpt-4o-realtime-preview',
+  openaiVoice: sanitizeEnv(process.env.OPENAI_VOICE) || 'alloy',
+
+  // Teleconsultation Video Provider Configuration
+  videoProvider: sanitizeEnv(process.env.VIDEO_PROVIDER) || 'webrtc_native',
+  videoApiKey: sanitizeEnv(process.env.VIDEO_API_KEY),
+  videoApiSecret: sanitizeEnv(process.env.VIDEO_API_SECRET),
 };
 
 /**

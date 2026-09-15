@@ -33,91 +33,117 @@ export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const [voiceModalOpen, setVoiceModalOpen] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<{
+    isProvisioned: boolean;
+    tollFreeNumber: string;
+    statusMessage: string;
+  } | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/voice/info')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.helpline) {
+          setVoiceStatus(data.helpline);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const isProvisioned = voiceStatus?.isProvisioned && voiceStatus?.tollFreeNumber && voiceStatus.tollFreeNumber !== 'Not Provisioned (Demo Active)';
+  const tollFreeNum = isProvisioned ? voiceStatus.tollFreeNumber : null;
 
   return (
     <div className="space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 pb-16 overflow-hidden">
       {/* ================================================== */}
       {/* 1. HERO SECTION */}
       {/* ================================================== */}
-      <section className="relative pt-8 pb-14 sm:pt-14 sm:pb-24 lg:pt-16 lg:pb-28 bg-gradient-to-b from-teal-50/70 via-white to-slate-50 border-b border-slate-200/80">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0d948808_1px,transparent_1px),linear-gradient(to_bottom,#0d948808_1px,transparent_1px)] sm:bg-[linear-gradient(to_right,#0d94880a_1px,transparent_1px),linear-gradient(to_bottom,#0d94880a_1px,transparent_1px)] bg-[size:2.5rem_2.5rem] sm:bg-[size:4rem_4rem] pointer-events-none" />
+      <section className="relative pt-10 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white border-b border-slate-800">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ea5e908_1px,transparent_1px),linear-gradient(to_bottom,#0ea5e908_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-4xl mx-auto space-y-4 sm:space-y-6">
-            {/* Tagline Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-semibold border border-teal-200/80 dark:border-teal-800 shadow-xs mb-2 sm:mb-3 max-w-full">
-              <Compass className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
-              <span className="truncate">PFIS — Turning Patient Journeys into Actionable Insights</span>
+          <div className="text-center max-w-4xl mx-auto space-y-5 sm:space-y-6">
+            {/* Small Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-950/80 text-teal-300 text-xs font-semibold tracking-wider uppercase border border-teal-800/80 shadow-xs mb-1">
+              <Compass className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+              <span>PATIENT FRICTION INTELLIGENCE SYSTEM</span>
             </div>
 
-            {/* Hero Main Heading */}
-            <h1 className="text-[clamp(1.875rem,5.2vw,4.25rem)] font-black text-slate-900 tracking-tight leading-[1.15] max-w-4xl mx-auto">
-              {t('landing.heroTitle1', 'Making Rural Healthcare')}{' '}
-              <span className="bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 bg-clip-text text-transparent block mt-1">
-                {t('landing.heroTitle2', 'Easier to Reach, Navigate and Improve.')}
-              </span>
+            {/* Hero Headline */}
+            <h1 className="text-[clamp(2rem,5vw,4rem)] font-extrabold text-white tracking-tight leading-[1.15] max-w-4xl mx-auto">
+              “Healthcare access should not depend on where a patient lives.”
             </h1>
 
-            {/* Subheading with Audio Read */}
+            {/* Subheading */}
             <div className="flex flex-col items-center gap-3">
-              <p className="w-full max-w-[760px] mx-auto px-4 sm:px-0 text-[clamp(0.9375rem,1.2vw,1.125rem)] text-slate-600 leading-relaxed">
-                PFIS identifies barriers in the patient journey, measures healthcare access friction, and recommends actionable interventions for patients, frontline workers, healthcare providers and administrators.
+              <p className="w-full max-w-[760px] mx-auto px-4 sm:px-0 text-[clamp(0.95rem,1.2vw,1.15rem)] text-slate-300 leading-relaxed font-normal">
+                PFIS identifies barriers across the patient journey, measures access friction, and helps patients, frontline workers and healthcare providers take the next best step.
               </p>
               <TTSButton
-                text="Making Rural Healthcare Easier to Reach, Navigate and Improve. PFIS identifies barriers in the patient journey, measures healthcare access friction, and recommends actionable interventions for patients, frontline workers, healthcare providers and administrators."
+                text="Healthcare access should not depend on where a patient lives. PFIS identifies barriers across the patient journey, measures access friction, and helps patients, frontline workers and healthcare providers take the next best step."
                 label={t('common.listen', 'Listen')}
               />
             </div>
 
-            {/* Action Buttons */}
-            <div className="pt-2 sm:pt-4">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-3.5 w-full max-w-md sm:max-w-none mx-auto">
-                <Link to="/assessment" className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
+            {/* Refined Action Buttons with Visual Hierarchy */}
+            <div className="pt-3 sm:pt-5">
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-2xl mx-auto">
+                <Link to="/assessment">
                   <Button
                     variant="primary"
                     size="lg"
-                    icon={<Activity className="w-5 h-5 shrink-0" />}
-                    className="w-full min-h-[48px] px-6 text-sm sm:text-base font-bold shadow-md bg-teal-600 hover:bg-teal-700 cursor-pointer"
+                    icon={<Activity className="w-4 h-4 shrink-0" />}
+                    className="min-h-[46px] px-6 text-sm font-bold shadow-md bg-teal-600 hover:bg-teal-500 text-white cursor-pointer border border-teal-500"
                   >
-                    Start Access Assessment →
+                    START ACCESS ASSESSMENT
                   </Button>
                 </Link>
 
-                <Link to="/patient/hospitals" className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
+                <Link to="/patient/hospitals">
                   <Button
                     variant="secondary"
                     size="lg"
-                    icon={<MapPin className="w-5 h-5 shrink-0" />}
-                    className="w-full min-h-[48px] px-6 text-sm sm:text-base font-semibold shadow-md cursor-pointer"
+                    icon={<MapPin className="w-4 h-4 shrink-0" />}
+                    className="min-h-[46px] px-6 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
                   >
-                    {t('landing.findHospitals', 'Find Nearby Hospitals')}
+                    FIND HEALTHCARE
                   </Button>
                 </Link>
 
-                <div className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setVoiceModalOpen(true)}
-                    icon={<PhoneCall className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
-                    className="w-full min-h-[48px] px-6 text-sm sm:text-base font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 shadow-md cursor-pointer"
-                  >
-                    Call PFIS — Voice Helpline 📞
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setVoiceModalOpen(true)}
+                  icon={<PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />}
+                  className="min-h-[46px] px-6 text-sm font-semibold text-emerald-300 bg-emerald-950/40 border-emerald-800 hover:bg-emerald-900/60 cursor-pointer"
+                >
+                  CALL PFIS
+                </Button>
+              </div>
 
-                {!isAuthenticated ? (
-                  <Link to="/login" className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      icon={<Shield className="w-4 h-4 shrink-0" />}
-                      className="w-full min-h-[48px] px-6 text-sm sm:text-base font-semibold shadow-xs cursor-pointer"
-                    >
-                      Sign In
-                    </Button>
+              {!isAuthenticated ? (
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+                  <Link to="/admin/judge-mode">
+                    <button className="text-xs text-teal-300 bg-teal-950/80 hover:bg-teal-900 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-800 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
+                      <BarChart3 className="w-3.5 h-3.5 text-teal-400" />
+                      <span>System Impact & Evaluation Hub →</span>
+                    </button>
                   </Link>
-                ) : (
+                  <span className="text-slate-700 hidden sm:inline">•</span>
+                  <Link to="/login?role=hospital">
+                    <button className="text-xs text-slate-400 hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
+                      {t('landing.hospitalPortal', 'Hospital Desk Portal →')}
+                    </button>
+                  </Link>
+                  <span className="text-slate-700 hidden sm:inline">•</span>
+                  <Link to="/login?role=patient">
+                    <button className="text-xs text-slate-400 hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
+                      {t('landing.patientLogin', 'Patient Portal →')}
+                    </button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="pt-4">
                   <Link
                     to={
                       user?.role === 'patient'
@@ -126,44 +152,91 @@ export const LandingPage: React.FC = () => {
                         ? '/hospital/dashboard'
                         : '/admin/dashboard'
                     }
-                    className="w-full sm:w-auto max-w-[360px] mx-auto sm:mx-0"
                   >
                     <Button
                       variant="secondary"
-                      size="lg"
+                      size="md"
                       icon={<ArrowRight className="w-4 h-4 shrink-0" />}
-                      className="w-full min-h-[48px] px-6 text-sm sm:text-base font-semibold shadow-md cursor-pointer"
+                      className="min-h-[42px] px-5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
                     >
                       {t('landing.goToDashboard', 'Go to Your Dashboard')}
                     </Button>
                   </Link>
-                )}
-              </div>
-
-              {/* Secondary portal links for unauthenticated */}
-              {!isAuthenticated && (
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-                  <Link to="/admin/judge-mode">
-                    <button className="text-xs text-teal-800 dark:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
-                      <BarChart3 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-                      <span>System Impact & Evaluation Hub →</span>
-                    </button>
-                  </Link>
-                  <span className="text-slate-300 hidden sm:inline">•</span>
-                  <Link to="/login?role=hospital">
-                    <button className="text-xs text-slate-600 hover:text-teal-600 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
-                      {t('landing.hospitalPortal', 'Hospital Desk Portal →')}
-                    </button>
-                  </Link>
-                  <span className="text-slate-300 hidden sm:inline">•</span>
-                  <Link to="/login?role=patient">
-                    <button className="text-xs text-slate-600 hover:text-teal-600 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
-                      {t('landing.patientLogin', 'Patient Portal →')}
-                    </button>
-                  </Link>
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================== */}
+      {/* DEDICATED VOICE HELPLINE PANEL SECTION */}
+      {/* ================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 border border-teal-800/60 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-900/60 text-teal-300 text-xs font-semibold border border-teal-700">
+              <PhoneCall className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+              <span>Need help without a smartphone?</span>
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              Call PFIS and speak with our voice assistant in your supported language.
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300">
+              Available in Hindi, Punjabi, English, Marathi, Gujarati, Tamil, Telugu, Bengali, Kannada, Malayalam & Odia.
+            </p>
+
+            <div className="pt-2 flex items-center justify-center md:justify-start gap-3">
+              <div className="p-2.5 rounded-xl bg-teal-900/80 border border-teal-700/80 flex items-center gap-3">
+                <PhoneCall className="w-5 h-5 text-teal-400 shrink-0" />
+                <div className="text-left">
+                  <span className="text-[10px] uppercase font-bold text-teal-300 tracking-wider block">PFIS VOICE HELPLINE</span>
+                  {tollFreeNum ? (
+                    <span className="text-base sm:text-lg font-black text-white tracking-wider">{tollFreeNum}</span>
+                  ) : (
+                    <span className="text-xs sm:text-sm font-semibold text-amber-300">
+                      PFIS Toll-Free Helpline — Number provisioning in progress
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
+            {tollFreeNum ? (
+              <a href={`tel:${tollFreeNum}`} className="w-full sm:w-auto">
+                <Button
+                  variant="primary"
+                  size="md"
+                  icon={<PhoneCall className="w-4 h-4 shrink-0" />}
+                  className="w-full min-h-[44px] px-6 text-sm font-bold bg-teal-600 hover:bg-teal-500 text-white cursor-pointer"
+                >
+                  CALL NOW
+                </Button>
+              </a>
+            ) : (
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setVoiceModalOpen(true)}
+                icon={<PhoneCall className="w-4 h-4 shrink-0" />}
+                className="w-full sm:w-auto min-h-[44px] px-6 text-sm font-bold bg-teal-600 hover:bg-teal-500 text-white cursor-pointer"
+              >
+                CALL NOW (DEMO SIMULATOR)
+              </Button>
+            )}
+
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => setVoiceModalOpen(true)}
+              className="w-full sm:w-auto min-h-[44px] px-6 text-sm font-semibold text-slate-200 border-slate-700 hover:bg-slate-800 cursor-pointer"
+            >
+              HOW IT WORKS
+            </Button>
           </div>
         </div>
       </section>

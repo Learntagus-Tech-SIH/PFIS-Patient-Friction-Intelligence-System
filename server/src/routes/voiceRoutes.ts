@@ -3,10 +3,15 @@ import { VoiceWebhookHandler } from '../integrations/voice/voiceWebhook.js';
 import { GovernmentHelplineDirectory } from '../integrations/voice/helplineDirectory.js';
 import { VoiceConfig } from '../integrations/voice/voiceConfig.js';
 
+import { RealtimeSessionHandler } from '../integrations/voice/realtimeSession.js';
+
 const router = Router();
 
 // Inbound Telephony Webhook
 router.post('/webhook', VoiceWebhookHandler.handleInboundCall);
+
+// OpenAI Realtime WebRTC Session Token Endpoint
+router.post('/realtime-session', RealtimeSessionHandler.createRealtimeSession);
 
 // Browser Interactive Voice Simulator (for Judge Demo)
 router.post('/simulate', VoiceWebhookHandler.simulateCallTurn);
