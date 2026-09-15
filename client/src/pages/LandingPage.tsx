@@ -58,25 +58,25 @@ export const LandingPage: React.FC = () => {
       {/* ================================================== */}
       {/* 1. HERO SECTION */}
       {/* ================================================== */}
-      <section className="relative pt-10 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white border-b border-slate-800">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ea5e908_1px,transparent_1px),linear-gradient(to_bottom,#0ea5e908_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
+      <section className="relative pt-10 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 bg-gradient-to-b from-teal-50/70 via-white to-slate-50 border-b border-slate-200/80">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0d94880a_1px,transparent_1px),linear-gradient(to_bottom,#0d94880a_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-5 sm:space-y-6">
             {/* Small Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-950/80 text-teal-300 text-xs font-semibold tracking-wider uppercase border border-teal-800/80 shadow-xs mb-1">
-              <Compass className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-semibold tracking-wider uppercase border border-teal-200/80 dark:border-teal-800 shadow-xs mb-1">
+              <Compass className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
               <span>PATIENT FRICTION INTELLIGENCE SYSTEM</span>
             </div>
 
             {/* Hero Headline */}
-            <h1 className="text-[clamp(2rem,5vw,4rem)] font-extrabold text-white tracking-tight leading-[1.15] max-w-4xl mx-auto">
+            <h1 className="text-[clamp(2rem,5vw,4rem)] font-black text-slate-900 dark:text-white tracking-tight leading-[1.15] max-w-4xl mx-auto">
               “Healthcare access should not depend on where a patient lives.”
             </h1>
 
             {/* Subheading */}
             <div className="flex flex-col items-center gap-3">
-              <p className="w-full max-w-[760px] mx-auto px-4 sm:px-0 text-[clamp(0.95rem,1.2vw,1.15rem)] text-slate-300 leading-relaxed font-normal">
+              <p className="w-full max-w-[760px] mx-auto px-4 sm:px-0 text-[clamp(0.95rem,1.2vw,1.15rem)] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                 PFIS identifies barriers across the patient journey, measures access friction, and helps patients, frontline workers and healthcare providers take the next best step.
               </p>
               <TTSButton
@@ -93,7 +93,7 @@ export const LandingPage: React.FC = () => {
                     variant="primary"
                     size="lg"
                     icon={<Activity className="w-4 h-4 shrink-0" />}
-                    className="min-h-[46px] px-6 text-sm font-bold shadow-md bg-teal-600 hover:bg-teal-500 text-white cursor-pointer border border-teal-500"
+                    className="min-h-[46px] px-6 text-sm font-bold shadow-md bg-teal-600 hover:bg-teal-700 text-white cursor-pointer border border-teal-600"
                   >
                     START ACCESS ASSESSMENT
                   </Button>
@@ -104,7 +104,7 @@ export const LandingPage: React.FC = () => {
                     variant="secondary"
                     size="lg"
                     icon={<MapPin className="w-4 h-4 shrink-0" />}
-                    className="min-h-[46px] px-6 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
+                    className="min-h-[46px] px-6 text-sm font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 shadow-sm cursor-pointer"
                   >
                     FIND HEALTHCARE
                   </Button>
@@ -114,8 +114,8 @@ export const LandingPage: React.FC = () => {
                   variant="outline"
                   size="lg"
                   onClick={() => setVoiceModalOpen(true)}
-                  icon={<PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />}
-                  className="min-h-[46px] px-6 text-sm font-bold text-emerald-300 bg-emerald-950/40 border-emerald-800 hover:bg-emerald-900/60 cursor-pointer whitespace-nowrap"
+                  icon={<PhoneCall className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+                  className="min-h-[46px] px-6 text-sm font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 shadow-sm cursor-pointer whitespace-nowrap"
                 >
                   CALL +91 7256052183
                 </Button>
@@ -124,20 +124,20 @@ export const LandingPage: React.FC = () => {
               {!isAuthenticated ? (
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
                   <Link to="/admin/judge-mode">
-                    <button className="text-xs text-teal-300 bg-teal-950/80 hover:bg-teal-900 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-800 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
-                      <BarChart3 className="w-3.5 h-3.5 text-teal-400" />
+                    <button className="text-xs text-teal-800 dark:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/80 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
+                      <BarChart3 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                       <span>System Impact & Evaluation Hub →</span>
                     </button>
                   </Link>
-                  <span className="text-slate-700 hidden sm:inline">•</span>
+                  <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
                   <Link to="/login?role=hospital">
-                    <button className="text-xs text-slate-400 hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
+                    <button className="text-xs text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                       {t('landing.hospitalPortal', 'Hospital Desk Portal →')}
                     </button>
                   </Link>
-                  <span className="text-slate-700 hidden sm:inline">•</span>
+                  <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
                   <Link to="/login?role=patient">
-                    <button className="text-xs text-slate-400 hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
+                    <button className="text-xs text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-300 font-medium px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                       {t('landing.patientLogin', 'Patient Portal →')}
                     </button>
                   </Link>
@@ -157,7 +157,7 @@ export const LandingPage: React.FC = () => {
                       variant="secondary"
                       size="md"
                       icon={<ArrowRight className="w-4 h-4 shrink-0" />}
-                      className="min-h-[42px] px-5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
+                      className="min-h-[42px] px-5 text-xs font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-sm cursor-pointer"
                     >
                       {t('landing.goToDashboard', 'Go to Your Dashboard')}
                     </Button>
