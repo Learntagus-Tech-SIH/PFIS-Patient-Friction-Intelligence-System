@@ -27,6 +27,29 @@ services:
         value: auto
       - key: MAX_FILE_SIZE_MB
         value: "10"
+      - key: ABDM_MODE
+        value: sandbox
+      - key: ABDM_BASE_URL
+        value: https://dev.abdm.gov.in/api/v1
+      - key: ABDM_CLIENT_ID
+        sync: false
+      - key: ABDM_CLIENT_SECRET
+        sync: false
+      - key: ABDM_REDIRECT_URI
+        value: https://pfis-patient-friction-intelligence-system.onrender.com/api/integrations/abdm/callback
+      - key: ABDM_HFR_ENABLED
+        value: "true"
+      - key: ABDM_HPR_ENABLED
+        value: "true"
+      - key: ABDM_ABHA_ENABLED
+        value: "true"
+      - key: ABDM_CONSENT_ENABLED
+        value: "true"
+      - key: ABDM_HEALTH_RECORDS_ENABLED
+        value: "true"
+      - key: ABDM_TIMEOUT_MS
+        value: "15000"
+
 
   # ===================================================
   # 2. PFIS Frontend Static Site (Render Static Site)

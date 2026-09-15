@@ -11,6 +11,7 @@ import { hospitalService } from '../../services/hospitalService';
 import { Hospital } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { PfisDocumentViewerModal } from '../../components/documents/PfisDocumentViewerModal';
 import {
   FileText,
   CreditCard,
@@ -68,6 +69,8 @@ export const LongitudinalRecordsPage: React.FC = () => {
   // ── Modals State ──────────────────────────────────────────────────────────
   const [isNewRecordModalOpen, setIsNewRecordModalOpen] = useState<boolean>(false);
   const [isConnectAbhaModalOpen, setIsConnectAbhaModalOpen] = useState<boolean>(false);
+  const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState<boolean>(false);
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
 
   // ── "Add Visit Entry" Form State ──────────────────────────────────────────
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -678,12 +681,36 @@ export const LongitudinalRecordsPage: React.FC = () => {
                         </p>
                       )}
 
-                      {/* Source Footnote */}
-                      <div className="text-[11px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-slate-800">
-                        <span>Source: <strong>{rec.record_source}</strong></span>
-                        {rec.created_at && (
-                          <span>Recorded on: {new Date(rec.created_at).toLocaleDateString()}</span>
-                        )}
+                      {/* Source Footnote & View Document Action */}
+                      <div className="text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
+                        <div className="flex items-center gap-2">
+                          <span>Source: <strong>{rec.record_source}</strong></span>
+                          {rec.created_at && (
+                            <span>• {new Date(rec.created_at).toLocaleDateString()}</span>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setSelectedDocument({
+                              documentId: rec.id || `DOC-${Date.now()}`,
+                              title: rec.diagnosis || rec.record_type,
+                              documentType: rec.record_type || 'Diagnostic Report',
+                              sourceFacility: rec.facility_name || 'Connected Facility',
+                              authorDoctor: rec.doctor_name,
+                              date: rec.record_date || new Date().toISOString().split('T')[0],
+                              status: 'CONSENT_GRANTED',
+                              sourceSystem: rec.record_source === 'abdm_imported' ? 'ABDM' : 'PFIS',
+                              consentStatus: 'GRANTED',
+                              lastUpdated: rec.created_at,
+                            });
+                            setIsDocumentViewerOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold text-[11px] hover:bg-indigo-100 flex items-center gap-1 transition-all cursor-pointer"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>View Document</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1097,6 +1124,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Pfis Document Viewer Modal */}
+      <PfisDocumentViewerModal
+        isOpen={isDocumentViewerOpen}
+        onClose={() => setIsDocumentViewerOpen(false)}
+        document={selectedDocument}
+      />
     </div>
   );
 };

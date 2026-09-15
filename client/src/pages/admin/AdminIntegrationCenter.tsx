@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import { useToast } from '../../context/ToastContext';
+import { AbdmConfigPanel } from '../../components/admin/AbdmConfigPanel';
 import {
   Database,
   CheckCircle2,
@@ -127,6 +128,9 @@ export const AdminIntegrationCenter: React.FC = () => {
           <span>Ping Connectors</span>
         </button>
       </div>
+
+      {/* ABDM Config Panel Component */}
+      <AbdmConfigPanel />
 
       {/* Transparent Integrity Notice */}
       <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 flex items-start gap-3">

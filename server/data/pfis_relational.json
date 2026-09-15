@@ -33031,6 +33031,86 @@
       "updated_at": "2026-09-12T17:36:44.243Z",
       "updatedat": "2026-09-12T17:36:44.243Z",
       "user_id": "99860eac-f5dc-4683-a462-7185fa1adcd3"
+    },
+    {
+      "id": "AUDIT-1789465192278-kda8i",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "CONSENT_GRANTED",
+      "resource": "ConsentArtifact",
+      "resource_id": "CONSENT-1789465192205-q95tt",
+      "details_json": "{\"purpose\":\"Care Continuity\",\"dataScope\":\"Diagnostic Report\",\"consentReference\":\"CONSENT-1789465192205-q95tt\",\"sourceType\":\"PFIS_USER_INPUT\",\"resultStatus\":\"SUCCESS\"}",
+      "created_at": "2026-09-15T09:39:52.278Z"
+    },
+    {
+      "id": "AUDIT-1789465192361-e69hx",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "CONSENT_REVOKED",
+      "resource": "ConsentArtifact",
+      "resource_id": "CONSENT-1789465192205-q95tt",
+      "details_json": "{\"consentReference\":\"CONSENT-1789465192205-q95tt\",\"sourceType\":\"PFIS_USER_INPUT\",\"resultStatus\":\"REVOKED\"}",
+      "created_at": "2026-09-15T09:39:52.362Z"
+    },
+    {
+      "id": "AUDIT-1789465192417-y3jqy",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "HEALTH_RECORD_ACCESS_DENIED",
+      "resource": "LongitudinalRecord",
+      "resource_id": "",
+      "details_json": "{\"purpose\":\"Missing active patient consent\",\"resultStatus\":\"DENIED\"}",
+      "created_at": "2026-09-15T09:39:52.417Z"
+    },
+    {
+      "id": "AUDIT-1789465192476-m2997",
+      "user_id": "system",
+      "actor_role": "system",
+      "action": "TEST_AUDIT_VERIFICATION",
+      "resource": "TestResource",
+      "resource_id": "",
+      "details_json": "{\"sourceType\":\"ABDM_HIU\",\"resultStatus\":\"SUCCESS\"}",
+      "created_at": "2026-09-15T09:39:52.476Z"
+    },
+    {
+      "id": "AUDIT-1789465271446-xf3z9",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "CONSENT_GRANTED",
+      "resource": "ConsentArtifact",
+      "resource_id": "CONSENT-1789465271332-1odyh",
+      "details_json": "{\"purpose\":\"Care Continuity\",\"dataScope\":\"Diagnostic Report\",\"consentReference\":\"CONSENT-1789465271332-1odyh\",\"sourceType\":\"PFIS_USER_INPUT\",\"resultStatus\":\"SUCCESS\"}",
+      "created_at": "2026-09-15T09:41:11.446Z"
+    },
+    {
+      "id": "AUDIT-1789465271544-1alzx",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "CONSENT_REVOKED",
+      "resource": "ConsentArtifact",
+      "resource_id": "CONSENT-1789465271332-1odyh",
+      "details_json": "{\"consentReference\":\"CONSENT-1789465271332-1odyh\",\"sourceType\":\"PFIS_USER_INPUT\",\"resultStatus\":\"REVOKED\"}",
+      "created_at": "2026-09-15T09:41:11.544Z"
+    },
+    {
+      "id": "AUDIT-1789465271595-oblrj",
+      "user_id": "PATIENT-TEST-001",
+      "actor_role": "patient",
+      "action": "HEALTH_RECORD_ACCESS_DENIED",
+      "resource": "LongitudinalRecord",
+      "resource_id": "",
+      "details_json": "{\"purpose\":\"Missing active patient consent\",\"resultStatus\":\"DENIED\"}",
+      "created_at": "2026-09-15T09:41:11.595Z"
+    },
+    {
+      "id": "AUDIT-1789465271622-yyw2f",
+      "user_id": "system",
+      "actor_role": "system",
+      "action": "TEST_AUDIT_VERIFICATION",
+      "resource": "TestResource",
+      "resource_id": "",
+      "details_json": "{\"sourceType\":\"ABDM_HIU\",\"resultStatus\":\"SUCCESS\"}",
+      "created_at": "2026-09-15T09:41:11.622Z"
     }
   ],
   "public_health_triage": [
@@ -33246,6 +33326,26 @@
       "status": "active",
       "valid_until": null,
       "created_at": "2026-09-12T17:35:56.754Z"
+    },
+    {
+      "id": "CONSENT-1789465192205-q95tt",
+      "user_id": "PATIENT-TEST-001",
+      "requester_name": "RIMS Hospital Doctor",
+      "purpose": "Care Continuity",
+      "data_scope": "Diagnostic Report",
+      "status": "revoked",
+      "created_at": "2026-09-15T09:39:52.205Z",
+      "updated_at": "2026-09-15T09:39:52.317Z"
+    },
+    {
+      "id": "CONSENT-1789465271332-1odyh",
+      "user_id": "PATIENT-TEST-001",
+      "requester_name": "RIMS Hospital Doctor",
+      "purpose": "Care Continuity",
+      "data_scope": "Diagnostic Report",
+      "status": "revoked",
+      "created_at": "2026-09-15T09:41:11.332Z",
+      "updated_at": "2026-09-15T09:41:11.497Z"
     }
   ],
   "health_record_audit_events": [

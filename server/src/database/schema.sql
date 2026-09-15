@@ -581,6 +581,22 @@ CREATE TABLE IF NOT EXISTS digital_twin_simulations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_dt_sims_user ON digital_twin_simulations(user_id);
-CREATE INDEX IF NOT EXISTS idx_dt_sims_facility ON digital_twin_simulations(facility_id);
+-- 24. ABDM INTEGRATION LOGS (Official Gateway Audit & Telemetry)
+CREATE TABLE IF NOT EXISTS abdm_integration_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    request_id VARCHAR(128) NOT NULL,
+    operation VARCHAR(128) NOT NULL,
+    environment VARCHAR(32) NOT NULL DEFAULT 'SANDBOX',
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    success BOOLEAN NOT NULL DEFAULT TRUE,
+    http_status INT DEFAULT 200,
+    latency_ms INT DEFAULT 0,
+    error_code VARCHAR(128),
+    error_message TEXT,
+    source_system VARCHAR(128) DEFAULT 'ABDM'
+);
+
+CREATE INDEX IF NOT EXISTS idx_abdm_logs_req ON abdm_integration_logs(request_id);
+CREATE INDEX IF NOT EXISTS idx_abdm_logs_op ON abdm_integration_logs(operation);
+
 

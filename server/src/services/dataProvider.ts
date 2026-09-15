@@ -59,18 +59,19 @@ export class DemoDataProvider implements IDataProvider {
 
 export class ABDMProvider implements IDataProvider {
   async getFacilities(district: string): Promise<DataProviderFacility[]> {
-    const records = await AbdmHealthFacility.searchFacilities(district);
-    return records.map((r) => ({
-      id: r.facilityId,
+    const res = await AbdmHealthFacility.searchFacilities(district);
+    const facilities = res.facilities || [];
+    return facilities.map((r: any) => ({
+      id: r.abdmFacilityId || r.pfisFacilityId || r.facilityId,
       name: r.facilityName,
       type: r.facilityType,
       district: r.district,
       state: r.state,
       latitude: r.latitude,
       longitude: r.longitude,
-      provenance: r.verificationStatus === 'VERIFIED' ? 'VERIFIED SOURCE' : 'ABDM SANDBOX',
+      provenance: r.abdmVerificationStatus === 'VERIFIED' ? 'VERIFIED SOURCE' : 'ABDM SANDBOX',
       sourceType: 'ABDM_HFR',
-      lastUpdated: r.lastUpdated,
+      lastUpdated: r.lastSyncedAt || r.lastUpdated || new Date().toISOString(),
     }));
   }
 

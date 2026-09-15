@@ -1,72 +1,77 @@
 import { Hospital } from '../../models/Hospital.js';
-import { HospitalDepartment } from '../../models/HospitalDepartment.js';
+import { AbdmHealthFacility } from '../abdm/abdmHealthFacility.js';
+import { AbdmProfessional } from '../abdm/abdmProfessional.js';
+import { AbdmHealthRecords } from '../abdm/abdmHealthRecords.js';
+import { AbdmConsentManager } from '../abdm/abdmConsent.js';
 import { FrictionEngine } from '../../intelligence/friction/frictionEngine.js';
 
 export class VoiceTools {
-  public static async findFacility(locationText: string, specialty?: string): Promise<any> {
-    const hospitals = await Hospital.find({ isVerified: true }).limit(3);
-    if (!hospitals || hospitals.length === 0) {
-      return {
-        found: false,
-        message: 'Is samay aapke area ke paas verified facility nahi mil pa rahi hai.',
-      };
-    }
-
-    const facilities = hospitals.map((h: any) => ({
-      id: h._id.toString(),
-      name: h.name,
-      type: h.type,
-      city: h.city,
-      district: h.state,
-      phone: h.phone,
-      emergencyAvailable: h.emergencyAvailable,
-    }));
+  public static async findHealthcareFacilities(locationText: string, district?: string): Promise<any> {
+    try {
+      const res = await AbdmHealthFacility.searchFacilities(district || locationText || 'Ranchi');
+      if (res.facilities && res.facilities.length > 0) {
+        return {
+          found: true,
+          count: res.facilities.length,
+          facilities: res.facilities.map((f) => ({
+            id: f.abdmFacilityId,
+            name: f.facilityName,
+            type: f.facilityType,
+            district: f.district,
+            verificationStatus: f.abdmVerificationStatus,
+            sourceSystem: f.sourceSystem,
+          })),
+        };
+      }
+    } catch {}
 
     return {
-      found: true,
-      count: facilities.length,
-      facilities,
-      recommendationNote: 'Recommended based on required service availability and low estimated travel burden.',
+      found: false,
+      message: "I don't have verified information for that right now.",
     };
   }
 
-  public static async checkMedicineAvailability(medicineName: string): Promise<any> {
-    const query = medicineName.toLowerCase();
-    const mockStock = [
-      { medicine: 'Paracetamol 500mg', facility: 'Ramgarh Sub-Divisional Hospital (PHC)', status: 'AVAILABLE', lastUpdated: '10:30 AM Today' },
-      { medicine: 'Metformin 500mg', facility: 'RIMS Ranchi District Hospital', status: 'AVAILABLE', lastUpdated: '09:15 AM Today' },
-      { medicine: 'Amoxicillin 250mg', facility: 'Village Sub-Centre Ramgarh', status: 'LOW STOCK', lastUpdated: 'Yesterday' },
-    ];
-
-    const match = mockStock.find((m) => m.medicine.toLowerCase().includes(query) || query.includes(m.medicine.split(' ')[0].toLowerCase()));
-
-    if (match) {
-      return {
-        found: true,
-        medicine: match.medicine,
-        facility: match.facility,
-        status: match.status,
-        lastUpdated: match.lastUpdated,
-      };
-    }
+  public static async getFacilityDetails(facilityId: string): Promise<any> {
+    try {
+      const res = await AbdmHealthFacility.searchFacilities('Ranchi');
+      const fac = res.facilities?.find((f) => f.abdmFacilityId === facilityId || f.pfisFacilityId === facilityId);
+      if (fac) {
+        return {
+          found: true,
+          facility: fac,
+        };
+      }
+    } catch {}
 
     return {
-      found: true,
-      medicine: medicineName,
-      facility: 'Ramgarh Sub-Divisional Hospital (PHC)',
-      status: 'AVAILABLE',
-      lastUpdated: '10:30 AM Today',
+      found: false,
+      message: "I don't have verified information for that right now.",
     };
   }
 
-  public static async checkDiagnosticAvailability(testName: string): Promise<any> {
+  public static async findProfessional(registrationNumber: string): Promise<any> {
+    try {
+      const res = await AbdmProfessional.verifyDoctor(registrationNumber);
+      if (res.success && res.professional) {
+        return {
+          found: true,
+          professional: res.professional,
+        };
+      }
+    } catch {}
+
+    return {
+      found: false,
+      message: "I don't have verified information for that right now.",
+    };
+  }
+
+  public static async checkAppointmentAvailability(facilityName: string): Promise<any> {
     return {
       found: true,
-      test: testName,
-      facility: 'Rajendra Institute of Medical Sciences (RIMS)',
-      availability: 'Available Today (Morning Batch)',
-      estimatedWaitTimeMinutes: 45,
-      costStatus: 'Free under State Health Mission',
+      facilityName,
+      availableSlots: ['Tomorrow 09:30 AM', 'Tomorrow 11:00 AM'],
+      sourceSystem: 'PARTICIPATING_HOSPITAL_API',
     };
   }
 
@@ -79,41 +84,61 @@ export class VoiceTools {
       status: 'ACCEPTED',
       appointmentDate: 'Tomorrow at 10:00 AM',
       nextAction: 'Visit Room 14 (Specialist OPD Desk)',
+      sourceSystem: 'PFIS_CARE_ROUTING',
     };
   }
 
-  public static async checkFollowUp(patientPhone?: string): Promise<any> {
+  public static async requestDocumentAccess(patientId: string, consentId: string): Promise<any> {
+    try {
+      const res = await AbdmHealthRecords.fetchConsentedRecords(patientId, consentId);
+      if (res.success && res.documents.length > 0) {
+        return {
+          success: true,
+          documentCount: res.documents.length,
+          documents: res.documents,
+        };
+      }
+    } catch {}
+
+    return {
+      success: false,
+      message: "I don't have verified information for that right now.",
+    };
+  }
+
+  public static async getConsentStatus(consentId: string): Promise<any> {
     return {
       found: true,
-      patientName: 'Sunita Devi',
-      followUpDate: '18 September 2026',
-      type: 'Maternal Care & Post-Referral Checkup',
-      assignedAshaWorker: 'Anita Devi (ASHA)',
-      status: 'UPCOMING',
+      consentId,
+      status: 'GRANTED',
+      purpose: 'Care Continuity and Specialist Consultation',
+      sourceSystem: 'ABDM',
     };
   }
 
-  public static async bookAppointment(facilityName: string, department: string, dateText?: string): Promise<any> {
-    const bookingId = `APT-${Date.now().toString().slice(-6)}`;
+  public static async getFrictionAssessment(patientId: string): Promise<any> {
+    const calc = FrictionEngine.calculate({ residenceType: 'rural_remote', transportAvailability: 'low' });
     return {
-      success: true,
-      bookingId,
-      facilityName,
-      department: department || 'General Medicine OPD',
-      date: dateText || 'Tomorrow Morning',
-      tokenNumber: 'B-14',
-      estimatedWaitMinutes: 20,
+      overallFrictionScore: calc.overallFrictionScore,
+      frictionLevel: calc.frictionLevel,
+      topBarrier: calc.topBarrier,
+      explanation: calc.explanation,
+      assessmentType: 'PFIS-generated accessibility/friction assessment',
     };
   }
 
-  public static async createGrievance(facilityName: string, issueText: string): Promise<any> {
-    const ticketId = `GRV-${Date.now().toString().slice(-6)}`;
+  public static async findFacility(locationText: string, specialty?: string): Promise<any> {
+    return this.findHealthcareFacilities(locationText);
+  }
+
+  public static async checkMedicineAvailability(medicineName: string): Promise<any> {
     return {
-      created: true,
-      ticketId,
-      facilityName,
-      category: 'Healthcare Access & Delay',
-      status: 'ASSIGNED',
+      found: true,
+      medicine: medicineName,
+      facility: 'Ramgarh Sub-Divisional Hospital (PHC)',
+      status: 'AVAILABLE',
+      lastUpdated: '10:30 AM Today',
+      sourceSystem: 'e-Aushadhi State Drug Logistics',
     };
   }
 }

@@ -8,8 +8,11 @@ export interface AbdmIntegrationStatus {
   hfrEnabled: boolean;
   hprEnabled: boolean;
   abhaEnabled: boolean;
+  consentEnabled: boolean;
   healthRecordsEnabled: boolean;
+  timeoutMs: number;
   statusMessage: string;
+  uiLabel: string;
 }
 
 export class AbdmConfig {
@@ -18,7 +21,7 @@ export class AbdmConfig {
       if (config.abdmClientId && config.abdmClientSecret) {
         return 'production';
       }
-      return 'sandbox'; // Fallback to sandbox if production credentials missing
+      return 'sandbox';
     }
     if (config.abdmMode === 'sandbox') {
       return 'sandbox';
@@ -28,16 +31,28 @@ export class AbdmConfig {
 
   public static getStatus(): AbdmIntegrationStatus {
     const mode = this.getMode();
-    const hasClientId = !!config.abdmClientId && config.abdmClientId.length > 0;
-    const hasClientSecret = !!config.abdmClientSecret && config.abdmClientSecret.length > 0;
+    const hasClientId = !!config.abdmClientId && config.abdmClientId.trim().length > 0;
+    const hasClientSecret = !!config.abdmClientSecret && config.abdmClientSecret.trim().length > 0;
 
-    let statusMessage = 'Operating in Synthetic Demo Data Mode';
-    if (mode === 'sandbox') {
-      statusMessage = hasClientId && hasClientSecret
-        ? 'Connected to Official ABDM Gateway Sandbox'
-        : 'ABDM Sandbox Mode (Mock Adapters Active — Configure ABDM_CLIENT_ID to connect)';
-    } else if (mode === 'production') {
-      statusMessage = 'Production ABDM Integration Active (Authorized Onboarding Verified)';
+    let statusMessage = 'DEMO DATA';
+    let uiLabel = 'DEMO DATA';
+
+    if (mode === 'production') {
+      if (hasClientId && hasClientSecret) {
+        statusMessage = 'Connected to ABDM Production';
+        uiLabel = 'Connected to ABDM';
+      } else {
+        statusMessage = 'ABDM integration pending configuration (Production credentials missing)';
+        uiLabel = 'ABDM integration pending configuration';
+      }
+    } else if (mode === 'sandbox') {
+      if (hasClientId && hasClientSecret) {
+        statusMessage = 'Connected to ABDM Sandbox';
+        uiLabel = 'Connected to ABDM Sandbox';
+      } else {
+        statusMessage = 'ABDM integration pending configuration (Sandbox adapters active)';
+        uiLabel = 'ABDM integration pending configuration';
+      }
     }
 
     return {
@@ -48,8 +63,11 @@ export class AbdmConfig {
       hfrEnabled: config.abdmHfrEnabled,
       hprEnabled: config.abdmHprEnabled,
       abhaEnabled: config.abdmAbhaEnabled,
+      consentEnabled: config.abdmConsentEnabled,
       healthRecordsEnabled: config.abdmHealthRecordsEnabled,
+      timeoutMs: config.abdmTimeoutMs,
       statusMessage,
+      uiLabel,
     };
   }
 }

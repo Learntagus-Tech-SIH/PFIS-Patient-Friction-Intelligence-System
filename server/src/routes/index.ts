@@ -19,6 +19,7 @@ import frictionReportRoutes from './frictionReportRoutes.js';
 import voiceRoutes from './voiceRoutes.js';
 import teleconsultationRoutes from './teleconsultationRoutes.js';
 import digitalTwinRoutes from './digitalTwinRoutes.js';
+import abdmRoutes from './abdmRoutes.js';
 
 const router = Router();
 
@@ -43,5 +44,6 @@ router.use('/friction-reports', frictionReportRoutes);
 router.use('/digital-twin', digitalTwinRoutes);
 router.use('/voice', voiceRoutes);
 router.use('/teleconsultations', teleconsultationRoutes);
+router.use('/integrations/abdm', abdmRoutes);
 
 export default router;

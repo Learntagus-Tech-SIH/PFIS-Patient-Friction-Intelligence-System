@@ -88,10 +88,12 @@ export const config = {
   abdmClientId: sanitizeEnv(process.env.ABDM_CLIENT_ID),
   abdmClientSecret: sanitizeEnv(process.env.ABDM_CLIENT_SECRET),
   abdmRedirectUri: sanitizeEnv(process.env.ABDM_REDIRECT_URI),
-  abdmHfrEnabled: (sanitizeEnv(process.env.ABDM_HFR_ENABLED) || 'false').toLowerCase() === 'true',
-  abdmHprEnabled: (sanitizeEnv(process.env.ABDM_HPR_ENABLED) || 'false').toLowerCase() === 'true',
-  abdmAbhaEnabled: (sanitizeEnv(process.env.ABDM_ABHA_ENABLED) || 'false').toLowerCase() === 'true',
-  abdmHealthRecordsEnabled: (sanitizeEnv(process.env.ABDM_HEALTH_RECORDS_ENABLED) || 'false').toLowerCase() === 'true',
+  abdmHfrEnabled: (sanitizeEnv(process.env.ABDM_HFR_ENABLED) || 'true').toLowerCase() === 'true',
+  abdmHprEnabled: (sanitizeEnv(process.env.ABDM_HPR_ENABLED) || 'true').toLowerCase() === 'true',
+  abdmAbhaEnabled: (sanitizeEnv(process.env.ABDM_ABHA_ENABLED) || 'true').toLowerCase() === 'true',
+  abdmConsentEnabled: (sanitizeEnv(process.env.ABDM_CONSENT_ENABLED) || 'true').toLowerCase() === 'true',
+  abdmHealthRecordsEnabled: (sanitizeEnv(process.env.ABDM_HEALTH_RECORDS_ENABLED) || 'true').toLowerCase() === 'true',
+  abdmTimeoutMs: parseInt(sanitizeEnv(process.env.ABDM_TIMEOUT_MS) || '15000', 10),
   dataMode: (sanitizeEnv(process.env.DATA_MODE) || 'demo').toLowerCase(), // 'demo' | 'sandbox' | 'production'
 
   // Voice AI Toll-Free Helpline Configuration
