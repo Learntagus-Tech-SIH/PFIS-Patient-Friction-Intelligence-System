@@ -1,21 +1,3 @@
-export const INDIA_STATES = [
-  'Punjab',
-  'Jharkhand',
-  'Bihar',
-  'Uttar Pradesh',
-  'Maharashtra',
-  'Rajasthan',
-  'Tamil Nadu',
-  'West Bengal',
-  'Karnataka',
-  'Gujarat',
-  'Madhya Pradesh',
-  'Odisha',
-  'Assam',
-  'Haryana',
-  'Kerala',
-];
-
 export interface VillageData {
   id: string;
   villageName: string;
@@ -53,7 +35,7 @@ export interface VillageData {
 export interface AvailableInterventionOption {
   code: string;
   name: string;
-  category: 'transit' | 'language' | 'resource' | 'digital_queue' | 'diagnostics';
+  category: 'transit' | 'language' | 'resource' | 'digital_queue' | 'diagnostics' | 'infrastructure' | 'camp';
   unitCostINR: number;
   reachVillagersPerUnit: number;
   frictionReductionPoints: number; // PFI reduction points
@@ -65,6 +47,7 @@ export interface VillageBudgetOptimizationResult {
   village: VillageData;
   allocatedBudgetINR: number;
   unspentBudgetINR: number;
+  budgetTierLabel: 'Micro Campaign' | 'Moderate Operational Upgrade' | 'Capital Mobile Fleet' | 'Major Hospital Infrastructure Construction';
   selectedInterventions: {
     intervention: AvailableInterventionOption;
     quantity: number;
@@ -81,60 +64,249 @@ export interface VillageBudgetOptimizationResult {
 }
 
 export const INTERVENTION_CATALOG: AvailableInterventionOption[] = [
+  // ── INFRASTRUCTURE (FOR LARGE BUDGETS > ₹50 LAKHS) ──
+  {
+    code: 'INT-CONSTRUCT-PHC',
+    name: 'Construct New Primary Health Centre (PHC) Hospital in Village',
+    category: 'infrastructure',
+    unitCostINR: 5000000, // ₹50 Lakhs
+    reachVillagersPerUnit: 10000,
+    frictionReductionPoints: 55,
+    description: 'Construct a 10-bed Primary Health Centre (PHC) with 24/7 doctor, maternity bay, and emergency ward right in the village.',
+    bestSuitedFor: 'High budget (> ₹50 Lakhs) for critical remote villages with travel distance > 20 km.',
+  },
+  {
+    code: 'INT-SUB-CENTER-UPGRADE',
+    name: 'Establish Health & Wellness Sub-Center Node',
+    category: 'infrastructure',
+    unitCostINR: 1500000, // ₹15 Lakhs
+    reachVillagersPerUnit: 5000,
+    frictionReductionPoints: 38,
+    description: 'Upgrade village sub-center with 24/7 Community Health Officer (CHO), diagnostic lab point, and solar power.',
+    bestSuitedFor: 'Capital budget (₹15 Lakhs - ₹30 Lakhs) for villages with high resource scarcity.',
+  },
+
+  // ── CAPITAL MOBILE FLEET (₹5 LAKHS - ₹15 LAKHS) ──
+  {
+    code: 'INT-MOBILE-CLINIC',
+    name: 'Mobile Tele-Medicine & Diagnostic Van Fleet',
+    category: 'diagnostics',
+    unitCostINR: 600000, // ₹6 Lakhs
+    reachVillagersPerUnit: 4500,
+    frictionReductionPoints: 34,
+    description: 'Equipped 4x4 van with ECG, rapid blood analyzer, solar power, and satellite tele-consultation screen.',
+    bestSuitedFor: 'Villages with high specialist deficit or riverine/mountain transit barriers.',
+  },
+
+  // ── MODERATE OPERATIONAL UPGRADES (₹1 LAKH - ₹5 LAKHS) ──
   {
     code: 'INT-TRANSIT-SHUTTLE',
-    name: 'Subsidized ASHA Transit Bus Shuttle',
+    name: 'Subsidized ASHA Village Bus Shuttle Service',
     category: 'transit',
-    unitCostINR: 150000,
-    reachVillagersPerUnit: 1200,
-    frictionReductionPoints: 22,
-    description: 'Scheduled daily minibus connect village cluster directly to District Sub-Divisional Hospital.',
-    bestSuitedFor: 'Villages with travel distance > 15 km or transit deserts.',
+    unitCostINR: 150000, // ₹1.5 Lakhs
+    reachVillagersPerUnit: 1500,
+    frictionReductionPoints: 24,
+    description: 'Scheduled daily minibus connecting village cluster directly to District Hospital & Sub-Divisional OPD.',
+    bestSuitedFor: 'Villages with transit deserts or travel time > 45 mins.',
   },
   {
     code: 'INT-VOICE-KIOSK',
     name: 'Vernacular Dialect Voice AI Token Kiosk',
     category: 'language',
-    unitCostINR: 75000,
+    unitCostINR: 75000, // ₹75,000
     reachVillagersPerUnit: 2500,
     frictionReductionPoints: 18,
-    description: 'Touchscreen + audio kiosk speaking local dialect for pre-booking OPD tokens and voice consent.',
+    description: 'Touchscreen + audio kiosk speaking local dialect (Bhojpuri, Magahi, Maithili, Mundari) for pre-booking OPD tokens.',
     bestSuitedFor: 'Villages with low digital literacy or dialect mismatch.',
   },
   {
-    code: 'INT-MOBILE-CLINIC',
-    name: 'Mobile Tele-Medicine & Diagnostic Van',
-    category: 'diagnostics',
-    unitCostINR: 500000,
-    reachVillagersPerUnit: 4500,
-    frictionReductionPoints: 34,
-    description: 'Equipped 4x4 van with ECG, rapid blood analyzer, and satellite tele-consultation screen.',
-    bestSuitedFor: 'Critical remote villages with high specialist deficit.',
-  },
-  {
     code: 'INT-OPD-FASTTRACK',
-    name: 'Hospital OPD Digital Queue Fast-Track',
+    name: 'Hospital OPD Digital Queue Fast-Track Scanner',
     category: 'digital_queue',
-    unitCostINR: 50000,
+    unitCostINR: 50000, // ₹50,000
     reachVillagersPerUnit: 3000,
     frictionReductionPoints: 14,
     description: 'ABHA QR code priority scanner at hospital triage desk to bypass 2-hour registration lines.',
     bestSuitedFor: 'Villages experiencing OPD wait times > 60 mins.',
   },
+
+  // ── MICRO CAMPAIGNS (< ₹1 LAKH) ──
+  {
+    code: 'INT-HEALTH-CAMP',
+    name: 'Village Healthcare & Screening Camp',
+    category: 'camp',
+    unitCostINR: 40000, // ₹40,000
+    reachVillagersPerUnit: 1000,
+    frictionReductionPoints: 12,
+    description: '1-day mobile medical camp with doctors, eye specialists, maternal checkups, and free medicine distribution.',
+    bestSuitedFor: 'Low budget (< ₹1 Lakh) to provide immediate community health coverage.',
+  },
   {
     code: 'INT-ESSENTIAL-DRUG-DEPOT',
-    name: 'Village Emergency Essential Medicine Buffer',
+    name: 'ASHA Emergency Essential Medicine Buffer',
     category: 'resource',
-    unitCostINR: 60000,
-    reachVillagersPerUnit: 1800,
-    frictionReductionPoints: 15,
-    description: 'Restocking ASHA kit with NCD medications, antibiotics, and maternal iron supplements.',
-    bestSuitedFor: 'High BPL population villages facing stockout risks.',
+    unitCostINR: 35000, // ₹35,000
+    reachVillagersPerUnit: 1200,
+    frictionReductionPoints: 10,
+    description: 'Restocking village ASHA kits with NCD medications, antibiotics, and maternal iron supplements.',
+    bestSuitedFor: 'Low budget villages facing essential medicine stockouts.',
   },
 ];
 
 export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
-  // Punjab Villages
+  // ── BIHAR VILLAGES ──
+  {
+    id: 'v-diara-br',
+    villageName: 'Diara Riverine Panchayat',
+    block: 'Danapur',
+    district: 'Patna',
+    state: 'Bihar',
+    totalPopulation: 9500,
+    bplPopulationPercent: 71,
+    pfiScore: 86,
+    frictionCategory: 'CRITICAL',
+    barriers: {
+      travelKm: 22.0,
+      travelTimeMins: 110,
+      transitAvailability: 'Severe Desert',
+      travelScore: 94,
+      primaryLanguage: 'Bhojpuri / Maithili',
+      dialectMatchPercent: 70,
+      digitalLiteracy: 'Low',
+      languageScore: 72,
+      nearestHospital: 'PMCH Patna (Tertiary Medical College)',
+      bedOccupancyPercent: 140,
+      specialistAvailability: 'Deficit',
+      resourceScore: 88,
+      avgOpdWaitTimeMins: 160,
+      abhaLinkagePercent: 39,
+      queueDocsScore: 90,
+    },
+    dominantBarrierSummary: 'Ganges river transit obstacle, PMCH hospital overcrowding, and low ABHA registration.',
+    geoCoords: { lat: 25.632, lng: 85.042 },
+  },
+  {
+    id: 'v-janipur-br',
+    villageName: 'Janipur Rural Village',
+    block: 'Phulwari Sharif',
+    district: 'Patna',
+    state: 'Bihar',
+    totalPopulation: 5800,
+    bplPopulationPercent: 45,
+    pfiScore: 58,
+    frictionCategory: 'MODERATE',
+    barriers: {
+      travelKm: 8.5,
+      travelTimeMins: 32,
+      transitAvailability: 'Moderate',
+      travelScore: 48,
+      primaryLanguage: 'Bhojpuri / Magahi',
+      dialectMatchPercent: 88,
+      digitalLiteracy: 'Basic',
+      languageScore: 42,
+      nearestHospital: 'AIIMS Patna / Danapur Sub-Divisional Hospital',
+      bedOccupancyPercent: 95,
+      specialistAvailability: 'Moderate',
+      resourceScore: 65,
+      avgOpdWaitTimeMins: 70,
+      abhaLinkagePercent: 68,
+      queueDocsScore: 56,
+    },
+    dominantBarrierSummary: 'Suburban traffic choke points and peak registration queues.',
+    geoCoords: { lat: 25.568, lng: 85.078 },
+  },
+  {
+    id: 'v-bakraur-br',
+    villageName: 'Bakraur Rural Panchayat',
+    block: 'Bodh Gaya',
+    district: 'Gaya',
+    state: 'Bihar',
+    totalPopulation: 6200,
+    bplPopulationPercent: 62,
+    pfiScore: 79,
+    frictionCategory: 'HIGH',
+    barriers: {
+      travelKm: 16.5,
+      travelTimeMins: 48,
+      transitAvailability: 'Poor',
+      travelScore: 74,
+      primaryLanguage: 'Magahi',
+      dialectMatchPercent: 78,
+      digitalLiteracy: 'Low',
+      languageScore: 68,
+      nearestHospital: 'ANMMCH Gaya (District Hospital)',
+      bedOccupancyPercent: 92,
+      specialistAvailability: 'Deficit',
+      resourceScore: 82,
+      avgOpdWaitTimeMins: 85,
+      abhaLinkagePercent: 46,
+      queueDocsScore: 78,
+    },
+    dominantBarrierSummary: 'Seasonal river flooding, high out-of-pocket medicine expense, and low digital literacy.',
+    geoCoords: { lat: 24.696, lng: 84.991 },
+  },
+  {
+    id: 'v-sobh-br',
+    villageName: 'Sobh Tribal Forest Village',
+    block: 'Barachatti',
+    district: 'Gaya',
+    state: 'Bihar',
+    totalPopulation: 4300,
+    bplPopulationPercent: 78,
+    pfiScore: 88,
+    frictionCategory: 'CRITICAL',
+    barriers: {
+      travelKm: 38.0,
+      travelTimeMins: 115,
+      transitAvailability: 'Severe Desert',
+      travelScore: 95,
+      primaryLanguage: 'Magahi / Local Dialect',
+      dialectMatchPercent: 62,
+      digitalLiteracy: 'Low',
+      languageScore: 84,
+      nearestHospital: 'Barachatti CHC / ANMMCH Gaya',
+      bedOccupancyPercent: 98,
+      specialistAvailability: 'Deficit',
+      resourceScore: 92,
+      avgOpdWaitTimeMins: 120,
+      abhaLinkagePercent: 28,
+      queueDocsScore: 88,
+    },
+    dominantBarrierSummary: 'Forest terrain transit desert, zero public bus connectivity, and maternal specialist deficit.',
+    geoCoords: { lat: 24.512, lng: 85.014 },
+  },
+  {
+    id: 'v-kanti-br',
+    villageName: 'Kanti Thermal Settlement',
+    block: 'Kanti',
+    district: 'Muzaffarpur',
+    state: 'Bihar',
+    totalPopulation: 7100,
+    bplPopulationPercent: 58,
+    pfiScore: 72,
+    frictionCategory: 'HIGH',
+    barriers: {
+      travelKm: 14.8,
+      travelTimeMins: 45,
+      transitAvailability: 'Moderate',
+      travelScore: 66,
+      primaryLanguage: 'Vajjika / Hindi',
+      dialectMatchPercent: 82,
+      digitalLiteracy: 'Basic',
+      languageScore: 54,
+      nearestHospital: 'SKMCH Muzaffarpur Medical College',
+      bedOccupancyPercent: 115,
+      specialistAvailability: 'Moderate',
+      resourceScore: 78,
+      avgOpdWaitTimeMins: 90,
+      abhaLinkagePercent: 54,
+      queueDocsScore: 70,
+    },
+    dominantBarrierSummary: 'SKMCH hospital overcrowding and long OPD registration queues.',
+    geoCoords: { lat: 26.185, lng: 85.289 },
+  },
+
+  // ── PUNJAB VILLAGES ──
   {
     id: 'v-chaheru-pb',
     villageName: 'Chaheru Village & LPU Outskirts',
@@ -143,24 +315,24 @@ export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
     state: 'Punjab',
     totalPopulation: 6400,
     bplPopulationPercent: 24,
-    pfiScore: 52,
+    pfiScore: 48,
     frictionCategory: 'MODERATE',
     barriers: {
       travelKm: 4.5,
       travelTimeMins: 20,
       transitAvailability: 'Moderate',
-      travelScore: 45,
+      travelScore: 42,
       primaryLanguage: 'Punjabi / Hindi',
-      dialectMatchPercent: 90,
+      dialectMatchPercent: 92,
       digitalLiteracy: 'Moderate',
-      languageScore: 32,
+      languageScore: 30,
       nearestHospital: 'Civil Hospital Phagwara (Sub-Divisional)',
-      bedOccupancyPercent: 82,
+      bedOccupancyPercent: 78,
       specialistAvailability: 'Moderate',
-      resourceScore: 58,
-      avgOpdWaitTimeMins: 50,
-      abhaLinkagePercent: 80,
-      queueDocsScore: 46,
+      resourceScore: 54,
+      avgOpdWaitTimeMins: 45,
+      abhaLinkagePercent: 84,
+      queueDocsScore: 40,
     },
     dominantBarrierSummary: 'Morning peak OPD wait times and specialist availability during off-hours.',
     geoCoords: { lat: 31.2533, lng: 75.7042 },
@@ -173,13 +345,13 @@ export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
     state: 'Punjab',
     totalPopulation: 8900,
     bplPopulationPercent: 38,
-    pfiScore: 76,
+    pfiScore: 74,
     frictionCategory: 'HIGH',
     barriers: {
       travelKm: 19.2,
       travelTimeMins: 55,
       transitAvailability: 'Poor',
-      travelScore: 80,
+      travelScore: 78,
       primaryLanguage: 'Rural Punjabi',
       dialectMatchPercent: 78,
       digitalLiteracy: 'Low',
@@ -192,11 +364,11 @@ export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
       abhaLinkagePercent: 52,
       queueDocsScore: 68,
     },
-    dominantBarrierSummary: 'Infrequent rural transport and shortage of maternal healthcare specialists.',
+    dominantBarrierSummary: 'Infrequent rural shuttle buses and maternal specialist shortage.',
     geoCoords: { lat: 31.527, lng: 75.521 },
   },
 
-  // Jharkhand Villages
+  // ── JHARKHAND VILLAGES ──
   {
     id: 'v-boreya-jh',
     villageName: 'Boreya Tribal Settlement',
@@ -224,73 +396,11 @@ export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
       abhaLinkagePercent: 34,
       queueDocsScore: 88,
     },
-    dominantBarrierSummary: 'Dialect communication gap, severe transit desert, and extreme RIMS hospital queue.',
+    dominantBarrierSummary: 'Language mismatch (Mundari to Hindi), severe transit desert, and extreme RIMS hospital queue.',
     geoCoords: { lat: 23.432, lng: 85.321 },
   },
-  {
-    id: 'v-bhaga-jh',
-    villageName: 'Bhaga Colliery Village',
-    block: 'Jharia',
-    district: 'Dhanbad',
-    state: 'Jharkhand',
-    totalPopulation: 7800,
-    bplPopulationPercent: 52,
-    pfiScore: 71,
-    frictionCategory: 'HIGH',
-    barriers: {
-      travelKm: 13.4,
-      travelTimeMins: 42,
-      transitAvailability: 'Moderate',
-      travelScore: 65,
-      primaryLanguage: 'Khortha / Hindi',
-      dialectMatchPercent: 82,
-      digitalLiteracy: 'Basic',
-      languageScore: 54,
-      nearestHospital: 'Dhanbad District Hospital',
-      bedOccupancyPercent: 98,
-      specialistAvailability: 'Moderate',
-      resourceScore: 78,
-      avgOpdWaitTimeMins: 75,
-      abhaLinkagePercent: 60,
-      queueDocsScore: 66,
-    },
-    dominantBarrierSummary: 'High respiratory disease burden and long OPD registration queues.',
-    geoCoords: { lat: 23.742, lng: 86.415 },
-  },
 
-  // Bihar Villages
-  {
-    id: 'v-diara-br',
-    villageName: 'Diara Riverine Panchayat',
-    block: 'Danapur',
-    district: 'Patna',
-    state: 'Bihar',
-    totalPopulation: 9500,
-    bplPopulationPercent: 71,
-    pfiScore: 85,
-    frictionCategory: 'CRITICAL',
-    barriers: {
-      travelKm: 21.0,
-      travelTimeMins: 105,
-      transitAvailability: 'Severe Desert',
-      travelScore: 96,
-      primaryLanguage: 'Bhojpuri / Maithili',
-      dialectMatchPercent: 72,
-      digitalLiteracy: 'Low',
-      languageScore: 74,
-      nearestHospital: 'PMCH Patna',
-      bedOccupancyPercent: 138,
-      specialistAvailability: 'Deficit',
-      resourceScore: 90,
-      avgOpdWaitTimeMins: 150,
-      abhaLinkagePercent: 38,
-      queueDocsScore: 92,
-    },
-    dominantBarrierSummary: 'Ganges river transit barrier, PMCH hospital overcrowding, and low ABHA registration.',
-    geoCoords: { lat: 25.632, lng: 85.042 },
-  },
-
-  // Maharashtra Villages
+  // ── MAHARASHTRA VILLAGES ──
   {
     id: 'v-dabhosa-mh',
     villageName: 'Dabhosa Warli Tribal Hamlet',
@@ -322,7 +432,7 @@ export const REAL_INDIAN_VILLAGES_DATABASE: VillageData[] = [
     geoCoords: { lat: 19.904, lng: 73.232 },
   },
 
-  // Rajasthan Villages
+  // ── RAJASTHAN VILLAGES ──
   {
     id: 'v-dhorimanna-rj',
     villageName: 'Dhorimanna Desert Outpost',
@@ -359,13 +469,15 @@ export const villageFrictionEngine = {
   /**
    * Search villages by State, District, or Name query
    */
-  searchVillages(query: string, stateFilter?: string): VillageData[] {
+  searchVillages(query: string, stateFilter?: string, districtFilter?: string): VillageData[] {
     const q = (query || '').toLowerCase().trim();
     const sFilter = (stateFilter || '').toLowerCase().trim();
+    const dFilter = (districtFilter || '').toLowerCase().trim();
 
     return REAL_INDIAN_VILLAGES_DATABASE.filter((v) => {
       const matchState = !sFilter || v.state.toLowerCase() === sFilter;
-      if (!matchState) return false;
+      const matchDistrict = !dFilter || v.district.toLowerCase() === dFilter;
+      if (!matchState || !matchDistrict) return false;
 
       if (!q) return true;
 
@@ -380,7 +492,7 @@ export const villageFrictionEngine = {
   },
 
   /**
-   * Calculate Optimal Government Budget Intervention Allocation for a given Village
+   * Calculate Multi-Tier Government Budget Intervention Allocation for a given Village
    */
   optimizeGovernmentBudgetForVillage(
     villageId: string,
@@ -394,23 +506,38 @@ export const villageFrictionEngine = {
     let totalPfiReductionPoints = 0;
     let totalVillagersHelped = 0;
 
-    // Prioritize interventions based on the village's dominant barriers
+    let budgetTierLabel: VillageBudgetOptimizationResult['budgetTierLabel'] = 'Micro Campaign';
+    if (allocatedBudgetINR >= 5000000) {
+      budgetTierLabel = 'Major Hospital Infrastructure Construction';
+    } else if (allocatedBudgetINR >= 1500000) {
+      budgetTierLabel = 'Capital Mobile Fleet';
+    } else if (allocatedBudgetINR >= 200000) {
+      budgetTierLabel = 'Moderate Operational Upgrade';
+    } else {
+      budgetTierLabel = 'Micro Campaign';
+    }
+
+    // Sort interventions according to budget tier and village barrier needs
     const sortedCatalog = [...INTERVENTION_CATALOG].sort((a, b) => {
+      // If budget is large enough (> ₹50L), prioritize infrastructure
+      if (allocatedBudgetINR >= 5000000) {
+        if (a.category === 'infrastructure') return -1;
+        if (b.category === 'infrastructure') return 1;
+      }
+      // If budget is low (< ₹2L), prioritize health camps and ASHA drug kits
+      if (allocatedBudgetINR < 200000) {
+        if (a.category === 'camp' || a.code === 'INT-ESSENTIAL-DRUG-DEPOT') return -1;
+        if (b.category === 'camp' || b.code === 'INT-ESSENTIAL-DRUG-DEPOT') return 1;
+      }
+
       let scoreA = a.frictionReductionPoints / a.unitCostINR;
       let scoreB = b.frictionReductionPoints / b.unitCostINR;
 
-      // Boost score if intervention matches dominant village barrier
       if (village.barriers.travelScore > 70 && a.category === 'transit') scoreA *= 2.0;
       if (village.barriers.travelScore > 70 && b.category === 'transit') scoreB *= 2.0;
 
       if (village.barriers.languageScore > 70 && a.category === 'language') scoreA *= 1.8;
       if (village.barriers.languageScore > 70 && b.category === 'language') scoreB *= 1.8;
-
-      if (village.barriers.resourceScore > 70 && a.category === 'diagnostics') scoreA *= 1.9;
-      if (village.barriers.resourceScore > 70 && b.category === 'diagnostics') scoreB *= 1.9;
-
-      if (village.barriers.queueDocsScore > 70 && a.category === 'digital_queue') scoreA *= 1.7;
-      if (village.barriers.queueDocsScore > 70 && b.category === 'digital_queue') scoreB *= 1.7;
 
       return scoreB - scoreA;
     });
@@ -437,7 +564,7 @@ export const villageFrictionEngine = {
     }
 
     const baselinePfiScore = village.pfiScore;
-    const projectedPfiScore = Math.max(12, baselinePfiScore - Math.min(65, totalPfiReductionPoints));
+    const projectedPfiScore = Math.max(10, baselinePfiScore - Math.min(75, totalPfiReductionPoints));
     const frictionReductionPercent = Math.round(
       ((baselinePfiScore - projectedPfiScore) / baselinePfiScore) * 100
     );
@@ -451,14 +578,26 @@ export const villageFrictionEngine = {
     const costPerVillagerHelpedINR =
       totalVillagersHelped > 0 ? Math.round(spentBudget / totalVillagersHelped) : 0;
 
-    const governmentRationale = `Allocating ₹${(spentBudget / 100000).toFixed(1)} Lakhs for ${
+    let actionSummaryText = '';
+    if (allocatedBudgetINR >= 5000000) {
+      actionSummaryText = `Constructing a New Primary Health Centre (PHC) in ${village.villageName} with 24/7 doctors and emergency beds`;
+    } else if (allocatedBudgetINR >= 1500000) {
+      actionSummaryText = `Establishing a Health & Wellness Sub-Center and Mobile Tele-Medicine Fleet for ${village.villageName}`;
+    } else if (allocatedBudgetINR >= 200000) {
+      actionSummaryText = `Deploying Subsidized ASHA Transit Bus Shuttle & Vernacular Voice Tokens for ${village.villageName}`;
+    } else {
+      actionSummaryText = `Conducting Village Health & Screening Camps and Restocking Emergency ASHA Medicine Depot for ${village.villageName}`;
+    }
+
+    const governmentRationale = `Allocating ₹${(spentBudget / 100000).toFixed(1)} Lakhs (${budgetTierLabel}) for ${
       village.villageName
-    } (${village.district}, ${village.state}) resolves its primary barriers (${village.dominantBarrierSummary}). This reduces village PFI from ${baselinePfiScore} (${village.frictionCategory}) to ${projectedPfiScore} (${projectedCategory}) with a ${frictionReductionPercent}% overall access friction reduction.`;
+    } (${village.district}, ${village.state}): ${actionSummaryText}. This resolves key village barriers (${village.dominantBarrierSummary}), reducing village PFI from ${baselinePfiScore} (${village.frictionCategory}) to ${projectedPfiScore} (${projectedCategory}) with a ${frictionReductionPercent}% overall access friction reduction.`;
 
     return {
       village,
       allocatedBudgetINR,
       unspentBudgetINR: remainingBudget,
+      budgetTierLabel,
       selectedInterventions,
       baselinePfiScore,
       projectedPfiScore,
@@ -470,3 +609,31 @@ export const villageFrictionEngine = {
     };
   },
 };
+
+export const INDIA_STATES: string[] = [
+  'Bihar',
+  'Punjab',
+  'Jharkhand',
+  'Maharashtra',
+  'Uttar Pradesh',
+];
+
+export const getStates = (): string[] => INDIA_STATES;
+
+export const getDistrictsByState = (stateName: string): string[] => {
+  const dists = REAL_INDIAN_VILLAGES_DATABASE.filter(
+    (v) => v.state.toLowerCase() === stateName.toLowerCase()
+  ).map((v) => v.district);
+  return Array.from(new Set(dists));
+};
+
+export const getVillagesByDistrict = (districtName: string, stateName?: string): VillageData[] => {
+  return REAL_INDIAN_VILLAGES_DATABASE.filter((v) => {
+    const matchDist = v.district.toLowerCase() === districtName.toLowerCase();
+    if (stateName) {
+      return matchDist && v.state.toLowerCase() === stateName.toLowerCase();
+    }
+    return matchDist;
+  });
+};
+

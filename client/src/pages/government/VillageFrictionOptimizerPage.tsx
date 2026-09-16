@@ -4,6 +4,8 @@ import {
   REAL_INDIAN_VILLAGES_DATABASE,
   VillageData,
   INDIA_STATES,
+  getDistrictsByState,
+  getVillagesByDistrict,
 } from '../../services/villageFrictionEngine';
 import { VillageFrictionCard } from '../../components/common/VillageFrictionCard';
 import {
@@ -22,46 +24,75 @@ import {
   ShieldCheck,
   Award,
   Globe,
+  ChevronDown,
 } from 'lucide-react';
 
 export const VillageFrictionOptimizerPage: React.FC = () => {
+  const [selectedState, setSelectedState] = useState<string>('Bihar');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('Patna');
+  const [selectedVillageId, setSelectedVillageId] = useState<string>('v-diara-br');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedState, setSelectedState] = useState<string>('');
-  const [selectedVillage, setSelectedVillage] = useState<VillageData>(
-    REAL_INDIAN_VILLAGES_DATABASE[0]
-  );
   const [budgetINR, setBudgetINR] = useState<number>(500000); // Default ₹5 Lakhs
 
-  const villages = villageFrictionEngine.searchVillages(searchQuery, selectedState);
+  // Cascading options
+  const availableDistricts = getDistrictsByState(selectedState);
+  const availableVillages = getVillagesByDistrict(
+    selectedDistrict,
+    selectedState
+  );
+
+  const selectedVillage =
+    REAL_INDIAN_VILLAGES_DATABASE.find((v) => v.id === selectedVillageId) ||
+    availableVillages[0] ||
+    REAL_INDIAN_VILLAGES_DATABASE[0];
+
   const optimization = villageFrictionEngine.optimizeGovernmentBudgetForVillage(
     selectedVillage.id,
     budgetINR
   );
 
+  const handleStateChange = (st: string) => {
+    setSelectedState(st);
+    const dists = getDistrictsByState(st);
+    const newDist = dists[0] || '';
+    setSelectedDistrict(newDist);
+    const vlgs = getVillagesByDistrict(newDist, st);
+    if (vlgs.length > 0) {
+      setSelectedVillageId(vlgs[0].id);
+    }
+  };
+
+  const handleDistrictChange = (dist: string) => {
+    setSelectedDistrict(dist);
+    const vlgs = getVillagesByDistrict(dist, selectedState);
+    if (vlgs.length > 0) {
+      setSelectedVillageId(vlgs[0].id);
+    }
+  };
+
   const BUDGET_PRESETS = [
-    { label: '₹2 Lakhs', val: 200000 },
-    { label: '₹5 Lakhs', val: 500000 },
-    { label: '₹10 Lakhs', val: 1000000 },
-    { label: '₹25 Lakhs', val: 2500000 },
-    { label: '₹50 Lakhs', val: 5000000 },
+    { label: '₹1 Lakh (Health Camp)', val: 100000 },
+    { label: '₹5 Lakhs (Shuttle/Van)', val: 500000 },
+    { label: '₹15 Lakhs (Wellness Center)', val: 1500000 },
+    { label: '₹50 Lakhs (Construct Hospital)', val: 5000000 },
   ];
 
   return (
     <div className="space-y-8 animate-fade-in max-w-7xl mx-auto pb-12">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden border border-teal-500/30">
+      {/* Top Banner (Light Theme Design) */}
+      <div className="bg-gradient-to-r from-teal-800 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/30">
         <div className="absolute right-0 top-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-bold uppercase tracking-wider">
               <Globe className="w-3.5 h-3.5 text-teal-400" />
-              <span>Area-Wise & Village Population Friction Engine</span>
+              <span>All-India Village Population Health Friction Command</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-              All-India Village Friction & Government Budget Optimizer
+              Village Friction & Government Budget Action Suite
             </h1>
-            <p className="text-sm text-indigo-200 max-w-3xl">
-              Evaluate real-calculated Friction Scores (0–100 PFI) village-by-village across India. Simulate government fund allocation to dynamically calculate the single best intervention portfolio for any target village.
+            <p className="text-sm text-indigo-100 max-w-3xl">
+              Inspect real PFI Friction Scores across Indian villages (Patna, Gaya, Muzaffarpur, Bhagalpur, Kapurthala, Ranchi, Jawhar, etc.). Simulate government fund allocation to suggest real-based action plans (Health Camps vs Hospital Construction).
             </p>
           </div>
 
@@ -75,68 +106,105 @@ export const VillageFrictionOptimizerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main 2-Column Interface: Village Selector (Left) vs Budget Allocation Suite (Right) */}
+      {/* Cascading State -> District -> Village Selector Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        {/* Step 1: Select State */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+            1. Select State:
+          </label>
+          <div className="relative">
+            <select
+              value={selectedState}
+              onChange={(e) => handleStateChange(e.target.value)}
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer appearance-none"
+            >
+              {INDIA_STATES.map((st: string) => (
+                <option key={st} value={st}>
+                  {st} State
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Step 2: Select District */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+            2. Select District:
+          </label>
+          <div className="relative">
+            <select
+              value={selectedDistrict}
+              onChange={(e) => handleDistrictChange(e.target.value)}
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer appearance-none"
+            >
+              {availableDistricts.map((dist) => (
+                <option key={dist} value={dist}>
+                  {dist} District
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Step 3: Select Village */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+            3. Select Target Village:
+          </label>
+          <div className="relative">
+            <select
+              value={selectedVillageId}
+              onChange={(e) => setSelectedVillageId(e.target.value)}
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-teal-700 dark:text-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer appearance-none"
+            >
+              {availableVillages.map((vlg) => (
+                <option key={vlg.id} value={vlg.id}>
+                  {vlg.villageName} (PFI {vlg.pfiScore})
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {/* Main 2-Column Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (5 Cols): Village Search & Directory */}
+        {/* Left Column (5 Cols): Village Cards */}
         <div className="lg:col-span-5 space-y-4">
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-teal-600" />
-                Select Target Indian Village
+                Villages in {selectedDistrict}, {selectedState}
               </h3>
-              <span className="text-xs text-slate-500 font-semibold">{villages.length} Villages Found</span>
             </div>
 
-            {/* Search Input & State Filter */}
-            <div className="space-y-2">
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                <input
-                  type="text"
-                  placeholder="Search Village, Block, District or State..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <select
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer"
-              >
-                <option value="">All States of India</option>
-                {INDIA_STATES.map((st: string) => (
-                  <option key={st} value={st}>
-                    {st} State
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Village List */}
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-              {villages.map((v) => (
+              {availableVillages.map((v) => (
                 <VillageFrictionCard
                   key={v.id}
                   village={v}
                   isSelected={selectedVillage.id === v.id}
-                  onSelect={(vg) => setSelectedVillage(vg)}
+                  onSelect={(vg) => setSelectedVillageId(vg.id)}
                 />
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right Column (7 Cols): Selected Village Telemetry & Interactive Government Budget Simulator */}
+        {/* Right Column (7 Cols): Government Budget Optimizer */}
         <div className="lg:col-span-7 space-y-6">
           {/* Selected Village Real Telemetry Card */}
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">
-                  {selectedVillage.state} • {selectedVillage.district} District ({selectedVillage.block} Block)
+                  {selectedVillage.state} State • {selectedVillage.district} District ({selectedVillage.block} Block)
                 </span>
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   {selectedVillage.villageName}
@@ -196,7 +264,7 @@ export const VillageFrictionOptimizerPage: React.FC = () => {
               <div>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Sliders className="w-5 h-5 text-teal-600" />
-                  Government Budget Allocation Simulator
+                  Government Budget Action Plan Simulator for {selectedVillage.villageName}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Set available government funds for <strong>{selectedVillage.villageName}</strong> to calculate optimal action plan.
@@ -211,18 +279,12 @@ export const VillageFrictionOptimizerPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Budget Slider & Quick Presets */}
+            {/* Budget Slider & Presets */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-semibold">
-                <span>₹1 Lakh</span>
-                <span>Select Available Government Budget</span>
-                <span>₹1 Crore</span>
-              </div>
-
               <input
                 type="range"
-                min={100000}
-                max={10000000}
+                min={50000}
+                max={7500000}
                 step={50000}
                 value={budgetINR}
                 onChange={(e) => setBudgetINR(Number(e.target.value))}
@@ -279,11 +341,10 @@ export const VillageFrictionOptimizerPage: React.FC = () => {
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase block">Unspent Buffer</span>
-                <span className="text-2xl font-black text-slate-900 dark:text-white">
-                  ₹{(optimization.unspentBudgetINR / 1000).toFixed(0)}k
+                <span className="text-[10px] text-slate-500 font-bold uppercase block">Action Scale</span>
+                <span className="text-xs font-black text-slate-900 dark:text-white block mt-1">
+                  {optimization.budgetTierLabel}
                 </span>
-                <span className="text-[10px] text-slate-400 block">reserved reserve fund</span>
               </div>
             </div>
 
@@ -299,47 +360,39 @@ export const VillageFrictionOptimizerPage: React.FC = () => {
             {/* Selected Intervention Portfolio Items */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Recommended Intervention Deployment for {selectedVillage.villageName}:
+                Recommended Action Plan Deployment for {selectedVillage.villageName}:
               </h4>
 
-              {optimization.selectedInterventions.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-amber-800 text-xs">
-                  Increase allocated government budget above ₹1.5 Lakhs to enable intervention deployment.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {optimization.selectedInterventions.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-slate-900 dark:text-white">
-                            {item.quantity}x {item.intervention.name}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200">
-                            -{item.totalReductionPoints} PFI Points
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.intervention.description}</p>
-                        <span className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold block">
-                          Suited for: {item.intervention.bestSuitedFor}
-                        </span>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <span className="text-base font-black text-slate-900 dark:text-white">
-                          ₹{item.totalCostINR.toLocaleString()}
-                        </span>
-                        <span className="text-[10px] text-slate-400 block">
-                          (~{item.quantity * item.intervention.reachVillagersPerUnit} villagers reached)
-                        </span>
-                      </div>
+              {optimization.selectedInterventions.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-slate-900 dark:text-white">
+                        {item.quantity}x {item.intervention.name}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200">
+                        -{item.totalReductionPoints} PFI Points
+                      </span>
                     </div>
-                  ))}
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{item.intervention.description}</p>
+                    <span className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold block">
+                      Suited for: {item.intervention.bestSuitedFor}
+                    </span>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <span className="text-base font-black text-slate-900 dark:text-white">
+                      ₹{item.totalCostINR.toLocaleString()}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block">
+                      (~{item.quantity * item.intervention.reachVillagersPerUnit} villagers reached)
+                    </span>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>

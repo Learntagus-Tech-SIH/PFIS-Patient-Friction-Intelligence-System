@@ -10,23 +10,23 @@ export interface LocationFrictionData {
     travelDistanceKm: number;
     travelTimeMins: number;
     transitAvailability: 'Poor' | 'Moderate' | 'Good' | 'Severe Desert';
-    travelFrictionScore: number; // 0 - 100
+    travelFrictionScore: number;
 
     primaryLanguage: string;
     languageMatchPercent: number;
     digitalLiteracyLevel: 'Low' | 'Basic' | 'Moderate' | 'High';
-    languageFrictionScore: number; // 0 - 100
+    languageFrictionScore: number;
 
     nearestHospitalType: string;
     bedOccupancyPercent: number;
     specialistAvailability: 'Deficit' | 'Moderate' | 'Adequate';
     bplPercentage: number;
-    resourceFrictionScore: number; // 0 - 100
+    resourceFrictionScore: number;
 
     avgOpdWaitTimeMins: number;
     abhaLinkedPercent: number;
     documentationBarrier: 'High' | 'Moderate' | 'Low';
-    queueDocsFrictionScore: number; // 0 - 100
+    queueDocsFrictionScore: number;
   };
   keyBarriers: string[];
   recommendedIntervention: string;
@@ -34,9 +34,9 @@ export interface LocationFrictionData {
 }
 
 export const INDIA_STATES = [
+  'Bihar',
   'Punjab',
   'Jharkhand',
-  'Bihar',
   'Uttar Pradesh',
   'Maharashtra',
   'Rajasthan',
@@ -52,7 +52,226 @@ export const INDIA_STATES = [
 ];
 
 export const INDIA_LOCATIONS_DATABASE: LocationFrictionData[] = [
-  // Punjab Locations
+  // ── BIHAR VILLAGES ──
+  {
+    id: 'br-patna-diara',
+    state: 'Bihar',
+    district: 'Patna',
+    block: 'Danapur',
+    villageOrLocality: 'Diara Riverine Panchayat',
+    pfiScore: 86,
+    frictionCategory: 'CRITICAL',
+    metrics: {
+      travelDistanceKm: 22.0,
+      travelTimeMins: 110,
+      transitAvailability: 'Severe Desert',
+      travelFrictionScore: 94,
+      primaryLanguage: 'Bhojpuri / Maithili',
+      languageMatchPercent: 70,
+      digitalLiteracyLevel: 'Low',
+      languageFrictionScore: 72,
+      nearestHospitalType: 'PMCH Patna (Tertiary Medical College)',
+      bedOccupancyPercent: 140,
+      specialistAvailability: 'Deficit',
+      bplPercentage: 72,
+      resourceFrictionScore: 88,
+      avgOpdWaitTimeMins: 160,
+      abhaLinkedPercent: 39,
+      documentationBarrier: 'High',
+      queueDocsFrictionScore: 90,
+    },
+    keyBarriers: ['Ganges river transit obstacle', 'Massive OPD queue at PMCH', 'Lack of digital tokens'],
+    recommendedIntervention: 'High Budget: Construct New Primary Health Centre (PHC) & Water Ambulance Relay',
+    geoCoords: { lat: 25.632, lng: 85.042 },
+  },
+  {
+    id: 'br-patna-phulwari',
+    state: 'Bihar',
+    district: 'Patna',
+    block: 'Phulwari Sharif',
+    villageOrLocality: 'Janipur Rural Village',
+    pfiScore: 58,
+    frictionCategory: 'MODERATE',
+    metrics: {
+      travelDistanceKm: 8.5,
+      travelTimeMins: 32,
+      transitAvailability: 'Moderate',
+      travelFrictionScore: 48,
+      primaryLanguage: 'Bhojpuri / Magahi',
+      languageMatchPercent: 88,
+      digitalLiteracyLevel: 'Basic',
+      languageFrictionScore: 42,
+      nearestHospitalType: 'AIIMS Patna / Danapur Sub-Divisional Hospital',
+      bedOccupancyPercent: 95,
+      specialistAvailability: 'Moderate',
+      bplPercentage: 45,
+      resourceFrictionScore: 65,
+      avgOpdWaitTimeMins: 70,
+      abhaLinkedPercent: 68,
+      documentationBarrier: 'Moderate',
+      queueDocsFrictionScore: 56,
+    },
+    keyBarriers: ['Suburban traffic choke points', 'Peak registration queue'],
+    recommendedIntervention: 'Medium Budget: Deploy OPD Digital Queue Fast-Track Kiosk & Subsidized Bus',
+    geoCoords: { lat: 25.568, lng: 85.078 },
+  },
+  {
+    id: 'br-gaya-bodhgaya',
+    state: 'Bihar',
+    district: 'Gaya',
+    block: 'Bodh Gaya',
+    villageOrLocality: 'Bakraur Rural Panchayat',
+    pfiScore: 79,
+    frictionCategory: 'HIGH',
+    metrics: {
+      travelDistanceKm: 16.5,
+      travelTimeMins: 48,
+      transitAvailability: 'Poor',
+      travelFrictionScore: 74,
+      primaryLanguage: 'Magahi',
+      languageMatchPercent: 78,
+      digitalLiteracyLevel: 'Low',
+      languageFrictionScore: 68,
+      nearestHospitalType: 'ANMMCH Gaya (District Hospital)',
+      bedOccupancyPercent: 92,
+      specialistAvailability: 'Deficit',
+      bplPercentage: 62,
+      resourceFrictionScore: 82,
+      avgOpdWaitTimeMins: 85,
+      abhaLinkedPercent: 46,
+      documentationBarrier: 'High',
+      queueDocsFrictionScore: 78,
+    },
+    keyBarriers: ['Seasonal river flooding', 'High out-of-pocket medicine expense', 'Low digital literacy'],
+    recommendedIntervention: 'Sub-Center Health & Wellness Upgrade & ASHA Drug Buffer Depot',
+    geoCoords: { lat: 24.696, lng: 84.991 },
+  },
+  {
+    id: 'br-gaya-barachatti',
+    state: 'Bihar',
+    district: 'Gaya',
+    block: 'Barachatti',
+    villageOrLocality: 'Sobh Tribal Forest Village',
+    pfiScore: 88,
+    frictionCategory: 'CRITICAL',
+    metrics: {
+      travelDistanceKm: 38.0,
+      travelTimeMins: 115,
+      transitAvailability: 'Severe Desert',
+      travelFrictionScore: 95,
+      primaryLanguage: 'Magahi / Local Dialect',
+      languageMatchPercent: 62,
+      digitalLiteracyLevel: 'Low',
+      languageFrictionScore: 84,
+      nearestHospitalType: 'Barachatti CHC / ANMMCH Gaya',
+      bedOccupancyPercent: 98,
+      specialistAvailability: 'Deficit',
+      bplPercentage: 78,
+      resourceFrictionScore: 92,
+      avgOpdWaitTimeMins: 120,
+      abhaLinkedPercent: 28,
+      documentationBarrier: 'High',
+      queueDocsFrictionScore: 88,
+    },
+    keyBarriers: ['Forest terrain transit desert', 'Zero public bus connectivity', 'Maternal specialist deficit'],
+    recommendedIntervention: 'Construct 24/7 Primary Health Centre (PHC) & Mobile Tele-Medicine Van',
+    geoCoords: { lat: 24.512, lng: 85.014 },
+  },
+  {
+    id: 'br-muzaffarpur-kanti',
+    state: 'Bihar',
+    district: 'Muzaffarpur',
+    block: 'Kanti',
+    villageOrLocality: 'Kanti Thermal Rural Settlement',
+    pfiScore: 72,
+    frictionCategory: 'HIGH',
+    metrics: {
+      travelDistanceKm: 14.8,
+      travelTimeMins: 45,
+      transitAvailability: 'Moderate',
+      travelFrictionScore: 66,
+      primaryLanguage: 'Vajjika / Hindi',
+      languageMatchPercent: 82,
+      digitalLiteracyLevel: 'Basic',
+      languageFrictionScore: 54,
+      nearestHospitalType: 'SKMCH Muzaffarpur Medical College',
+      bedOccupancyPercent: 115,
+      specialistAvailability: 'Moderate',
+      bplPercentage: 58,
+      resourceFrictionScore: 78,
+      avgOpdWaitTimeMins: 90,
+      abhaLinkedPercent: 54,
+      documentationBarrier: 'Moderate',
+      queueDocsFrictionScore: 70,
+    },
+    keyBarriers: ['SKMCH hospital overcrowding', 'Long OPD registration queue'],
+    recommendedIntervention: 'Fast-Track Digital Token Scanner & ASHA Shuttle Voucher',
+    geoCoords: { lat: 26.185, lng: 85.289 },
+  },
+  {
+    id: 'br-bhagalpur-sabour',
+    state: 'Bihar',
+    district: 'Bhagalpur',
+    block: 'Sabour',
+    villageOrLocality: 'Rajpur Riverine Settlement',
+    pfiScore: 81,
+    frictionCategory: 'CRITICAL',
+    metrics: {
+      travelDistanceKm: 24.5,
+      travelTimeMins: 85,
+      transitAvailability: 'Poor',
+      travelFrictionScore: 88,
+      primaryLanguage: 'Angika / Hindi',
+      languageMatchPercent: 74,
+      digitalLiteracyLevel: 'Low',
+      languageFrictionScore: 72,
+      nearestHospitalType: 'JLN Medical College Hospital Bhagalpur',
+      bedOccupancyPercent: 122,
+      specialistAvailability: 'Deficit',
+      bplPercentage: 66,
+      resourceFrictionScore: 85,
+      avgOpdWaitTimeMins: 110,
+      abhaLinkedPercent: 41,
+      documentationBarrier: 'High',
+      queueDocsFrictionScore: 82,
+    },
+    keyBarriers: ['Angika dialect gap', 'River flood transit disruption', 'Bed deficit'],
+    recommendedIntervention: 'Construct Sub-Divisional Emergency Ward & Mobile Diagnostic Van',
+    geoCoords: { lat: 25.234, lng: 87.042 },
+  },
+  {
+    id: 'br-darbhanga-keoti',
+    state: 'Bihar',
+    district: 'Darbhanga',
+    block: 'Keoti',
+    villageOrLocality: 'Biraul Rural Cluster',
+    pfiScore: 77,
+    frictionCategory: 'HIGH',
+    metrics: {
+      travelDistanceKm: 18.2,
+      travelTimeMins: 58,
+      transitAvailability: 'Poor',
+      travelFrictionScore: 76,
+      primaryLanguage: 'Maithili',
+      languageMatchPercent: 80,
+      digitalLiteracyLevel: 'Low',
+      languageFrictionScore: 62,
+      nearestHospitalType: 'DMCH Medical College Darbhanga',
+      bedOccupancyPercent: 130,
+      specialistAvailability: 'Deficit',
+      bplPercentage: 64,
+      resourceFrictionScore: 84,
+      avgOpdWaitTimeMins: 105,
+      abhaLinkedPercent: 44,
+      documentationBarrier: 'Moderate',
+      queueDocsFrictionScore: 78,
+    },
+    keyBarriers: ['DMCH extreme OPD queue', 'Infrequent rural auto/bus connectivity'],
+    recommendedIntervention: 'Health Screening Camps & Vernacular Voice AI Booking Kiosk',
+    geoCoords: { lat: 26.241, lng: 85.981 },
+  },
+
+  // ── PUNJAB VILLAGES ──
   {
     id: 'pb-phagwara-uni',
     state: 'Punjab',
@@ -85,276 +304,182 @@ export const INDIA_LOCATIONS_DATABASE: LocationFrictionData[] = [
     geoCoords: { lat: 31.2533, lng: 75.7042 },
   },
   {
-    id: 'pb-kapurthala-rural',
+    id: 'pb-bholath-pb',
     state: 'Punjab',
     district: 'Kapurthala',
-    block: 'Sultanpur Lodhi',
+    block: 'Bholath',
     villageOrLocality: 'Bholath Rural Cluster',
     pfiScore: 74,
     frictionCategory: 'HIGH',
     metrics: {
-      travelDistanceKm: 18.5,
-      travelTimeMins: 52,
+      travelDistanceKm: 19.2,
+      travelTimeMins: 55,
       transitAvailability: 'Poor',
       travelFrictionScore: 78,
-      primaryLanguage: 'Punjabi (Rural Dialect)',
-      languageMatchPercent: 75,
+      primaryLanguage: 'Rural Punjabi',
+      languageMatchPercent: 78,
       digitalLiteracyLevel: 'Low',
-      languageFrictionScore: 65,
-      nearestHospitalType: 'CHC Sultanpur Lodhi',
-      bedOccupancyPercent: 92,
+      languageFrictionScore: 68,
+      nearestHospitalType: 'CHC Bholath / District Hospital Kapurthala',
+      bedOccupancyPercent: 94,
       specialistAvailability: 'Deficit',
-      bplPercentage: 41,
-      resourceFrictionScore: 82,
-      avgOpdWaitTimeMins: 85,
-      abhaLinkedPercent: 48,
+      resourceFrictionScore: 84,
+      avgOpdWaitTimeMins: 80,
+      abhaLinkedPercent: 52,
       documentationBarrier: 'Moderate',
-      queueDocsFrictionScore: 70,
+      queueDocsFrictionScore: 68,
     },
     keyBarriers: ['Infrequent rural shuttle buses', 'Maternal specialist shortage', 'Low digital literacy'],
     recommendedIntervention: 'Establish Subsidized ASHA Shuttle & Telemedicine Node',
-    geoCoords: { lat: 31.216, lng: 75.198 },
+    geoCoords: { lat: 31.527, lng: 75.521 },
   },
 
-  // Jharkhand Locations
+  // ── JHARKHAND VILLAGES ──
   {
-    id: 'jh-ranchi-khunti',
+    id: 'jh-ranchi-boreya',
     state: 'Jharkhand',
     district: 'Ranchi',
     block: 'Kanke',
-    villageOrLocality: 'Boreya Tribal Hamlet',
-    pfiScore: 86,
+    villageOrLocality: 'Boreya Tribal Settlement',
+    pfiScore: 88,
     frictionCategory: 'CRITICAL',
     metrics: {
-      travelDistanceKm: 28.4,
-      travelTimeMins: 95,
+      travelDistanceKm: 27.5,
+      travelTimeMins: 90,
       transitAvailability: 'Severe Desert',
-      travelFrictionScore: 92,
-      primaryLanguage: 'Nagpuri / Mundari',
-      languageMatchPercent: 55,
+      travelFrictionScore: 94,
+      primaryLanguage: 'Mundari / Nagpuri',
+      languageMatchPercent: 54,
       digitalLiteracyLevel: 'Low',
-      languageFrictionScore: 85,
-      nearestHospitalType: 'RIMS Regional Medical College',
-      bedOccupancyPercent: 125,
+      languageFrictionScore: 86,
+      nearestHospitalType: 'RIMS Medical College Ranchi',
+      bedOccupancyPercent: 128,
       specialistAvailability: 'Deficit',
-      bplPercentage: 68,
-      resourceFrictionScore: 90,
-      avgOpdWaitTimeMins: 140,
-      abhaLinkedPercent: 32,
+      bplPercentage: 64,
+      resourceFrictionScore: 92,
+      avgOpdWaitTimeMins: 135,
+      abhaLinkedPercent: 34,
       documentationBarrier: 'High',
       queueDocsFrictionScore: 88,
     },
     keyBarriers: ['Language mismatch (Mundari to Hindi)', 'Tertiary hospital severe bed overcrowding', 'High travel cost'],
-    recommendedIntervention: 'Deploy Vernacular Voice AI Booking & Mobile Tribal Ambulance',
+    recommendedIntervention: 'Construct 24/7 Primary Health Centre (PHC) & Vernacular Tele-Medicine',
     geoCoords: { lat: 23.432, lng: 85.321 },
   },
-  {
-    id: 'jh-dhanbad-jharia',
-    state: 'Jharkhand',
-    district: 'Dhanbad',
-    block: 'Jharia',
-    villageOrLocality: 'Bhaga Colliery Enclave',
-    pfiScore: 68,
-    frictionCategory: 'HIGH',
-    metrics: {
-      travelDistanceKm: 12.1,
-      travelTimeMins: 40,
-      transitAvailability: 'Moderate',
-      travelFrictionScore: 62,
-      primaryLanguage: 'Khortha / Hindi',
-      languageMatchPercent: 80,
-      digitalLiteracyLevel: 'Basic',
-      languageFrictionScore: 58,
-      nearestHospitalType: 'Dhanbad District Hospital',
-      bedOccupancyPercent: 96,
-      specialistAvailability: 'Moderate',
-      bplPercentage: 54,
-      resourceFrictionScore: 76,
-      avgOpdWaitTimeMins: 75,
-      abhaLinkedPercent: 58,
-      documentationBarrier: 'Moderate',
-      queueDocsFrictionScore: 65,
-    },
-    keyBarriers: ['High respiratory care demand', 'Long OPD registration wait times'],
-    recommendedIntervention: 'Expand Essential Medicine Pharmacy Buffer & Fast-Track Respiratory Desk',
-    geoCoords: { lat: 23.742, lng: 86.415 },
-  },
 
-  // Bihar Locations
+  // ── MAHARASHTRA VILLAGES ──
   {
-    id: 'br-patna-danapur',
-    state: 'Bihar',
-    district: 'Patna',
-    block: 'Danapur',
-    villageOrLocality: 'Diara Riverine Cluster',
-    pfiScore: 82,
-    frictionCategory: 'CRITICAL',
-    metrics: {
-      travelDistanceKm: 22.0,
-      travelTimeMins: 110,
-      transitAvailability: 'Severe Desert',
-      travelFrictionScore: 94,
-      primaryLanguage: 'Bhojpuri / Maithili',
-      languageMatchPercent: 70,
-      digitalLiteracyLevel: 'Low',
-      languageFrictionScore: 72,
-      nearestHospitalType: 'PMCH Medical College Patna',
-      bedOccupancyPercent: 140,
-      specialistAvailability: 'Deficit',
-      bplPercentage: 72,
-      resourceFrictionScore: 88,
-      avgOpdWaitTimeMins: 160,
-      abhaLinkedPercent: 39,
-      documentationBarrier: 'High',
-      queueDocsFrictionScore: 90,
-    },
-    keyBarriers: ['Riverine boat transit obstacle', 'Massive OPD queue at PMCH', 'Lack of digital tokens'],
-    recommendedIntervention: 'Water Ambulance Connectivity + Pre-booked Token Dispatch',
-    geoCoords: { lat: 25.632, lng: 85.042 },
-  },
-  {
-    id: 'br-gaya-bodhgaya',
-    state: 'Bihar',
-    district: 'Gaya',
-    block: 'Bodh Gaya',
-    villageOrLocality: 'Bakraur Rural Panchayat',
-    pfiScore: 61,
-    frictionCategory: 'HIGH',
-    metrics: {
-      travelDistanceKm: 14.2,
-      travelTimeMins: 38,
-      transitAvailability: 'Moderate',
-      travelFrictionScore: 56,
-      primaryLanguage: 'Magahi / Hindi',
-      languageMatchPercent: 88,
-      digitalLiteracyLevel: 'Basic',
-      languageFrictionScore: 45,
-      nearestHospitalType: 'ANMMCH Gaya',
-      bedOccupancyPercent: 88,
-      specialistAvailability: 'Moderate',
-      bplPercentage: 58,
-      resourceFrictionScore: 70,
-      avgOpdWaitTimeMins: 65,
-      abhaLinkedPercent: 62,
-      documentationBarrier: 'Moderate',
-      queueDocsFrictionScore: 58,
-    },
-    keyBarriers: ['Seasonal flood transit delay', 'High out-of-pocket medicine expense'],
-    recommendedIntervention: 'ASHA Field Drug Kit Replenishment & Dialect Audio Consent',
-    geoCoords: { lat: 24.696, lng: 84.991 },
-  },
-
-  // Uttar Pradesh Locations
-  {
-    id: 'up-varanasi-kashi',
-    state: 'Uttar Pradesh',
-    district: 'Varanasi',
-    block: 'Sewapuri',
-    villageOrLocality: 'Pindra Village Panchayat',
-    pfiScore: 65,
-    frictionCategory: 'HIGH',
-    metrics: {
-      travelDistanceKm: 16.8,
-      travelTimeMins: 48,
-      transitAvailability: 'Moderate',
-      travelFrictionScore: 64,
-      primaryLanguage: 'Bhojpuri / Hindi',
-      languageMatchPercent: 85,
-      digitalLiteracyLevel: 'Basic',
-      languageFrictionScore: 48,
-      nearestHospitalType: 'Pandit Deendayal Upadhyay Hospital',
-      bedOccupancyPercent: 91,
-      specialistAvailability: 'Moderate',
-      bplPercentage: 46,
-      resourceFrictionScore: 72,
-      avgOpdWaitTimeMins: 70,
-      abhaLinkedPercent: 66,
-      documentationBarrier: 'Moderate',
-      queueDocsFrictionScore: 62,
-    },
-    keyBarriers: ['Narrow road congestion', 'High diagnostic lab turnaround time'],
-    recommendedIntervention: 'Smart District Diagnostic Hub Routing',
-    geoCoords: { lat: 25.317, lng: 82.973 },
-  },
-
-  // Maharashtra Locations
-  {
-    id: 'mh-palghar-tribal',
+    id: 'mh-palghar-dabhosa',
     state: 'Maharashtra',
     district: 'Palghar',
     block: 'Jawhar',
-    villageOrLocality: 'Dabhosa Tribal Settlement',
-    pfiScore: 84,
+    villageOrLocality: 'Dabhosa Warli Tribal Hamlet',
+    pfiScore: 86,
     frictionCategory: 'CRITICAL',
     metrics: {
-      travelDistanceKm: 34.0,
-      travelTimeMins: 105,
+      travelDistanceKm: 33.0,
+      travelTimeMins: 100,
       transitAvailability: 'Poor',
-      travelFrictionScore: 90,
+      travelFrictionScore: 92,
       primaryLanguage: 'Warli / Marathi',
-      languageMatchPercent: 60,
+      languageMatchPercent: 58,
       digitalLiteracyLevel: 'Low',
-      languageFrictionScore: 82,
+      languageFrictionScore: 84,
       nearestHospitalType: 'Jawhar Sub-District Hospital',
-      bedOccupancyPercent: 85,
+      bedOccupancyPercent: 88,
       specialistAvailability: 'Deficit',
-      bplPercentage: 64,
+      bplPercentage: 68,
       resourceFrictionScore: 86,
-      avgOpdWaitTimeMins: 90,
-      abhaLinkedPercent: 41,
+      avgOpdWaitTimeMins: 95,
+      abhaLinkedPercent: 42,
       documentationBarrier: 'High',
-      queueDocsFrictionScore: 80,
+      queueDocsFrictionScore: 82,
     },
-    keyBarriers: ['Hilly terrain transit desert', 'Malnutrition clinic specialist deficiency', 'Warli dialect barrier'],
-    recommendedIntervention: 'Mobile High-Risk Maternal Tele-ICU & Local Language ASHA Tablet',
+    keyBarriers: ['Sahyadri mountain travel obstacle', 'Warli dialect gap', 'Maternal specialist deficit'],
+    recommendedIntervention: 'Mobile Tele-Medicine Van & Warli Audio Language Tablet',
     geoCoords: { lat: 19.904, lng: 73.232 },
   },
 
-  // Rajasthan Locations
+  // ── RAJASTHAN VILLAGES ──
   {
-    id: 'rj-barmer-desert',
+    id: 'rj-barmer-dhorimanna',
     state: 'Rajasthan',
     district: 'Barmer',
     block: 'Chohtan',
     villageOrLocality: 'Dhorimanna Desert Outpost',
-    pfiScore: 89,
+    pfiScore: 91,
     frictionCategory: 'CRITICAL',
     metrics: {
-      travelDistanceKm: 42.5,
-      travelTimeMins: 130,
+      travelDistanceKm: 44.0,
+      travelTimeMins: 135,
       transitAvailability: 'Severe Desert',
-      travelFrictionScore: 96,
-      primaryLanguage: 'Marwari / Rajasthani',
-      languageMatchPercent: 68,
+      travelFrictionScore: 98,
+      primaryLanguage: 'Marwari',
+      languageMatchPercent: 66,
       digitalLiteracyLevel: 'Low',
-      languageFrictionScore: 78,
+      languageFrictionScore: 80,
       nearestHospitalType: 'Barmer District Hospital',
-      bedOccupancyPercent: 82,
+      bedOccupancyPercent: 84,
       specialistAvailability: 'Deficit',
-      bplPercentage: 70,
-      resourceFrictionScore: 89,
-      avgOpdWaitTimeMins: 110,
-      abhaLinkedPercent: 35,
+      bplPercentage: 74,
+      resourceFrictionScore: 90,
+      avgOpdWaitTimeMins: 120,
+      abhaLinkedPercent: 32,
       documentationBarrier: 'High',
-      queueDocsFrictionScore: 86,
+      queueDocsFrictionScore: 88,
     },
-    keyBarriers: ['Thar Desert extreme travel distance', 'Sand dune road obstruction', 'Zero public bus frequency'],
-    recommendedIntervention: 'Desert Tele-Medicine Pod + Emergency Camel & 4x4 Ambulance Relay',
+    keyBarriers: ['Thar Desert extreme transit desert', 'Dune road blockade', 'Zero public bus frequency'],
+    recommendedIntervention: 'Construct Desert Primary Health Centre (PHC) & 4x4 Emergency Ambulance Relay',
     geoCoords: { lat: 25.405, lng: 71.054 },
   },
 ];
 
 export const indiaFrictionService = {
   /**
-   * Search locations across India by query string or state filter
+   * Helper to get list of unique states
    */
-  searchLocations(query: string, stateFilter?: string): LocationFrictionData[] {
+  getStates(): string[] {
+    return INDIA_STATES;
+  },
+
+  /**
+   * Helper to get list of unique districts for a given state
+   */
+  getDistrictsByState(stateName: string): string[] {
+    if (!stateName) {
+      const set = new Set(INDIA_LOCATIONS_DATABASE.map((loc) => loc.district));
+      return Array.from(set).sort();
+    }
+    const filtered = INDIA_LOCATIONS_DATABASE.filter(
+      (loc) => loc.state.toLowerCase() === stateName.toLowerCase()
+    );
+    const set = new Set(filtered.map((loc) => loc.district));
+    return Array.from(set).sort();
+  },
+
+  /**
+   * Helper to get list of villages for a given district
+   */
+  getVillagesByDistrict(districtName: string, stateName?: string): LocationFrictionData[] {
+    return INDIA_LOCATIONS_DATABASE.filter((loc) => {
+      const matchState = !stateName || loc.state.toLowerCase() === stateName.toLowerCase();
+      const matchDistrict = !districtName || loc.district.toLowerCase() === districtName.toLowerCase();
+      return matchState && matchDistrict;
+    });
+  },
+
+  /**
+   * Search locations across India by query string or state/district filters
+   */
+  searchLocations(query: string, stateFilter?: string, districtFilter?: string): LocationFrictionData[] {
     const q = (query || '').toLowerCase().trim();
     const sFilter = (stateFilter || '').toLowerCase().trim();
+    const dFilter = (districtFilter || '').toLowerCase().trim();
 
     return INDIA_LOCATIONS_DATABASE.filter((item) => {
-      const matchStateFilter = !sFilter || item.state.toLowerCase() === sFilter;
-      if (!matchStateFilter) return false;
+      const matchState = !sFilter || item.state.toLowerCase() === sFilter;
+      const matchDistrict = !dFilter || item.district.toLowerCase() === dFilter;
+      if (!matchState || !matchDistrict) return false;
 
       if (!q) return true;
 
@@ -366,52 +491,5 @@ export const indiaFrictionService = {
         item.metrics.nearestHospitalType.toLowerCase().includes(q)
       );
     });
-  },
-
-  /**
-   * Compute dynamic PFI Friction score based on real user or location parameters
-   */
-  computeCustomFrictionScore(params: {
-    travelKm: number;
-    hasPublicTransit: boolean;
-    languageMatched: boolean;
-    digitalLiteracy: 'Low' | 'Basic' | 'Moderate' | 'High';
-    hasBplCard: boolean;
-    hospitalBedOccupancyPct: number;
-    opdWaitMins: number;
-  }): { pfiScore: number; category: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL'; breakdown: Record<string, number> } {
-    // 1. Travel Friction (35% weight)
-    let travelScore = Math.min(100, Math.round((params.travelKm / 35) * 80 + (params.hasPublicTransit ? 0 : 25)));
-
-    // 2. Language Friction (20% weight)
-    let langScore = params.languageMatched ? 20 : 80;
-    if (params.digitalLiteracy === 'Low') langScore += 15;
-
-    // 3. Resource Friction (25% weight)
-    let resourceScore = Math.min(100, Math.round((params.hospitalBedOccupancyPct / 120) * 70 + (params.hasBplCard ? 25 : 10)));
-
-    // 4. Queue / Docs Friction (20% weight)
-    let queueScore = Math.min(100, Math.round((params.opdWaitMins / 150) * 85));
-
-    const pfiScore = Math.min(
-      100,
-      Math.round(travelScore * 0.35 + resourceScore * 0.25 + langScore * 0.2 + queueScore * 0.2)
-    );
-
-    let category: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL' = 'LOW';
-    if (pfiScore >= 80) category = 'CRITICAL';
-    else if (pfiScore >= 65) category = 'HIGH';
-    else if (pfiScore >= 45) category = 'MODERATE';
-
-    return {
-      pfiScore,
-      category,
-      breakdown: {
-        Travel: travelScore,
-        Language: Math.min(100, langScore),
-        ResourceScarcity: resourceScore,
-        QueueAndDocs: queueScore,
-      },
-    };
   },
 };
