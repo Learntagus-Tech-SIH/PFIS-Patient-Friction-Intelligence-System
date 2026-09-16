@@ -15,6 +15,24 @@ export const GoogleCallback: React.FC = () => {
 
   const hasCalledRef = React.useRef(false);
 
+  const getDashboardUrl = (userRole?: string) => {
+    switch (userRole) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'government':
+        return '/government/dashboard';
+      case 'doctor':
+        return '/doctor/dashboard';
+      case 'asha_worker':
+        return '/asha/dashboard';
+      case 'hospital':
+        return '/hospital/dashboard';
+      case 'patient':
+      default:
+        return '/patient/dashboard';
+    }
+  };
+
   useEffect(() => {
     // 1. If already authenticated, redirect straight to dashboard
     const existingToken = localStorage.getItem('pfis_auth_token') || localStorage.getItem('pfis_token');
@@ -22,16 +40,8 @@ export const GoogleCallback: React.FC = () => {
     if (existingToken && existingUser && !searchParams.get('token')) {
       try {
         const parsedUser = JSON.parse(existingUser);
-        if (parsedUser.role === 'admin') {
-          navigate('/admin/dashboard', { replace: true });
-          return;
-        } else if (parsedUser.role === 'hospital') {
-          navigate('/hospital/dashboard', { replace: true });
-          return;
-        } else {
-          navigate('/patient/dashboard', { replace: true });
-          return;
-        }
+        navigate(getDashboardUrl(parsedUser.role), { replace: true });
+        return;
       } catch {}
     }
 
@@ -74,10 +84,7 @@ export const GoogleCallback: React.FC = () => {
           setStatus('success');
 
           setTimeout(() => {
-            const role = userObj?.role || 'patient';
-            if (role === 'admin') navigate('/admin/dashboard', { replace: true });
-            else if (role === 'hospital') navigate('/hospital/dashboard', { replace: true });
-            else navigate('/patient/dashboard', { replace: true });
+            navigate(getDashboardUrl(userObj?.role), { replace: true });
           }, 600);
           return;
         } catch (err: any) {
@@ -115,9 +122,7 @@ export const GoogleCallback: React.FC = () => {
           setStatus('success');
 
           setTimeout(() => {
-            if (res.user.role === 'admin') navigate('/admin/dashboard', { replace: true });
-            else if (res.user.role === 'hospital') navigate('/hospital/dashboard', { replace: true });
-            else navigate('/patient/dashboard', { replace: true });
+            navigate(getDashboardUrl(res.user.role), { replace: true });
           }, 600);
         } else {
           const tokenNow = localStorage.getItem('pfis_auth_token') || localStorage.getItem('pfis_token');

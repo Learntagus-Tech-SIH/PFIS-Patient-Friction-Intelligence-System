@@ -183,10 +183,28 @@ export const Login: React.FC = () => {
 
   const currentPortalConfig = portals.find((p) => p.id === activePortal) || portals[0];
 
+  const demoCredentials: Record<PortalRole, { email: string; pass: string }> = {
+    patient: { email: 'patient@pfis.org', pass: 'Patient@123' },
+    doctor: { email: 'doctor@pfis.org', pass: 'Doctor@123' },
+    hospital: { email: 'hospital@apollo.org', pass: 'Hospital@123' },
+    asha_worker: { email: 'asha@pfis.org', pass: 'Asha@123' },
+    government: { email: 'government@pfis.org', pass: 'Govt@123' },
+    admin: { email: 'admin@pfis.org', pass: 'Admin@123' },
+  };
+
   const handlePortalSwitch = (role: PortalRole) => {
     setActivePortal(role);
     setError(null);
     setSuccessMessage(null);
+  };
+
+  const handleFillDemo = (role: PortalRole) => {
+    const creds = demoCredentials[role];
+    if (creds) {
+      setEmail(creds.email);
+      setPassword(creds.pass);
+      setError(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -391,6 +409,17 @@ export const Login: React.FC = () => {
 
       {/* Production Credentials Login Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-0.5">
+          <span>Demo login for <strong>{currentPortalConfig.title}</strong>:</span>
+          <button
+            type="button"
+            onClick={() => handleFillDemo(activePortal)}
+            className="font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer flex items-center gap-1"
+          >
+            <span>Auto-fill ({demoCredentials[activePortal]?.email})</span>
+          </button>
+        </div>
+
         <Input
           label={t('auth.emailLabel', 'Email Address')}
           type="email"

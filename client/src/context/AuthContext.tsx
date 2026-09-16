@@ -110,6 +110,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         cleanEmail === 'admin@pfis.org' ||
         cleanEmail === 'hospital@apollo.org' ||
         cleanEmail === 'patient@pfis.org' ||
+        cleanEmail === 'government@pfis.org' ||
+        cleanEmail === 'doctor@pfis.org' ||
+        cleanEmail === 'asha@pfis.org' ||
         cleanEmail === 'dhirajkumar464748@gmail.com';
 
       if (isDemoAccount) {
@@ -121,6 +124,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else if (cleanEmail === 'hospital@apollo.org') {
           demoRole = 'hospital';
           demoName = 'Apollo Health Facility';
+        } else if (cleanEmail === 'government@pfis.org') {
+          demoRole = 'government';
+          demoName = 'District Health Officer (Health Authority)';
+        } else if (cleanEmail === 'doctor@pfis.org') {
+          demoRole = 'doctor';
+          demoName = 'Dr. Rajesh Sharma (Specialist)';
+        } else if (cleanEmail === 'asha@pfis.org') {
+          demoRole = 'asha_worker';
+          demoName = 'Sunita Devi (ASHA Field Worker)';
         } else {
           demoRole = 'patient';
           demoName = 'Aarav Kumar (Patient)';

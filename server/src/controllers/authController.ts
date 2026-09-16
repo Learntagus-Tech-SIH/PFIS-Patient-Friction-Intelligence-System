@@ -296,6 +296,12 @@ export class AuthController {
           .populate('activeCareRiskId');
       } else if (user.role === 'hospital') {
         profile = await Hospital.findOne({ userId: user._id });
+      } else if (user.role === 'doctor') {
+        profile = await DoctorProfile.findOne({ userId: user._id });
+      } else if (user.role === 'asha_worker') {
+        profile = await AshaWorkerProfile.findOne({ userId: user._id });
+      } else if (user.role === 'government') {
+        profile = await GovernmentProfile.findOne({ userId: user._id });
       }
 
       const token = generateToken({
@@ -343,6 +349,12 @@ export class AuthController {
           .populate('activeCareRiskId');
       } else if (user.role === 'hospital') {
         profile = await Hospital.findOne({ userId: user._id });
+      } else if (user.role === 'doctor') {
+        profile = await DoctorProfile.findOne({ userId: user._id });
+      } else if (user.role === 'asha_worker') {
+        profile = await AshaWorkerProfile.findOne({ userId: user._id });
+      } else if (user.role === 'government') {
+        profile = await GovernmentProfile.findOne({ userId: user._id });
       }
 
       res.status(200).json({
@@ -383,11 +395,11 @@ export class AuthController {
     const isAdmin = ADMIN_EMAILS.includes(normalizedEmail);
 
     // ONLY whitelisted admin emails get Admin access. All others get hospital or patient.
-    let assignedRole: 'admin' | 'hospital' | 'patient' = 'patient';
+    let assignedRole: 'admin' | 'hospital' | 'patient' | 'doctor' | 'asha_worker' | 'government' = 'patient';
     if (isAdmin) {
       assignedRole = 'admin';
-    } else if (role === 'hospital') {
-      assignedRole = 'hospital';
+    } else if (['patient', 'doctor', 'hospital', 'asha_worker', 'government'].includes(role)) {
+      assignedRole = role;
     } else {
       assignedRole = 'patient';
     }
@@ -492,10 +504,51 @@ export class AuthController {
           availableBeds: 25,
           specialistAvailable: true,
         });
+      } else if (user.role === 'doctor') {
+        const count = await DoctorProfile.countDocuments();
+        const doctorCode = `DOC-${1000 + count + 1}`;
+        await DoctorProfile.create({
+          userId: user._id,
+          doctorCode,
+          name: name || 'Doctor Officer',
+          specialization: 'General Medicine',
+          qualification: 'MBBS',
+          email: normalizedEmail,
+          isVerified: true,
+          isActive: true,
+        });
+      } else if (user.role === 'asha_worker') {
+        const count = await AshaWorkerProfile.countDocuments();
+        const ashaCode = `ASHA-${2000 + count + 1}`;
+        await AshaWorkerProfile.create({
+          userId: user._id,
+          ashaCode,
+          name: name || 'ASHA Worker',
+          email: normalizedEmail,
+          zone: 'Zone 1',
+          district: 'Local District',
+          state: 'Punjab',
+          isActive: true,
+        });
+      } else if (user.role === 'government') {
+        const count = await GovernmentProfile.countDocuments();
+        const govCode = `GOV-${3000 + count + 1}`;
+        await GovernmentProfile.create({
+          userId: user._id,
+          govCode,
+          department: 'District Health Command & Population Analytics',
+          designation: 'Health Authority Officer',
+          state: 'Punjab',
+          district: 'Local District',
+          accessLevel: 'district',
+          email: normalizedEmail,
+          isVerified: true,
+          isActive: true,
+        });
       }
     } else {
-      if (user.role !== assignedRole) {
-        user.role = assignedRole;
+      if (role && user.role !== 'admin' && ['patient', 'doctor', 'hospital', 'asha_worker', 'government'].includes(role)) {
+        user.role = role;
         await user.save();
       }
       if (avatarUrl && !user.avatarUrl) {
@@ -511,6 +564,12 @@ export class AuthController {
         .populate('activeCareRiskId');
     } else if (user.role === 'hospital') {
       profile = await Hospital.findOne({ userId: user._id });
+    } else if (user.role === 'doctor') {
+      profile = await DoctorProfile.findOne({ userId: user._id });
+    } else if (user.role === 'asha_worker') {
+      profile = await AshaWorkerProfile.findOne({ userId: user._id });
+    } else if (user.role === 'government') {
+      profile = await GovernmentProfile.findOne({ userId: user._id });
     }
 
     const token = generateToken({
