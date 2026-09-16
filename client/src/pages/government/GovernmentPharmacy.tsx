@@ -138,7 +138,7 @@ export const GovernmentPharmacy: React.FC = () => {
                     {med.facility}
                   </td>
                   <td className="p-4 font-black text-slate-900 dark:text-white">
-                    {med.stock.toLocaleString()} {med.unit}
+                    {(med?.stock ?? 0).toLocaleString()} {med?.unit || ''}
                   </td>
                   <td className="p-4">
                     <span className={`font-bold ${med.bufferDays < 15 ? 'text-rose-600' : 'text-emerald-600'}`}>

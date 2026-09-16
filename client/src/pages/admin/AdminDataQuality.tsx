@@ -157,7 +157,7 @@ export const AdminDataQuality: React.FC = () => {
                     {ds.name}
                   </td>
                   <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
-                    {ds.totalRecords.toLocaleString()}
+                    {(ds?.totalRecords ?? 0).toLocaleString()}
                   </td>
                   <td className="p-4 font-bold text-teal-600 dark:text-teal-400">
                     {ds.completeness}%

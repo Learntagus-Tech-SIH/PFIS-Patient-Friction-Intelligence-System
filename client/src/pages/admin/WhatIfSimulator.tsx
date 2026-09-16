@@ -201,10 +201,10 @@ export const WhatIfSimulator: React.FC = () => {
                 Total Portfolio Budget
               </span>
               <div className="text-2xl sm:text-3xl font-black text-slate-900">
-                ₹{totalBudget.toLocaleString('en-IN')}
+                ₹{(totalBudget ?? 0).toLocaleString('en-IN')}
               </div>
               <p className="text-[11px] text-slate-500">
-                ₹{Math.round(totalBudget / (patientsHelped || 1)).toLocaleString('en-IN')} per patient helped
+                ₹{(Math.round((totalBudget ?? 0) / (patientsHelped || 1)) || 0).toLocaleString('en-IN')} per patient helped
               </p>
             </div>
           </div>
@@ -253,7 +253,7 @@ export const WhatIfSimulator: React.FC = () => {
                         isSelected ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-700'
                       }`}
                     >
-                      +{item.baseGainPercent}%
+                      +{(item.baseGainPercent ?? 0)}%
                     </span>
                   </div>
 
@@ -264,7 +264,7 @@ export const WhatIfSimulator: React.FC = () => {
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 text-[11px] flex items-center justify-between text-slate-500">
-                  <span>₹{item.unitCostINR.toLocaleString('en-IN')}</span>
+                  <span>₹{(item.unitCostINR ?? 0).toLocaleString('en-IN')}</span>
                   <span className="font-bold text-teal-700">~{item.reachPatientsPerUnit} Patients</span>
                 </div>
               </div>

@@ -117,7 +117,7 @@ export const InterventionOptimizer: React.FC = () => {
             </div>
 
             <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold">
-              Budget Cap: ₹{recommendation.availableBudgetINR.toLocaleString('en-IN')}
+              Budget Cap: ₹{(recommendation?.availableBudgetINR ?? 0).toLocaleString('en-IN')}
             </span>
           </div>
 
@@ -126,17 +126,17 @@ export const InterventionOptimizer: React.FC = () => {
             <div className="p-4 bg-teal-50 rounded-2xl border border-teal-200 space-y-1">
               <span className="text-[10px] text-teal-700 font-bold uppercase block">Est. Completion Gain</span>
               <span className="text-2xl sm:text-3xl font-black text-teal-950">
-                +{recommendation.projectedGainPercent}%
+                +{(recommendation?.projectedGainPercent ?? 0)}%
               </span>
               <p className="text-[10px] text-teal-700">
-                {recommendation.projectedBaselineProbability}% → {recommendation.projectedOptimizedProbability}%
+                {(recommendation?.projectedBaselineProbability ?? 0)}% → {(recommendation?.projectedOptimizedProbability ?? 0)}%
               </p>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
               <span className="text-[10px] text-slate-500 font-bold uppercase block">Patients Helped</span>
               <span className="text-2xl sm:text-3xl font-black text-slate-900">
-                ~{recommendation.estimatedPatientsHelped}
+                ~{(recommendation?.estimatedPatientsHelped ?? 0)}
               </span>
               <p className="text-[10px] text-slate-400">across target population</p>
             </div>
@@ -144,17 +144,17 @@ export const InterventionOptimizer: React.FC = () => {
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
               <span className="text-[10px] text-slate-500 font-bold uppercase block">Allocated Budget</span>
               <span className="text-2xl sm:text-3xl font-black text-slate-900">
-                ₹{recommendation.totalAllocatedCostINR.toLocaleString('en-IN')}
+                ₹{(recommendation?.totalAllocatedCostINR ?? 0).toLocaleString('en-IN')}
               </span>
               <p className="text-[10px] text-slate-400">
-                ₹{recommendation.remainingBudgetINR.toLocaleString('en-IN')} unspent buffer
+                ₹{(recommendation?.remainingBudgetINR ?? 0).toLocaleString('en-IN')} unspent buffer
               </p>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
               <span className="text-[10px] text-slate-500 font-bold uppercase block">Cost Per Patient</span>
               <span className="text-2xl sm:text-3xl font-black text-teal-800">
-                ₹{recommendation.costPerPatientHelpedINR.toLocaleString('en-IN')}
+                ₹{(recommendation?.costPerPatientHelpedINR ?? 0).toLocaleString('en-IN')}
               </span>
               <p className="text-[10px] text-teal-600 font-medium">Exceptional Efficiency</p>
             </div>
@@ -165,14 +165,14 @@ export const InterventionOptimizer: React.FC = () => {
             <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block">
               Explainable Decision Rationale
             </span>
-            <p className="text-slate-200 leading-relaxed">{recommendation.rationale}</p>
+            <p className="text-slate-200 leading-relaxed">{recommendation?.rationale || 'Optimal budget allocation.'}</p>
           </div>
 
           {/* Selected Interventions Detailed Cards */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-slate-900">Chosen Interventions in this Portfolio:</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {recommendation.selectedInterventions.map((item) => (
+              {(recommendation?.selectedInterventions || []).map((item) => (
                 <div
                   key={item.code}
                   className="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-2"
@@ -180,12 +180,12 @@ export const InterventionOptimizer: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <h5 className="font-bold text-sm text-slate-900">{item.name}</h5>
                     <span className="text-xs font-black text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
-                      +{item.baseGainPercent}%
+                      +{(item.baseGainPercent ?? 0)}%
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">{item.description}</p>
                   <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-100">
-                    <span>Unit Cost: ₹{item.unitCostINR.toLocaleString('en-IN')}</span>
+                    <span>Unit Cost: ₹{(item.unitCostINR ?? 0).toLocaleString('en-IN')}</span>
                     <span className="font-bold text-slate-700">~{item.reachPatientsPerUnit} Patients Reached</span>
                   </div>
                 </div>
@@ -204,11 +204,11 @@ export const InterventionOptimizer: React.FC = () => {
                   Constrained Budget Scenario (-30%)
                 </span>
                 <p className="font-bold text-slate-800">
-                  Budget ₹{recommendation.sensitivityAnalysis.reducedBudgetScenario.budgetINR.toLocaleString('en-IN')}: +
-                  {recommendation.sensitivityAnalysis.reducedBudgetScenario.projectedGainPercent}% Gain
+                  Budget ₹{(recommendation?.sensitivityAnalysis?.reducedBudgetScenario?.budgetINR ?? 0).toLocaleString('en-IN')}: +
+                  {(recommendation?.sensitivityAnalysis?.reducedBudgetScenario?.projectedGainPercent ?? 0)}% Gain
                 </p>
                 <p className="text-slate-500 text-[11px]">
-                  Items: {recommendation.sensitivityAnalysis.reducedBudgetScenario.items.join(', ') || 'Minimal triage'}
+                  Items: {recommendation?.sensitivityAnalysis?.reducedBudgetScenario?.items?.join(', ') || 'Minimal triage'}
                 </p>
               </div>
 
@@ -217,11 +217,11 @@ export const InterventionOptimizer: React.FC = () => {
                   Expanded Budget Scenario (+30%)
                 </span>
                 <p className="font-bold text-slate-800">
-                  Budget ₹{recommendation.sensitivityAnalysis.expandedBudgetScenario.budgetINR.toLocaleString('en-IN')}: +
-                  {recommendation.sensitivityAnalysis.expandedBudgetScenario.projectedGainPercent}% Gain
+                  Budget ₹{(recommendation?.sensitivityAnalysis?.expandedBudgetScenario?.budgetINR ?? 0).toLocaleString('en-IN')}: +
+                  {(recommendation?.sensitivityAnalysis?.expandedBudgetScenario?.projectedGainPercent ?? 0)}% Gain
                 </p>
                 <p className="text-slate-500 text-[11px]">
-                  Items: {recommendation.sensitivityAnalysis.expandedBudgetScenario.items.join(', ')}
+                  Items: {recommendation?.sensitivityAnalysis?.expandedBudgetScenario?.items?.join(', ') || ''}
                 </p>
               </div>
             </div>
