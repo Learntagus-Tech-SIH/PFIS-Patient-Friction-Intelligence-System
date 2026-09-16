@@ -4,6 +4,7 @@ import { adminService } from '../../services/adminService';
 import { StatCard } from '../../components/common/StatCard';
 import { Button } from '../../components/common/Button';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
+import { IndiaFrictionExplorerWidget } from '../../components/common/IndiaFrictionExplorerWidget';
 import {
   Shield,
   Users,
@@ -47,13 +48,10 @@ export const AdminDashboard: React.FC = () => {
         }
 
         if (logsRes?.success) {
-          const authEvents = (logsRes.logs || []).filter((l: any) =>
-            l.action?.startsWith('AUTH_') || l.action === 'PATIENT_PROFILE_UPDATED'
-          );
-          setRecentLogs(authEvents.length > 0 ? authEvents : logsRes.logs.slice(0, 10));
+          const authEvents = (logsRes.logs || []).filter((l: any) => l.action?.includes('AUTH'));
+          setRecentLogs(authEvents.slice(0, 5));
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
         setStatsError(true);
       } finally {
         setIsLoading(false);
@@ -64,7 +62,7 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <LoadingSkeleton rows={6} />;
+    return <LoadingSkeleton rows={8} />;
   }
 
   const googleLoginsCount = recentLogs.filter(
@@ -73,6 +71,9 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {/* Real-Time All-India Friction Score Explorer Widget (Top Position) */}
+      <IndiaFrictionExplorerWidget portalRole="admin" />
+
       {/* Header Banner */}
       <div className="bg-gradient-to-tr from-slate-900 via-navy-900 to-slate-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2 max-w-2xl">

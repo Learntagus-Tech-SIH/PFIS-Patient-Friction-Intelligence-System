@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ashaService, AshaProfile, AshaDashboardStats } from '../../services/ashaService';
 import { useToast } from '../../context/ToastContext';
+import { IndiaFrictionExplorerWidget } from '../../components/common/IndiaFrictionExplorerWidget';
 import {
   Users,
   Home,
@@ -116,6 +117,9 @@ export const AshaDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto">
+      {/* Real-Time All-India Friction Score Explorer Widget (Top Position) */}
+      <IndiaFrictionExplorerWidget portalRole="asha_worker" />
+
       {/* ── TOP IDENTITY BANNER ── */}
       <div className="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-200 to-transparent" />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { governmentService, IGovAnalytics } from '../../services/governmentService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { IndiaFrictionExplorerWidget } from '../../components/common/IndiaFrictionExplorerWidget';
 import {
   Building2,
   Users,
@@ -52,7 +53,7 @@ export const GovernmentDashboard: React.FC = () => {
         setHospitals(hospRes.value.hospitals || []);
       }
     } catch {
-      showToast('Failed to load live district health telemetry.', 'error');
+      showToast('Failed to load government dashboard telemetry.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -103,6 +104,9 @@ export const GovernmentDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-fade-in max-w-7xl mx-auto pb-12">
+      {/* Real-Time All-India Friction Score Explorer Widget (Top Position) */}
+      <IndiaFrictionExplorerWidget portalRole="government" />
+
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
         <div className="absolute right-0 top-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
