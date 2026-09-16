@@ -323,6 +323,7 @@ export const INDIA_LOCATIONS_DATABASE: LocationFrictionData[] = [
       nearestHospitalType: 'CHC Bholath / District Hospital Kapurthala',
       bedOccupancyPercent: 94,
       specialistAvailability: 'Deficit',
+      bplPercentage: 38,
       resourceFrictionScore: 84,
       avgOpdWaitTimeMins: 80,
       abhaLinkedPercent: 52,
