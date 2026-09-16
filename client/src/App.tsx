@@ -123,6 +123,7 @@ import { GovernmentDistrictComparison } from './pages/government/GovernmentDistr
 import { GovernmentActionCenter } from './pages/government/GovernmentActionCenter';
 import { GovernmentReports } from './pages/government/GovernmentReports';
 import { GovernmentAuditLogs } from './pages/government/GovernmentAuditLogs';
+import { VillageFrictionOptimizerPage } from './pages/government/VillageFrictionOptimizerPage';
 
 // Admin Strategic Intelligence Pages
 import { AdminStateCommand } from './pages/admin/AdminStateCommand';
@@ -293,6 +294,7 @@ export const App: React.FC = () => {
                       <Route path="alerts" element={<GovernmentActionCenter />} />
                       <Route path="reports" element={<GovernmentReports />} />
                       <Route path="audit-logs" element={<GovernmentAuditLogs />} />
+                      <Route path="village-optimizer" element={<VillageFrictionOptimizerPage />} />
                       <Route path="notifications" element={<PatientNotifications />} />
                       <Route path="settings" element={<PatientSettings />} />
                     </Route>
@@ -316,6 +318,7 @@ export const App: React.FC = () => {
                       <Route path="frontline" element={<FrontlineWorkerPortal />} />
                       <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
                       <Route path="friction-map" element={<PopulationFrictionMap />} />
+                      <Route path="village-optimizer" element={<VillageFrictionOptimizerPage />} />
                       <Route path="simulator" element={<WhatIfSimulator />} />
                       <Route path="digital-twin" element={<DigitalTwinSimulator />} />
                       <Route path="teleconsult" element={<TeleconsultationRoom />} />

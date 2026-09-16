@@ -127,6 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
 
   const governmentLinks = [
     { name: 'State / District Health Overview', path: '/government/dashboard', icon: LayoutDashboard },
+    { name: 'Village Friction & Govt Budget AI', path: '/government/village-optimizer', icon: Sliders },
     { name: 'System Impact Evaluation', path: '/admin/judge-mode', icon: BarChart3 },
     { name: 'Hospital Registry', path: '/government/hospitals', icon: Building2 },
     { name: 'Hospital Bed & Resource Oversight', path: '/government/beds', icon: Bed },
